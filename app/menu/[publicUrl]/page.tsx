@@ -459,9 +459,9 @@ export default function PublicMenuPage() {
                             exit={{ opacity: 0 }}
                             className="w-full h-full"
                           >
-                            {selectedDish.modelUrl3D ? (
+                            {selectedDish.model3DUrl ? (
                               <model-viewer
-                                src={selectedDish.modelUrl3D}
+                                src={selectedDish.model3DUrl}
                                 auto-rotate
                                 camera-controls
                                 shadow-intensity="1"
