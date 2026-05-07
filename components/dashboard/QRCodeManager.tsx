@@ -69,21 +69,15 @@ export default function QRCodeManager({
     try {
       setLoading(true);
       const publicUrl = restaurantName.toLowerCase().replace(/\s+/g, "-");
-      const appUrl =
-        typeof window !== "undefined"
-          ? window.location.origin
-          : process.env.NEXT_PUBLIC_APP_URL;
       console.log("Generating QR code with:", {
         restaurantId,
         publicUrl,
         restaurantName,
-        appUrl,
       });
 
       const response = await apiClient.post("/qrcode/generate", {
         restaurantId,
         publicUrl,
-        appUrl,
       });
 
       console.log("Generate response:", response);

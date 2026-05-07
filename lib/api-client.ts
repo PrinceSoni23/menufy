@@ -22,6 +22,11 @@ class ApiClient {
     // Request interceptor
     this.client.interceptors.request.use(
       config => {
+        // Handle FormData - remove default Content-Type so axios can set proper multipart boundary
+        if (config.data instanceof FormData) {
+          delete config.headers["Content-Type"];
+        }
+
         const token = this.getAccessToken();
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
