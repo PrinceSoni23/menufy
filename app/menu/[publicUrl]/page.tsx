@@ -66,9 +66,14 @@ export default function PublicMenuPage() {
   const [selectedDish, setSelectedDish] = useState<MenuItem | null>(null);
   const [activeTab, setActiveTab] = useState<"details" | "3d">("details");
   const [cart, setCart] = useState<{ item: MenuItem; qty: number }[]>([]);
+  const [modelLoadError, setModelLoadError] = useState<string | null>(null);
 
   // Search and filters
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    setModelLoadError(null);
+  }, [selectedDish?._id, selectedDish?.model3DUrl, activeTab]);
 
   // Load data
   useEffect(() => {
@@ -460,22 +465,46 @@ export default function PublicMenuPage() {
                             className="w-full h-full"
                           >
                             {selectedDish.model3DUrl ? (
-                              <model-viewer
-                                src={selectedDish.model3DUrl}
-                                auto-rotate
-                                camera-controls
-                                shadow-intensity="1"
-                                ar
-                                ar-modes="webxr scene-viewer quick-look"
-                                style={{
-                                  width: "100%",
-                                  height: "100%",
-                                  backgroundColor: "#0a0806",
-                                }}
-                                environment-image="neutral"
-                                auto-rotate-delay="100"
-                                rotation-per-second="30deg"
-                              ></model-viewer>
+                              /^(https?:\/\/)?(localhost|127\.0\.0\.1|::1)(:\d+)?(\/|$)/i.test(
+                                selectedDish.model3DUrl,
+                              ) || modelLoadError ? (
+                                <div className="w-full h-full flex flex-col items-center justify-center text-[#f8f3e6]/60 font-serif px-6 text-center bg-[#0a0806]">
+                                  <span className="text-4xl mb-4">⚠️</span>
+                                  <p className="uppercase tracking-widest text-sm text-[#d4af37] mb-2">
+                                    3D model could not be loaded
+                                  </p>
+                                  <p className="text-sm max-w-md leading-relaxed text-[#f8f3e6]/70">
+                                    This dish has a 3D file saved, but the URL
+                                    is not reachable from the current device or
+                                    deployment.
+                                    {modelLoadError
+                                      ? ` ${modelLoadError}`
+                                      : " In production, this usually means the file was saved with a localhost URL or the file is no longer publicly accessible."}
+                                  </p>
+                                </div>
+                              ) : (
+                                <model-viewer
+                                  src={selectedDish.model3DUrl}
+                                  auto-rotate
+                                  camera-controls
+                                  shadow-intensity="1"
+                                  ar
+                                  ar-modes="webxr scene-viewer quick-look"
+                                  style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    backgroundColor: "#0a0806",
+                                  }}
+                                  environment-image="neutral"
+                                  auto-rotate-delay="100"
+                                  rotation-per-second="30deg"
+                                  onError={() =>
+                                    setModelLoadError(
+                                      "The model-viewer component failed to fetch the file. Check that the URL is publicly accessible over HTTPS.",
+                                    )
+                                  }
+                                ></model-viewer>
+                              )
                             ) : (
                               <div className="w-full h-full flex flex-col items-center justify-center text-[#d4af37]/30 font-serif">
                                 <span className="text-4xl mb-4">🔮</span>
@@ -560,7 +589,7 @@ export default function PublicMenuPage() {
                   </div>
 
                   <div className="p-5 md:p-6 border-t border-[#d4af37]/20 bg-[#0a0806] flex items-center justify-between gap-4 sticky bottom-0 z-20">
-                    {activeTab === "3d" && selectedDish.modelUrl3D ? (
+                    {activeTab === "3d" && selectedDish.model3DUrl ? (
                       <button
                         onClick={() => {
                           const modelViewer = document.querySelector(
