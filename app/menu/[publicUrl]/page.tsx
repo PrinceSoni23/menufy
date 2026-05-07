@@ -67,12 +67,15 @@ export default function PublicMenuPage() {
   const [activeTab, setActiveTab] = useState<"details" | "3d">("details");
   const [cart, setCart] = useState<{ item: MenuItem; qty: number }[]>([]);
   const [modelLoadError, setModelLoadError] = useState<string | null>(null);
+  const [modelLoading, setModelLoading] = useState(false);
+  const modelViewerRef = useRef<any>(null);
 
   // Search and filters
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     setModelLoadError(null);
+    setModelLoading(false);
   }, [selectedDish?._id, selectedDish?.model3DUrl, activeTab]);
 
   // Load data
@@ -226,6 +229,7 @@ export default function PublicMenuPage() {
       <Script
         type="module"
         src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"
+        strategy="afterInteractive"
       />
       {!introDone && <IntroCinematic onComplete={() => setIntroDone(true)} />}
 
@@ -483,26 +487,70 @@ export default function PublicMenuPage() {
                                   </p>
                                 </div>
                               ) : (
-                                createElement("model-viewer", {
-                                  src: selectedDish.model3DUrl,
-                                  "auto-rotate": true,
-                                  "camera-controls": true,
-                                  "shadow-intensity": "1",
-                                  ar: true,
-                                  "ar-modes": "webxr scene-viewer quick-look",
-                                  style: {
-                                    width: "100%",
-                                    height: "100%",
-                                    backgroundColor: "#0a0806",
-                                  },
-                                  "environment-image": "neutral",
-                                  "auto-rotate-delay": "100",
-                                  "rotation-per-second": "30deg",
-                                  onError: () =>
-                                    setModelLoadError(
-                                      "The model-viewer component failed to fetch the file. Check that the URL is publicly accessible over HTTPS.",
-                                    ),
-                                } as any)
+                                <div className="relative w-full h-full">
+                                  {modelLoading && (
+                                    <motion.div
+                                      initial={{ opacity: 1 }}
+                                      exit={{ opacity: 0 }}
+                                      className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0806]/80 backdrop-blur-sm z-10"
+                                    >
+                                      <div className="flex flex-col items-center gap-4">
+                                        <div className="relative w-16 h-16">
+                                          <motion.div
+                                            className="absolute inset-0 rounded-full border-2 border-[#d4af37]/30"
+                                            animate={{ rotate: 360 }}
+                                            transition={{
+                                              duration: 2,
+                                              repeat: Infinity,
+                                              ease: "linear",
+                                            }}
+                                          />
+                                          <motion.div
+                                            className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#d4af37]"
+                                            animate={{ rotate: -360 }}
+                                            transition={{
+                                              duration: 1.5,
+                                              repeat: Infinity,
+                                              ease: "linear",
+                                            }}
+                                          />
+                                        </div>
+                                        <p className="text-[#d4af37] text-sm font-serif tracking-widest uppercase">
+                                          Loading 3D Model...
+                                        </p>
+                                      </div>
+                                    </motion.div>
+                                  )}
+                                  {createElement("model-viewer", {
+                                    ref: modelViewerRef,
+                                    src: selectedDish.model3DUrl,
+                                    "auto-rotate": true,
+                                    "camera-controls": true,
+                                    "shadow-intensity": "1",
+                                    ar: true,
+                                    "ar-modes": "webxr scene-viewer quick-look",
+                                    style: {
+                                      width: "100%",
+                                      height: "100%",
+                                      backgroundColor: "#0a0806",
+                                    },
+                                    "environment-image": "neutral",
+                                    "auto-rotate-delay": "100",
+                                    "rotation-per-second": "30deg",
+                                    onBeforeRender: () => {
+                                      if (modelLoading === false) {
+                                        setModelLoading(true);
+                                      }
+                                    },
+                                    onLoad: () => setModelLoading(false),
+                                    onError: () => {
+                                      setModelLoading(false);
+                                      setModelLoadError(
+                                        "The model-viewer component failed to fetch the file. Check that the URL is publicly accessible over HTTPS.",
+                                      );
+                                    },
+                                  } as any)}
+                                </div>
                               )
                             ) : (
                               <div className="w-full h-full flex flex-col items-center justify-center text-[#d4af37]/30 font-serif">
@@ -525,7 +573,10 @@ export default function PublicMenuPage() {
                             Photography
                           </button>
                           <button
-                            onClick={() => setActiveTab("3d")}
+                            onClick={() => {
+                              setActiveTab("3d");
+                              setModelLoading(true);
+                            }}
                             className={`px-6 py-2 text-xs font-bold rounded-full transition-all uppercase tracking-widest ${activeTab === "3d" ? "bg-[#d4af37] text-black shadow-lg" : "text-[#d4af37] hover:bg-white/5"}`}
                           >
                             Interactive
