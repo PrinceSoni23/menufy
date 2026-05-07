@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { createElement, useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import { showToast } from "@/components/common/Toast";
 import { motion, AnimatePresence } from "framer-motion";
@@ -165,7 +165,7 @@ export default function PublicMenuPage() {
       x: 0,
       scale: 1,
       filter: "blur(0px)",
-      transition: { duration: 0.6, ease: "easeOut" },
+      transition: { duration: 0.6, ease: "easeOut" as const },
     },
     exit: (dir: number) => ({
       opacity: 0,
@@ -483,27 +483,26 @@ export default function PublicMenuPage() {
                                   </p>
                                 </div>
                               ) : (
-                                <model-viewer
-                                  src={selectedDish.model3DUrl}
-                                  auto-rotate
-                                  camera-controls
-                                  shadow-intensity="1"
-                                  ar
-                                  ar-modes="webxr scene-viewer quick-look"
-                                  style={{
+                                createElement("model-viewer", {
+                                  src: selectedDish.model3DUrl,
+                                  "auto-rotate": true,
+                                  "camera-controls": true,
+                                  "shadow-intensity": "1",
+                                  ar: true,
+                                  "ar-modes": "webxr scene-viewer quick-look",
+                                  style: {
                                     width: "100%",
                                     height: "100%",
                                     backgroundColor: "#0a0806",
-                                  }}
-                                  environment-image="neutral"
-                                  auto-rotate-delay="100"
-                                  rotation-per-second="30deg"
-                                  onError={() =>
+                                  },
+                                  "environment-image": "neutral",
+                                  "auto-rotate-delay": "100",
+                                  "rotation-per-second": "30deg",
+                                  onError: () =>
                                     setModelLoadError(
                                       "The model-viewer component failed to fetch the file. Check that the URL is publicly accessible over HTTPS.",
-                                    )
-                                  }
-                                ></model-viewer>
+                                    ),
+                                } as any)
                               )
                             ) : (
                               <div className="w-full h-full flex flex-col items-center justify-center text-[#d4af37]/30 font-serif">

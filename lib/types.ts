@@ -105,6 +105,7 @@ export interface MenuItem {
   avgTimeViewed?: number;
   displayOrder?: number;
   isActive?: boolean;
+  isVegetarian?: boolean;
   createdAt: string;
   updatedAt: string;
 }
