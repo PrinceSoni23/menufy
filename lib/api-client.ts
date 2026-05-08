@@ -211,8 +211,7 @@ class ApiClient {
   private handleError(error: any) {
     if (axios.isAxiosError(error)) {
       if (!error.response) {
-        const networkMessage =
-          error.message || ERROR_MESSAGES.NETWORK_ERROR;
+        const networkMessage = error.message || ERROR_MESSAGES.NETWORK_ERROR;
         const err = new Error(networkMessage);
         (err as any).response = undefined;
         (err as any).code = error.code;
