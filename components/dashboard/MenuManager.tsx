@@ -191,7 +191,13 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
         category: formData.category,
         isActive: formData.isActive,
         restaurantId,
-        imageUrl2D: imagePreview || "", // Always send imageUrl2D (empty string will use default placeholder on backend)
+        // Never persist base64 previews; actual image files are uploaded separately.
+        imageUrl2D:
+          !formData.imageFile &&
+          formData.imageUrl2D &&
+          !formData.imageUrl2D.startsWith("data:")
+            ? formData.imageUrl2D
+            : "",
       };
 
       if (editingId) {
@@ -214,6 +220,34 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
         createdItemId = response.data?.menuItem?._id;
         console.log("[3D UPLOAD] Extracted createdItemId:", createdItemId); // DEBUG
         showToast("Menu item created successfully", "success");
+      }
+
+      // Upload 2D image separately if provided
+      if (formData.imageFile && createdItemId) {
+        const imageEndpoint = API_ENDPOINTS.UPLOAD_IMAGE(
+          restaurantId,
+          createdItemId,
+        );
+        const imageFullUrl = `${API_BASE_URL.replace(/\/$/, "")}${imageEndpoint}`;
+        console.log(
+          `[2D UPLOAD] Making POST request to ${imageEndpoint} (resolved full URL: ${imageFullUrl})`,
+        );
+
+        try {
+          const imageUploadResponse = await apiClient.uploadFile(
+            imageEndpoint,
+            formData.imageFile,
+            "image",
+          );
+          console.log("[2D UPLOAD] Response:", imageUploadResponse);
+          showToast("Image uploaded successfully", "success");
+        } catch (imageError: any) {
+          console.error("[2D UPLOAD] Error:", imageError);
+          showToast(
+            "Item saved! Image upload failed - you can retry later",
+            "warning",
+          );
+        }
       }
 
       // Upload 3D model separately if provided

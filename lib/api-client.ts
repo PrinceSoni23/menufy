@@ -24,7 +24,10 @@ class ApiClient {
       config => {
         // Handle FormData - remove default Content-Type so axios can set proper multipart boundary
         if (config.data instanceof FormData) {
-          delete config.headers["Content-Type"];
+          if (config.headers) {
+            delete (config.headers as any)["Content-Type"];
+            delete (config.headers as any)["content-type"];
+          }
         }
 
         const token = this.getAccessToken();
@@ -195,9 +198,7 @@ class ApiClient {
       }
 
       const response = await this.client.post<ApiResponse<T>>(url, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: {},
       });
 
       return response.data;
@@ -209,6 +210,15 @@ class ApiClient {
   // Error Handling
   private handleError(error: any) {
     if (axios.isAxiosError(error)) {
+      if (!error.response) {
+        const networkMessage =
+          error.message || ERROR_MESSAGES.NETWORK_ERROR;
+        const err = new Error(networkMessage);
+        (err as any).response = undefined;
+        (err as any).code = error.code;
+        return err;
+      }
+
       const status = error.response?.status;
       const message = error.response?.data?.message;
 
