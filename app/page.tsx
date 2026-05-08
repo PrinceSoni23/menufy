@@ -314,7 +314,7 @@ export default function Home() {
                   className="absolute -left-4 top-8 hidden sm:block w-[38%] max-w-[220px] rounded-[1.5rem] border border-white/75 bg-white/78 p-3 backdrop-blur-xl shadow-[0_18px_60px_rgba(124,47,47,0.16)]"
                 >
                   <p className="text-[0.7rem] uppercase tracking-[0.26em] text-[#8c3b3b]">
-                    Premium detail
+                    Premium details
                   </p>
                   <div className="mt-3 rounded-[1.1rem] bg-[linear-gradient(135deg,rgba(255,241,207,0.95),rgba(231,211,211,0.82),rgba(204,229,255,0.8))] p-4 text-[#5d2d2d] shadow-inner">
                     <p className="text-sm font-semibold leading-snug">
