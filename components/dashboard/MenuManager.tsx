@@ -239,10 +239,27 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
           showToast("3D model uploaded successfully", "success");
         } catch (modelError: any) {
           console.error("[3D UPLOAD] Error:", modelError);
-          console.error(
-            "[3D UPLOAD] Error response:",
-            modelError.response?.data,
-          );
+          try {
+            console.error("[3D UPLOAD] error.message:", modelError.message);
+            console.error(
+              "[3D UPLOAD] response status:",
+              modelError.response?.status,
+            );
+            console.error(
+              "[3D UPLOAD] response headers:",
+              modelError.response?.headers,
+            );
+            console.error(
+              "[3D UPLOAD] response data:",
+              modelError.response?.data,
+            );
+          } catch (e) {
+            console.error(
+              "[3D UPLOAD] Error while logging modelError details",
+              e,
+            );
+          }
+
           showToast(
             "Item saved! 3D model upload failed - you can retry later",
             "warning",

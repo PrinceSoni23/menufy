@@ -76,7 +76,9 @@ export default function PublicMenuPage() {
     if (/^https?:\/\//i.test(ref)) return ref;
     const apiRoot = API_BASE.replace(/\/api\/?$/i, "");
     if (ref.startsWith("/")) return `${apiRoot}${ref}`;
-    return `${apiRoot}/uploads/images/${ref}`;
+    const resolved = `${apiRoot}/uploads/images/${ref}`;
+    console.log("[3D Model]", { ref, resolved });
+    return resolved;
   };
 
   // Search and filters
@@ -109,7 +111,9 @@ export default function PublicMenuPage() {
         setRestaurantId(rId);
 
         try {
-          const restaurantRes = await fetch(`${API_BASE}/restaurants/${rId}`);
+          const restaurantRes = await fetch(
+            `${API_BASE}/restaurants/public/${publicUrl}`,
+          );
           if (restaurantRes.ok) {
             const restaurantData = await restaurantRes.json();
             setRestaurant(restaurantData?.data || restaurantData);
@@ -124,7 +128,12 @@ export default function PublicMenuPage() {
           throw new Error(menuData.message || "Failed to load menu items");
         }
         const items = menuData?.data?.menuItems || menuData?.data || [];
-        setMenuItems(Array.isArray(items) ? items : []);
+        const itemsArray = Array.isArray(items) ? items : [];
+        console.log("[Menu]", {
+          itemCount: itemsArray.length,
+          itemsWithModels: itemsArray.filter((i: any) => i.model3DUrl).length,
+        });
+        setMenuItems(itemsArray);
       } catch (err) {
         const errorMsg =
           err.response?.data?.message || err.message || "Failed to load menu";
@@ -239,6 +248,7 @@ export default function PublicMenuPage() {
         type="module"
         src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"
         strategy="afterInteractive"
+        crossOrigin="anonymous"
       />
       {!introDone && <IntroCinematic onComplete={() => setIntroDone(true)} />}
 
@@ -478,12 +488,6 @@ export default function PublicMenuPage() {
                             className="w-full h-full"
                           >
                             {selectedDish.model3DUrl ? (
-                              /^(https?:\/\/)?(localhost|127\.0\.0\.1|::1)(:\d+)?(\/|$)/i.test(
-                                selectedDish.model3DUrl,
-                              ) ||
-                              /^(https?:\/\/)?(localhost|127\.0\.0\.1|::1)(:\d+)?(\/|$)/i.test(
-                                resolveModelUrl(selectedDish.model3DUrl),
-                              ) ||
                               modelLoadError ? (
                                 <div className="w-full h-full flex flex-col items-center justify-center text-[#f8f3e6]/60 font-serif px-6 text-center bg-[#0a0806]">
                                   <span className="text-4xl mb-4">⚠️</span>
@@ -491,12 +495,7 @@ export default function PublicMenuPage() {
                                     3D model could not be loaded
                                   </p>
                                   <p className="text-sm max-w-md leading-relaxed text-[#f8f3e6]/70">
-                                    This dish has a 3D file saved, but the URL
-                                    is not reachable from the current device or
-                                    deployment.
-                                    {modelLoadError
-                                      ? ` ${modelLoadError}`
-                                      : " In production, this usually means the file was saved with a localhost URL or the file is no longer publicly accessible."}
+                                    {modelLoadError}
                                   </p>
                                 </div>
                               ) : (
@@ -553,15 +552,27 @@ export default function PublicMenuPage() {
                                     "auto-rotate-delay": "100",
                                     "rotation-per-second": "30deg",
                                     onBeforeRender: () => {
-                                      if (modelLoading === false) {
+                                      if (!modelLoading) {
+                                        console.log(
+                                          "[3D Model] Rendering started",
+                                        );
                                         setModelLoading(true);
                                       }
                                     },
-                                    onLoad: () => setModelLoading(false),
-                                    onError: () => {
+                                    onLoad: () => {
+                                      console.log(
+                                        "[3D Model] Successfully loaded",
+                                      );
+                                      setModelLoading(false);
+                                    },
+                                    onError: (e: any) => {
+                                      console.error(
+                                        "[3D Model] Load failed:",
+                                        e,
+                                      );
                                       setModelLoading(false);
                                       setModelLoadError(
-                                        "The model-viewer component failed to fetch the file. Check that the URL is publicly accessible over HTTPS.",
+                                        "The model-viewer component failed to fetch the file. Check the Network tab for details.",
                                       );
                                     },
                                   } as any)}
