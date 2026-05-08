@@ -212,22 +212,33 @@ class ApiClient {
       const status = error.response?.status;
       const message = error.response?.data?.message;
 
+      let errMessage = message || ERROR_MESSAGES.UNKNOWN_ERROR;
+
       switch (status) {
         case 400:
-          return new Error(message || ERROR_MESSAGES.VALIDATION_ERROR);
+          errMessage = message || ERROR_MESSAGES.VALIDATION_ERROR;
+          break;
         case 401:
-          return new Error(message || ERROR_MESSAGES.UNAUTHORIZED);
+          errMessage = message || ERROR_MESSAGES.UNAUTHORIZED;
+          break;
         case 403:
-          return new Error(message || ERROR_MESSAGES.FORBIDDEN);
+          errMessage = message || ERROR_MESSAGES.FORBIDDEN;
+          break;
         case 404:
-          return new Error(message || ERROR_MESSAGES.NOT_FOUND);
+          errMessage = message || ERROR_MESSAGES.NOT_FOUND;
+          break;
         case 409:
-          return new Error(message || ERROR_MESSAGES.CONFLICT);
+          errMessage = message || ERROR_MESSAGES.CONFLICT;
+          break;
         case 500:
-          return new Error(message || ERROR_MESSAGES.SERVER_ERROR);
-        default:
-          return new Error(message || ERROR_MESSAGES.UNKNOWN_ERROR);
+          errMessage = message || ERROR_MESSAGES.SERVER_ERROR;
+          break;
       }
+
+      const err = new Error(errMessage);
+      // Preserve axios response for callers to inspect details
+      (err as any).response = error.response;
+      return err;
     }
 
     if (error instanceof Error) {
