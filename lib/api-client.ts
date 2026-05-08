@@ -197,8 +197,12 @@ class ApiClient {
         });
       }
 
+      // Uploads can be large (3D models). Allow a longer timeout for file uploads
+      // and keep headers empty so axios sets multipart boundaries automatically.
       const response = await this.client.post<ApiResponse<T>>(url, formData, {
         headers: {},
+        // 5 minutes for large file uploads; override per-call later if needed
+        timeout: 5 * 60 * 1000,
       });
 
       return response.data;

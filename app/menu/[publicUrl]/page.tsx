@@ -6,8 +6,12 @@ import { showToast } from "@/components/common/Toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { MenuItem } from "@/lib/types";
 import Script from "next/script";
+import { API_BASE_URL } from "@/lib/constants";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const API_BASE =
+  API_BASE_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:5000/api";
 
 declare global {
   namespace JSX {
@@ -74,10 +78,17 @@ export default function PublicMenuPage() {
   const resolveModelUrl = (ref?: string) => {
     if (!ref) return "";
     if (/^https?:\/\//i.test(ref)) return ref;
+    if (/^data:/i.test(ref)) return ref;
     const apiRoot = API_BASE.replace(/\/api\/?$/i, "");
-    if (ref.startsWith("/")) return `${apiRoot}${ref}`;
+    // If value already looks like an uploads path, join with apiRoot
+    if (ref.startsWith("/uploads") || ref.startsWith("uploads/")) {
+      const r = ref.startsWith("/") ? `${apiRoot}${ref}` : `${apiRoot}/${ref}`;
+      console.log("[3D Model] resolved (uploads path)", { ref, resolved: r });
+      return r;
+    }
+
     const resolved = `${apiRoot}/uploads/images/${ref}`;
-    console.log("[3D Model]", { ref, resolved });
+    console.log("[3D Model] resolved", { ref, resolved });
     return resolved;
   };
 
@@ -133,6 +144,17 @@ export default function PublicMenuPage() {
           itemCount: itemsArray.length,
           itemsWithModels: itemsArray.filter((i: any) => i.model3DUrl).length,
         });
+        // Debug: list first few media URLs to ensure server returned public URLs
+        console.log(
+          "[Menu] sample media URLs",
+          itemsArray
+            .slice(0, 5)
+            .map((it: any) => ({
+              id: it._id,
+              image: it.imageUrl2D,
+              model: it.model3DUrl,
+            })),
+        );
         setMenuItems(itemsArray);
       } catch (err) {
         const errorMsg =
