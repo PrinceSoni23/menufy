@@ -72,7 +72,22 @@ export default function PublicMenuPage() {
   const [cart, setCart] = useState<{ item: MenuItem; qty: number }[]>([]);
   const [modelLoadError, setModelLoadError] = useState<string | null>(null);
   const [modelLoading, setModelLoading] = useState(false);
-  const modelViewerRef = useRef<any>(null);
+  const [modelPreloadCache, setModelPreloadCache] = useState<Set<string>>(new Set());
+
+  // Preload 3D models on hover for instant loading when clicked
+  const preloadModel = (item: MenuItem) => {
+    if (item.model3DUrl && !modelPreloadCache.has(item._id)) {
+      const url = resolveModelUrl(item.model3DUrl);
+      // Add prefetch link to trigger browser download
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = url;
+      link.as = 'fetch';
+      document.head.appendChild(link);
+      console.log(`[3D Preload] Started for: ${item.name}`);
+      setModelPreloadCache(prev => new Set([...prev, item._id]));
+    }
+  };
 
   // Resolve model reference (filename or full URL) to a public URL
   const resolveModelUrl = (ref?: string) => {
@@ -358,6 +373,7 @@ export default function PublicMenuPage() {
                       whileHover={{ scale: 1.02, y: -4 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setSelectedDish(item)}
+                      onMouseEnter={() => preloadModel(item)}
                       className="bg-gradient-to-b from-[#1F1812] to-[#16110c] border border-[#d4af37]/20 rounded-xl overflow-hidden cursor-pointer shadow-xl hover:border-[#d4af37]/50 hover:shadow-[0_15px_40px_-5px_rgba(212,175,55,0.2)] transition-all duration-300 group flex flex-col h-full"
                     >
                       <div className="relative h-60 overflow-hidden bg-[#0a0806]">
