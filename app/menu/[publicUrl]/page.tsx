@@ -70,6 +70,15 @@ export default function PublicMenuPage() {
   const [modelLoading, setModelLoading] = useState(false);
   const modelViewerRef = useRef<any>(null);
 
+  // Resolve model reference (filename or full URL) to a public URL
+  const resolveModelUrl = (ref?: string) => {
+    if (!ref) return "";
+    if (/^https?:\/\//i.test(ref)) return ref;
+    const apiRoot = API_BASE.replace(/\/api\/?$/i, "");
+    if (ref.startsWith("/")) return `${apiRoot}${ref}`;
+    return `${apiRoot}/uploads/images/${ref}`;
+  };
+
   // Search and filters
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -471,7 +480,11 @@ export default function PublicMenuPage() {
                             {selectedDish.model3DUrl ? (
                               /^(https?:\/\/)?(localhost|127\.0\.0\.1|::1)(:\d+)?(\/|$)/i.test(
                                 selectedDish.model3DUrl,
-                              ) || modelLoadError ? (
+                              ) ||
+                              /^(https?:\/\/)?(localhost|127\.0\.0\.1|::1)(:\d+)?(\/|$)/i.test(
+                                resolveModelUrl(selectedDish.model3DUrl),
+                              ) ||
+                              modelLoadError ? (
                                 <div className="w-full h-full flex flex-col items-center justify-center text-[#f8f3e6]/60 font-serif px-6 text-center bg-[#0a0806]">
                                   <span className="text-4xl mb-4">⚠️</span>
                                   <p className="uppercase tracking-widest text-sm text-[#d4af37] mb-2">
@@ -523,7 +536,9 @@ export default function PublicMenuPage() {
                                   )}
                                   {createElement("model-viewer", {
                                     ref: modelViewerRef,
-                                    src: selectedDish.model3DUrl,
+                                    src: resolveModelUrl(
+                                      selectedDish.model3DUrl,
+                                    ),
                                     "auto-rotate": true,
                                     "camera-controls": true,
                                     "shadow-intensity": "1",
