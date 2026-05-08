@@ -72,17 +72,20 @@ export default function PublicMenuPage() {
   const [cart, setCart] = useState<{ item: MenuItem; qty: number }[]>([]);
   const [modelLoadError, setModelLoadError] = useState<string | null>(null);
   const [modelLoading, setModelLoading] = useState(false);
-  const [modelPreloadCache, setModelPreloadCache] = useState<Set<string>>(new Set());
+  const [modelPreloadCache, setModelPreloadCache] = useState<Set<string>>(
+    new Set(),
+  );
+  const modelViewerRef = useRef<any>(null);
 
   // Preload 3D models on hover for instant loading when clicked
   const preloadModel = (item: MenuItem) => {
     if (item.model3DUrl && !modelPreloadCache.has(item._id)) {
       const url = resolveModelUrl(item.model3DUrl);
       // Add prefetch link to trigger browser download
-      const link = document.createElement('link');
-      link.rel = 'prefetch';
+      const link = document.createElement("link");
+      link.rel = "prefetch";
       link.href = url;
-      link.as = 'fetch';
+      link.as = "fetch";
       document.head.appendChild(link);
       console.log(`[3D Preload] Started for: ${item.name}`);
       setModelPreloadCache(prev => new Set([...prev, item._id]));
@@ -162,13 +165,11 @@ export default function PublicMenuPage() {
         // Debug: list first few media URLs to ensure server returned public URLs
         console.log(
           "[Menu] sample media URLs",
-          itemsArray
-            .slice(0, 5)
-            .map((it: any) => ({
-              id: it._id,
-              image: it.imageUrl2D,
-              model: it.model3DUrl,
-            })),
+          itemsArray.slice(0, 5).map((it: any) => ({
+            id: it._id,
+            image: it.imageUrl2D,
+            model: it.model3DUrl,
+          })),
         );
         setMenuItems(itemsArray);
       } catch (err) {
