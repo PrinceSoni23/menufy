@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { apiClient } from "@/lib/api-client";
+import { API_BASE_URL, API_ENDPOINTS } from "@/lib/constants";
 import { showToast } from "@/components/common/Toast";
 import { MenuItem } from "@/lib/types";
 
@@ -223,19 +224,23 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
         const formDataForModel = new FormData();
         formDataForModel.append("file", formData.model3DFile);
 
+        const relativeEndpoint = API_ENDPOINTS.UPLOAD_3D_MODEL(
+          restaurantId,
+          createdItemId,
+        );
+        const fullUrl = `${API_BASE_URL.replace(/\/$/, "")}${relativeEndpoint}`;
         console.log(
-          `[3D UPLOAD] Making POST request to /upload/3d-model/${restaurantId}/${createdItemId}`,
+          `[3D UPLOAD] Making POST request to ${relativeEndpoint} (resolved full URL: ${fullUrl})`,
         ); // DEBUG
 
         try {
-          // Upload to the 3D model endpoint
-          // IMPORTANT: Don't set Content-Type header when sending FormData
-          // Let axios automatically handle it with proper boundary
-          const uploadResponse = await apiClient.post(
-            `/upload/3d-model/${restaurantId}/${createdItemId}`,
-            formDataForModel,
+          // Upload to the 3D model endpoint using uploadFile helper (handles FormData)
+          const uploadResponse = await apiClient.uploadFile(
+            relativeEndpoint,
+            formDataForModel.get("file") as File,
+            "file",
           );
-          console.log("[3D UPLOAD] Response:", uploadResponse.data); // DEBUG
+          console.log("[3D UPLOAD] Response:", uploadResponse); // DEBUG
           showToast("3D model uploaded successfully", "success");
         } catch (modelError: any) {
           console.error("[3D UPLOAD] Error:", modelError);
