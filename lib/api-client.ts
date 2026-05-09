@@ -186,6 +186,7 @@ class ApiClient {
     file: File,
     fieldName: string = "file",
     additionalData?: Record<string, any>,
+    options?: { timeoutMs?: number },
   ) {
     try {
       const formData = new FormData();
@@ -202,7 +203,7 @@ class ApiClient {
       const response = await this.client.post<ApiResponse<T>>(url, formData, {
         headers: {},
         // 5 minutes for large file uploads; override per-call later if needed
-        timeout: 5 * 60 * 1000,
+        timeout: options?.timeoutMs ?? 5 * 60 * 1000,
       });
 
       return response.data;

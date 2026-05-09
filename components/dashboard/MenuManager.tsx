@@ -155,8 +155,11 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
   const handle3DModelSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 50 * 1024 * 1024) {
-        showToast("3D model must be less than 50MB", "error");
+      if (file.size > 35 * 1024 * 1024) {
+        showToast(
+          "3D model must be less than 35MB for reliable production uploads",
+          "error",
+        );
         return;
       }
       const validTypes = [".glb", ".gltf", ".obj"];
@@ -273,6 +276,8 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
             relativeEndpoint,
             formDataForModel.get("file") as File,
             "file",
+            undefined,
+            { timeoutMs: 10 * 60 * 1000 },
           );
           console.log("[3D UPLOAD] Response:", uploadResponse); // DEBUG
           showToast("3D model uploaded successfully", "success");
@@ -300,7 +305,9 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
           }
 
           showToast(
-            "Item saved! 3D model upload failed - you can retry later",
+            modelError?.message?.includes("timeout")
+              ? "Item saved! 3D upload timed out. Try a smaller .glb (<=35MB)."
+              : "Item saved! 3D model upload failed - you can retry later",
             "warning",
           );
         }
