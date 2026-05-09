@@ -26,29 +26,66 @@ declare global {
 const IntroCinematic = ({ onComplete }: { onComplete: () => void }) => {
   return (
     <motion.div
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0806] overflow-hidden"
+      className="fixed inset-0 z-100 flex flex-col items-center justify-center bg-linear-to-br from-white via-emerald-50 to-slate-100 overflow-hidden"
       initial={{ opacity: 1 }}
       animate={{ opacity: 0, pointerEvents: "none" }}
-      transition={{ duration: 1.5, delay: 2.5, ease: "easeInOut" }}
+      transition={{ duration: 1.2, delay: 2.8, ease: "easeInOut" }}
       onAnimationComplete={onComplete}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#3a2818] via-[#0a0806] to-[#0a0806] opacity-60"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] from-emerald-100/40 via-transparent to-transparent"></div>
+
+      {/* Animated background elements */}
       <motion.div
-        initial={{ scale: 0.8, opacity: 0, y: 50 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
+        className="absolute w-96 h-96 bg-emerald-300/10 rounded-full blur-3xl"
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8 }}
+      />
+
+      <motion.div
+        initial={{ scale: 0, opacity: 0, rotate: -180 }}
+        animate={{ scale: 1, opacity: 1, rotate: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
         className="relative z-10 flex flex-col items-center"
       >
-        <div className="w-24 h-24 border border-[#d4af37] rounded-full flex items-center justify-center p-2 mb-6 shadow-[0_0_30px_rgba(212,175,55,0.2)]">
-          <div className="text-5xl">???</div>
-        </div>
-        <h1 className="text-4xl md:text-5xl font-serif text-[#d4af37] tracking-widest uppercase mb-2">
+        <motion.div
+          animate={{ y: [0, -10, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="w-28 h-28 border-2 border-emerald-400 rounded-full flex items-center justify-center p-2 mb-8 shadow-2xl shadow-emerald-200/50 bg-white/90 backdrop-blur-sm"
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+            className="text-6xl"
+          >
+            🍽️
+          </motion.div>
+        </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="text-5xl md:text-6xl font-black text-slate-900 tracking-tight mb-4"
+        >
           MENU
-        </h1>
-        <div className="h-[1px] w-32 bg-gradient-to-r from-transparent via-[#d4af37] to-transparent"></div>
-        <p className="text-[#f8f3e6] mt-4 font-light tracking-[0.2em] text-sm opacity-80">
-          A CULINARY EXPERIENCE
-        </p>
+        </motion.h1>
+
+        <motion.div
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className="h-1 w-40 bg-linear-to-r from-emerald-400 via-green-500 to-teal-400 rounded-full"
+        />
+
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.7 }}
+          className="text-slate-600 mt-6 font-semibold tracking-[0.2em] text-xs"
+        >
+          EXPLORE CULINARY EXCELLENCE
+        </motion.p>
       </motion.div>
     </motion.div>
   );
@@ -234,29 +271,27 @@ export default function PublicMenuPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0806] flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-[#d4af37] border-t-transparent rounded-full animate-spin shadow-[0_0_15px_rgba(212,175,55,0.5)]"></div>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin shadow-[0_0_15px_rgba(255,107,53,0.3)]"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#0a0806] flex flex-col items-center justify-center px-4">
-        <div className="text-5xl border border-[#d4af37]/30 rounded-full p-4 mb-6">
-          🤌
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4">
+        <div className="text-5xl border border-red-200 rounded-full p-4 mb-6 bg-red-50">
+          ⚠️
         </div>
-        <h2 className="text-[#f8f3e6] text-3xl font-serif mb-2">
-          We Apologize
-        </h2>
-        <p className="text-[#d4af37] text-lg mb-8 font-light text-center">
+        <h2 className="text-gray-900 text-3xl font-bold mb-2">Oops!</h2>
+        <p className="text-gray-600 text-lg mb-8 font-medium text-center">
           {error}
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="px-8 py-3 border border-[#d4af37] text-[#d4af37] rounded-full uppercase tracking-widest text-sm hover:bg-[#d4af37] hover:text-black transition-colors"
+          className="px-8 py-3 border-2 border-orange-500 text-orange-500 rounded-lg uppercase tracking-wider text-sm font-bold hover:bg-orange-500 hover:text-white transition-colors"
         >
-          Retry Search
+          Retry
         </button>
       </div>
     );
@@ -272,73 +307,119 @@ export default function PublicMenuPage() {
       />
       {!introDone && <IntroCinematic onComplete={() => setIntroDone(true)} />}
 
-      <div className="min-h-screen bg-[#120E0A] text-[#f8f3e6] font-sans selection:bg-[#d4af37] selection:text-black overflow-x-hidden pb-32">
-        <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#2a1c11]/40 via-[#120E0A] to-[#0a0806]"></div>
+      <div className="min-h-screen bg-linear-to-br from-white via-slate-50 to-emerald-50/30 text-slate-900 font-sans selection:bg-emerald-500 selection:text-white overflow-x-hidden pb-40">
+        <div className="fixed inset-0 pointer-events-none">
+          {/* Animated background gradients */}
+          <motion.div
+            className="absolute top-0 right-0 w-96 h-96 bg-emerald-200/20 rounded-full blur-3xl"
+            animate={{ y: [0, 30, 0], x: [0, -20, 0] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute bottom-0 left-0 w-96 h-96 bg-sky-200/15 rounded-full blur-3xl"
+            animate={{ y: [0, -30, 0], x: [0, 20, 0] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </div>
 
-        <div className="relative z-10 max-w-lg mx-auto md:max-w-5xl">
+        <div className="relative z-10 max-w-140 mx-auto lg:max-w-5xl">
+          {/* Header */}
           <motion.header
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 1 }}
-            className="pt-12 pb-6 px-6 text-center"
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="pt-8 pb-5 px-4 sm:px-6 text-left border-b border-slate-200/80"
           >
-            <h1 className="text-3xl md:text-5xl font-serif text-[#d4af37] uppercase tracking-widest drop-shadow-[0_0_10px_rgba(212,175,55,0.4)]">
-              {restaurant?.name || "Premium Menu"}
-            </h1>
-            <p className="text-sm md:text-base tracking-[0.3em] mt-4 opacity-70 uppercase text-[#f8f3e6]">
-              {restaurant?.description || "A Digital Culinary Journey"}
-            </p>
-            <div className="mt-8 flex items-center justify-center">
-              <div className="h-[1px] w-full max-w-[120px] bg-gradient-to-r from-transparent to-[#d4af37]/60"></div>
-              <div className="w-2 h-2 rotate-45 bg-[#d4af37] mx-4 shadow-[0_0_8px_rgba(212,175,55,0.8)]"></div>
-              <div className="h-[1px] w-full max-w-[120px] bg-gradient-to-l from-transparent to-[#d4af37]/60"></div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 text-[11px] font-bold uppercase tracking-[0.25em] mb-4 shadow-sm">
+              Freshly curated menu
             </div>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+              className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 mb-2 tracking-tight"
+            >
+              {restaurant?.name || "Premium Menu"}
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7, duration: 0.6 }}
+              className="text-sm sm:text-base text-slate-600 font-semibold tracking-[0.14em] uppercase mb-5"
+            >
+              {restaurant?.description || "Discover Culinary Excellence"}
+            </motion.p>
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: 0.9, duration: 0.6 }}
+              className="h-1 w-24 bg-linear-to-r from-emerald-400 to-green-500 rounded-full"
+            />
           </motion.header>
 
-          <div className="px-4 sticky top-0 z-40 bg-[#120E0A]/80 backdrop-blur-xl py-4 border-b border-[#d4af37]/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.7)] transition-all">
-            <div className="relative mb-5 max-w-md mx-auto">
-              <input
-                type="text"
-                placeholder="Search our offerings..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="w-full bg-[#1F1812]/80 border border-[#d4af37]/30 text-[#f8f3e6] px-5 py-3 pl-12 rounded-full focus:outline-none focus:border-[#d4af37] transition-all placeholder:text-[#f8f3e6]/40 font-light shadow-inner"
-              />
-              <svg
-                className="w-5 h-5 absolute left-4 top-3.5 text-[#d4af37]/70"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+          {/* Sticky Search & Filter Bar */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 py-4 px-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]"
+          >
+            <div className="max-w-140 mx-auto lg:max-w-5xl">
+              {/* Search Input */}
+              <motion.div className="relative mb-4 group">
+                <motion.input
+                  type="text"
+                  placeholder="Search dishes, ingredients..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  className="w-full bg-slate-100 border border-slate-200 text-slate-900 px-6 py-4 pl-14 pr-14 rounded-full focus:outline-none focus:border-emerald-400 focus:shadow-lg focus:shadow-emerald-200/30 transition-all font-semibold placeholder:text-slate-500/80"
+                  whileFocus={{ scale: 1.02 }}
                 />
-              </svg>
+                <svg
+                  className="w-6 h-6 absolute left-5 top-4 text-slate-400 group-focus-within:text-emerald-600 transition-colors"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                  />
+                </svg>
+              </motion.div>
+
+              {/* Category Tabs */}
+              {!searchQuery && categories.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.6 }}
+                  className="flex overflow-x-auto hide-scrollbar gap-3 px-1 pb-1"
+                >
+                  {categories.map((cat, idx) => (
+                    <motion.button
+                      key={cat}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => handleTurnPage(idx)}
+                      className={`shrink-0 px-5 py-3 rounded-full whitespace-nowrap font-bold text-sm tracking-wide transition-all border ${
+                        idx === selectedCategoryIndex
+                          ? "bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-200 scale-105"
+                          : "bg-white text-slate-700 border-slate-200 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
+                      }`}
+                    >
+                      {cat}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
             </div>
+          </motion.div>
 
-            {!searchQuery && categories.length > 0 && (
-              <div className="flex overflow-x-auto hide-scrollbar gap-3 px-2 py-2 snap-x snap-mandatory">
-                {categories.map((cat, idx) => (
-                  <button
-                    key={cat}
-                    onClick={() => handleTurnPage(idx)}
-                    className={`shrink-0 snap-center px-6 py-2.5 rounded-full whitespace-nowrap text-sm font-serif tracking-widest transition-all duration-300 ${
-                      idx === selectedCategoryIndex
-                        ? "bg-gradient-to-r from-[#d4af37] to-[#b38e21] text-black shadow-[0_0_15px_rgba(212,175,55,0.4)]"
-                        : "bg-[#1F1812] text-[#f8f3e6]/80 border border-[#d4af37]/20 hover:border-[#d4af37]/60"
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="relative mt-8 px-4" style={{ perspective: "2000px" }}>
+          {/* Menu Items Grid */}
+          <div className="relative mt-12 px-4">
             <AnimatePresence custom={turnDirection} mode="wait">
               <motion.div
                 key={searchQuery ? "search" : currentCategory}
@@ -347,53 +428,35 @@ export default function PublicMenuPage() {
                 initial="enter"
                 animate="center"
                 exit="exit"
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 origin-center"
+                className="grid grid-cols-2 gap-4 sm:gap-5 origin-center"
               >
                 {displayItems.length > 0 ? (
                   displayItems.map((item, idx) => (
                     <motion.div
                       key={item._id}
-                      whileHover={{ scale: 1.02, y: -4 }}
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.08, duration: 0.5 }}
+                      whileHover={{ y: -8, scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setSelectedDish(item)}
-                      className="bg-gradient-to-b from-[#1F1812] to-[#16110c] border border-[#d4af37]/20 rounded-xl overflow-hidden cursor-pointer shadow-xl hover:border-[#d4af37]/50 hover:shadow-[0_15px_40px_-5px_rgba(212,175,55,0.2)] transition-all duration-300 group flex flex-col h-full"
+                      className="group cursor-pointer"
                     >
-                      <div className="relative h-60 overflow-hidden bg-[#0a0806]">
-                        {item.imageUrl2D ? (
-                          <motion.img
-                            whileHover={{ scale: 1.1 }}
-                            transition={{ duration: 0.8, ease: "easeOut" }}
-                            src={item.imageUrl2D}
-                            alt={item.name}
-                            className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity mix-blend-luminosity hover:mix-blend-normal"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex flex-col items-center justify-center text-[#d4af37]/30 bg-[#16110c]">
-                            <svg
-                              className="w-16 h-16 mb-2"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={1}
-                                d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
-                              />
-                            </svg>
-                            <span className="text-xs uppercase tracking-widest">
-                              Image unavailable
-                            </span>
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#1F1812] via-transparent to-transparent opacity-80"></div>
-
-                        <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
-                          {item.arEnabled && (
-                            <div className="bg-black/70 backdrop-blur-md border border-[#d4af37]/50 text-[#d4af37] px-3 py-1.5 rounded text-xs font-bold tracking-widest flex items-center gap-2 shadow-lg w-max">
+                      <motion.div className="bg-white border border-slate-200 rounded-[1.75rem] overflow-hidden shadow-[0_12px_30px_rgba(15,23,42,0.06)] hover:shadow-[0_18px_40px_rgba(15,23,42,0.10)] hover:border-emerald-200 transition-all duration-300 flex flex-col h-full hover:bg-white">
+                        {/* Image Container */}
+                        <div className="relative h-40 sm:h-48 overflow-hidden bg-linear-to-br from-slate-100 to-emerald-50">
+                          {item.imageUrl2D ? (
+                            <motion.img
+                              whileHover={{ scale: 1.12, rotate: 2 }}
+                              transition={{ duration: 0.6, ease: "easeOut" }}
+                              src={item.imageUrl2D}
+                              alt={item.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex flex-col items-center justify-center text-emerald-300">
                               <svg
-                                className="w-4 h-4"
+                                className="w-20 h-20 mb-3"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
@@ -401,47 +464,88 @@ export default function PublicMenuPage() {
                                 <path
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"
+                                  strokeWidth={1}
+                                  d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z"
                                 />
                               </svg>
-                              3D / AR
+                              <span className="text-sm font-semibold">
+                                No image
+                              </span>
                             </div>
                           )}
-                          {item.isVegetarian && (
-                            <div className="bg-emerald-900/80 text-emerald-400 border border-emerald-700/50 px-2 py-1 rounded text-[10px] font-bold shadow-lg uppercase tracking-wider w-max">
-                              Vegetarian
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                          <motion.div
+                            initial={{ opacity: 0 }}
+                            whileHover={{ opacity: 1 }}
+                            className="absolute inset-0 bg-linear-to-t from-slate-900/25 via-transparent to-transparent group-hover:from-slate-900/45 transition-all duration-300"
+                          />
 
-                      <div className="p-6 flex flex-col flex-1 justify-between">
-                        <div>
-                          <div className="flex justify-between items-start mb-3">
-                            <h3 className="text-xl md:text-2xl font-serif text-[#f8f3e6] group-hover:text-[#d4af37] transition-colors mb-1 pr-4 line-clamp-2">
-                              {item.name}
-                            </h3>
-                            <span className="text-xl md:text-2xl text-[#d4af37] font-serif shrink-0">
-                              ${Number(item.price).toFixed(2)}
-                            </span>
+                          {/* Badges */}
+                          <motion.div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
+                            {item.arEnabled && (
+                              <motion.div
+                                whileHover={{ scale: 1.1 }}
+                                className="bg-white/95 backdrop-blur border border-emerald-300 text-emerald-700 px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wider flex items-center gap-2 shadow-lg"
+                              >
+                                <svg
+                                  className="w-4 h-4"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"
+                                  />
+                                </svg>
+                                3D
+                              </motion.div>
+                            )}
+                            {item.isVegetarian && (
+                              <motion.div
+                                whileHover={{ scale: 1.1 }}
+                                className="bg-white/95 backdrop-blur border border-green-500 text-green-700 px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wider shadow-lg"
+                              >
+                                🌱 VEG
+                              </motion.div>
+                            )}
+                          </motion.div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between">
+                          <div className="mb-3">
+                            <div className="flex justify-between items-start gap-3 mb-2">
+                              <motion.h3 className="text-[15px] sm:text-lg font-black text-slate-900 group-hover:text-emerald-700 transition-colors line-clamp-2 leading-tight">
+                                {item.name}
+                              </motion.h3>
+                              <motion.span className="text-lg sm:text-xl font-black text-emerald-700 shrink-0">
+                                ₹{Number(item.price).toFixed(0)}
+                              </motion.span>
+                            </div>
+                            <motion.div className="h-1 w-10 bg-linear-to-r from-emerald-400 to-green-500 rounded-full group-hover:w-full transition-all duration-300" />
                           </div>
-                          <div className="w-12 h-[1px] bg-[#d4af37]/40 mb-4 transition-all duration-300 group-hover:w-24 group-hover:bg-[#d4af37]"></div>
                           {item.description && (
-                            <p className="text-[#f8f3e6]/60 text-sm font-light line-clamp-2 md:line-clamp-3 leading-relaxed">
+                            <p className="text-slate-500 text-[12px] sm:text-sm font-medium line-clamp-2 leading-snug">
                               {item.description}
                             </p>
                           )}
                         </div>
-                      </div>
+                      </motion.div>
                     </motion.div>
                   ))
                 ) : (
-                  <div className="col-span-full py-20 text-center border border-dashed border-[#d4af37]/20 rounded-2xl">
-                    <p className="text-[#d4af37] font-serif text-2xl opacity-60">
-                      No culinary delights found for this selection.
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="col-span-full py-24 text-center"
+                  >
+                    <div className="text-6xl mb-4">🔍</div>
+                    <p className="text-slate-500 font-bold text-xl">
+                      No dishes found in this category
                     </p>
-                  </div>
+                  </motion.div>
                 )}
               </motion.div>
             </AnimatePresence>
@@ -453,7 +557,7 @@ export default function PublicMenuPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0, transition: { duration: 0.2 } }}
-                className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-md p-0 sm:p-4"
+                className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/45 backdrop-blur-sm p-0 sm:p-4"
               >
                 <div
                   className="absolute inset-0"
@@ -464,14 +568,16 @@ export default function PublicMenuPage() {
                   animate={{ y: 0, scale: 1 }}
                   exit={{ y: "100%", scale: 0.95 }}
                   transition={{ type: "spring", damping: 28, stiffness: 200 }}
-                  className="relative z-10 w-full max-w-3xl bg-[#120E0A] sm:rounded-2xl rounded-t-3xl overflow-hidden border border-[#d4af37]/30 shadow-[0_-10px_50px_rgba(0,0,0,0.8)] max-h-[90vh] flex flex-col"
+                  className="relative z-10 w-full max-w-3xl bg-linear-to-br from-white to-slate-50 sm:rounded-4xl rounded-t-4xl overflow-hidden border border-slate-200 shadow-2xl max-h-[90vh] flex flex-col backdrop-blur-xl"
                 >
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.1, rotate: 90 }}
+                    whileTap={{ scale: 0.9 }}
                     onClick={() => setSelectedDish(null)}
-                    className="absolute top-4 right-4 z-20 bg-black/60 backdrop-blur border border-[#d4af37]/30 p-2.5 rounded-full text-[#f8f3e6]/80 hover:text-[#d4af37] hover:border-[#d4af37] transition-all group shadow-xl"
+                    className="absolute top-5 right-5 z-20 bg-slate-900/80 backdrop-blur border border-slate-700 p-3 rounded-full text-white transition-all group shadow-lg"
                   >
                     <svg
-                      className="w-5 h-5 transition-transform group-hover:rotate-90"
+                      className="w-6 h-6"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -483,10 +589,10 @@ export default function PublicMenuPage() {
                         d="M6 18L18 6M6 6l12 12"
                       />
                     </svg>
-                  </button>
+                  </motion.button>
 
                   <div className="flex-1 overflow-y-auto hide-scrollbar">
-                    <div className="relative h-[40vh] sm:h-[50vh] bg-[#0a0806] flex items-center justify-center overflow-hidden">
+                    <div className="relative h-[40vh] sm:h-[50vh] bg-linear-to-br from-slate-100 to-emerald-50 flex items-center justify-center overflow-hidden">
                       <AnimatePresence mode="wait">
                         {activeTab === "details" ? (
                           <motion.img
@@ -497,7 +603,7 @@ export default function PublicMenuPage() {
                             transition={{ duration: 0.4 }}
                             src={selectedDish.imageUrl2D || "/placeholder.jpg"}
                             alt={selectedDish.name}
-                            className="w-full h-full object-cover mix-blend-luminosity hover:mix-blend-normal transition-all duration-700"
+                            className="w-full h-full object-cover"
                           />
                         ) : (
                           <motion.div
@@ -509,12 +615,12 @@ export default function PublicMenuPage() {
                           >
                             {selectedDish.model3DUrl ? (
                               modelLoadError ? (
-                                <div className="w-full h-full flex flex-col items-center justify-center text-[#f8f3e6]/60 font-serif px-6 text-center bg-[#0a0806]">
+                                <div className="w-full h-full flex flex-col items-center justify-center text-slate-600 font-semibold px-6 text-center bg-slate-100">
                                   <span className="text-4xl mb-4">⚠️</span>
-                                  <p className="uppercase tracking-widest text-sm text-[#d4af37] mb-2">
-                                    3D model could not be loaded
+                                  <p className="uppercase tracking-wider text-sm text-emerald-700 mb-2 font-bold">
+                                    3D Model Load Error
                                   </p>
-                                  <p className="text-sm max-w-md leading-relaxed text-[#f8f3e6]/70">
+                                  <p className="text-sm max-w-md leading-relaxed text-gray-600">
                                     {modelLoadError}
                                   </p>
                                 </div>
@@ -524,12 +630,12 @@ export default function PublicMenuPage() {
                                     <motion.div
                                       initial={{ opacity: 1 }}
                                       exit={{ opacity: 0 }}
-                                      className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0806]/80 backdrop-blur-sm z-10"
+                                      className="absolute inset-0 flex flex-col items-center justify-center bg-slate-100/80 backdrop-blur-sm z-10"
                                     >
                                       <div className="flex flex-col items-center gap-4">
                                         <div className="relative w-16 h-16">
                                           <motion.div
-                                            className="absolute inset-0 rounded-full border-2 border-[#d4af37]/30"
+                                            className="absolute inset-0 rounded-full border-2 border-emerald-200"
                                             animate={{ rotate: 360 }}
                                             transition={{
                                               duration: 2,
@@ -538,7 +644,7 @@ export default function PublicMenuPage() {
                                             }}
                                           />
                                           <motion.div
-                                            className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#d4af37]"
+                                            className="absolute inset-0 rounded-full border-2 border-transparent border-t-emerald-500"
                                             animate={{ rotate: -360 }}
                                             transition={{
                                               duration: 1.5,
@@ -547,7 +653,7 @@ export default function PublicMenuPage() {
                                             }}
                                           />
                                         </div>
-                                        <p className="text-[#d4af37] text-sm font-serif tracking-widest uppercase">
+                                        <p className="text-emerald-700 text-sm font-bold tracking-wider uppercase">
                                           Loading 3D Model...
                                         </p>
                                       </div>
@@ -566,7 +672,7 @@ export default function PublicMenuPage() {
                                     style: {
                                       width: "100%",
                                       height: "100%",
-                                      backgroundColor: "#0a0806",
+                                      backgroundColor: "#f3f4f6",
                                     },
                                     "environment-image": "neutral",
                                     "auto-rotate-delay": "100",
@@ -599,9 +705,9 @@ export default function PublicMenuPage() {
                                 </div>
                               )
                             ) : (
-                              <div className="w-full h-full flex flex-col items-center justify-center text-[#d4af37]/30 font-serif">
+                              <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 font-semibold">
                                 <span className="text-4xl mb-4">🔮</span>
-                                <p className="uppercase tracking-widest text-sm">
+                                <p className="uppercase tracking-wider text-sm">
                                   3D model not available
                                 </p>
                               </div>
@@ -611,72 +717,70 @@ export default function PublicMenuPage() {
                       </AnimatePresence>
 
                       {selectedDish.arEnabled && (
-                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1 p-1 bg-black/60 backdrop-blur-md rounded-full border border-[#d4af37]/20 shadow-2xl">
+                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1 p-1 bg-white/95 backdrop-blur-md rounded-full border border-slate-200 shadow-xl">
                           <button
                             onClick={() => setActiveTab("details")}
-                            className={`px-6 py-2 text-xs font-bold rounded-full transition-all uppercase tracking-widest ${activeTab === "details" ? "bg-[#d4af37] text-black shadow-lg" : "text-[#d4af37] hover:bg-white/5"}`}
+                            className={`px-6 py-2 text-xs font-bold rounded-full transition-all uppercase tracking-wider ${activeTab === "details" ? "bg-emerald-600 text-white shadow-lg" : "text-slate-700 hover:bg-slate-50"}`}
                           >
-                            Photography
+                            Photo
                           </button>
                           <button
                             onClick={() => {
                               setActiveTab("3d");
                               setModelLoading(true);
                             }}
-                            className={`px-6 py-2 text-xs font-bold rounded-full transition-all uppercase tracking-widest ${activeTab === "3d" ? "bg-[#d4af37] text-black shadow-lg" : "text-[#d4af37] hover:bg-white/5"}`}
+                            className={`px-6 py-2 text-xs font-bold rounded-full transition-all uppercase tracking-wider ${activeTab === "3d" ? "bg-emerald-600 text-white shadow-lg" : "text-slate-700 hover:bg-slate-50"}`}
                           >
-                            Interactive
+                            3D View
                           </button>
                         </div>
                       )}
                     </div>
 
-                    <div className="p-6 md:p-10 relative">
-                      <div className="absolute top-0 left-10 right-10 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/50 to-transparent"></div>
-
-                      <div className="flex flex-col md:flex-row justify-between items-start mb-6 gap-4 pt-4">
+                    <div className="p-6 md:p-8 relative">
+                      <div className="flex flex-col md:flex-row justify-between items-start mb-6 gap-4">
                         <div>
-                          <h2 className="text-3xl md:text-4xl font-serif text-[#f8f3e6] leading-tight mb-3">
+                          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 leading-tight mb-3">
                             {selectedDish.name}
                           </h2>
                           <div className="flex flex-wrap gap-2 items-center">
-                            <span className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37] border border-[#d4af37]/30 px-3 py-1 rounded-sm">
+                            <span className="text-[10px] uppercase tracking-widest font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-lg">
                               {selectedDish.category}
                             </span>
                             {selectedDish.isVegetarian && (
-                              <span className="text-[10px] uppercase tracking-[0.2em] text-emerald-400 border border-emerald-400/30 px-3 py-1 rounded-sm">
+                              <span className="text-[10px] uppercase tracking-widest font-bold text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-lg">
                                 Vegetarian
                               </span>
                             )}
                           </div>
                         </div>
-                        <span className="text-4xl text-[#d4af37] font-serif md:text-right shrink-0">
-                          ${Number(selectedDish.price).toFixed(2)}
+                        <span className="text-4xl text-emerald-700 font-bold md:text-right shrink-0">
+                          ₹{Number(selectedDish.price).toFixed(0)}
                         </span>
                       </div>
 
-                      <div className="space-y-8 text-[#f8f3e6]/80 font-light leading-relaxed text-lg">
-                        <p className="italic text-[#f8f3e6]/90 border-l-2 border-[#d4af37] pl-4">
+                      <div className="space-y-6 text-slate-600 font-medium leading-relaxed text-lg">
+                        <p className="text-slate-800 font-semibold border-l-4 border-emerald-500 pl-4">
                           {selectedDish.description ||
-                            "The chef has meticulously crafted this dish to provide an unforgettable gastronomic journey."}
+                            "Deliciously crafted with fresh ingredients and expert preparation."}
                         </p>
 
-                        <div className="bg-[#1F1812]/50 p-6 rounded-xl border border-[#d4af37]/10 flex flex-col md:flex-row gap-6 md:gap-12 md:items-center">
+                        <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 flex flex-col md:flex-row gap-6 md:gap-12 md:items-center">
                           <div className="flex-1 flex flex-col gap-1">
-                            <span className="text-[#f8f3e6]/50 text-xs uppercase tracking-widest">
+                            <span className="text-slate-500 text-xs uppercase tracking-widest font-bold">
                               Prep Time
                             </span>
-                            <span className="font-serif text-[#d4af37] text-xl">
-                              ~15-20 min
+                            <span className="font-bold text-emerald-700 text-lg">
+                              15-20 min
                             </span>
                           </div>
-                          <div className="hidden md:block w-[1px] h-12 bg-[#d4af37]/20"></div>
+                          <div className="hidden md:block w-px h-12 bg-slate-200"></div>
                           <div className="flex-1 flex flex-col gap-1">
-                            <span className="text-[#f8f3e6]/50 text-xs uppercase tracking-widest">
-                              Chef's Note
+                            <span className="text-slate-500 text-xs uppercase tracking-widest font-bold">
+                              Chef's Special
                             </span>
-                            <span className="font-serif text-[#d4af37] text-xl">
-                              Recommendation ✨
+                            <span className="font-bold text-emerald-700 text-lg">
+                              Highly Recommended ⭐
                             </span>
                           </div>
                         </div>
@@ -684,7 +788,7 @@ export default function PublicMenuPage() {
                     </div>
                   </div>
 
-                  <div className="p-5 md:p-6 border-t border-[#d4af37]/20 bg-[#0a0806] flex items-center justify-between gap-4 sticky bottom-0 z-20">
+                  <div className="p-5 md:p-6 border-t border-slate-200 bg-white flex items-center justify-between gap-4 sticky bottom-0 z-20">
                     {activeTab === "3d" && selectedDish.model3DUrl ? (
                       <button
                         onClick={() => {
@@ -694,7 +798,7 @@ export default function PublicMenuPage() {
                           if (modelViewer && modelViewer.activateAR)
                             modelViewer.activateAR();
                         }}
-                        className="flex-1 bg-white text-black py-4 rounded-xl font-bold tracking-widest text-sm md:text-base hover:bg-gray-200 transition-colors uppercase flex items-center justify-center gap-3"
+                        className="flex-1 bg-emerald-600 text-white py-4 rounded-full font-bold tracking-widest text-sm md:text-base hover:bg-emerald-700 transition-colors uppercase flex items-center justify-center gap-3 shadow-lg"
                       >
                         <svg
                           className="w-6 h-6"
@@ -709,15 +813,27 @@ export default function PublicMenuPage() {
                             d="M12 4v16m8-8H4"
                           />
                         </svg>
-                        View On My Table (AR)
+                        Try in AR
                       </button>
                     ) : (
                       <button
                         onClick={() => addToCart(selectedDish)}
-                        className="flex-1 bg-gradient-to-r from-[#d4af37] to-[#b38e21] text-black py-4 rounded-xl font-bold tracking-widest text-sm md:text-base hover:brightness-110 transition-all uppercase flex items-center justify-center gap-3"
+                        className="flex-1 bg-emerald-600 text-white py-4 rounded-full font-bold tracking-widest text-sm md:text-base hover:bg-emerald-700 transition-colors uppercase flex items-center justify-center gap-2 shadow-lg"
                       >
-                        Add to Order &nbsp; — &nbsp; $
-                        {Number(selectedDish.price).toFixed(2)}
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 4v16m8-8H4"
+                          />
+                        </svg>
+                        Add to Cart — ₹{Number(selectedDish.price).toFixed(0)}
                       </button>
                     )}
                   </div>
@@ -732,16 +848,24 @@ export default function PublicMenuPage() {
                 initial={{ y: 100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 100, opacity: 0 }}
-                className="fixed bottom-6 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:min-w-[400px] z-40 bg-gradient-to-r from-[#1F1812] to-[#0a0806] border border-[#d4af37]/50 text-[#f8f3e6] p-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex justify-between items-center backdrop-blur-xl"
+                className="fixed bottom-4 left-3 right-3 md:left-1/2 md:right-auto md:-translate-x-1/2 md:min-w-105 z-40 bg-emerald-600 border border-emerald-700 text-white p-4 rounded-3xl shadow-[0_16px_40px_rgba(16,185,129,0.30)] flex justify-between items-center backdrop-blur-xl"
               >
                 <div className="pl-2">
-                  <p className="text-[10px] text-[#d4af37] font-bold uppercase tracking-[0.2em] mb-1">
-                    Your Selection
+                  <p className="text-[10px] text-emerald-100 font-bold uppercase tracking-widest mb-1">
+                    Items in Cart
                   </p>
-                  <p className="font-serif text-2xl leading-none">$\\\</p>
+                  <p className="font-bold text-2xl text-white">
+                    ₹
+                    {cart
+                      .reduce(
+                        (acc, curr) => acc + curr.item.price * curr.qty,
+                        0,
+                      )
+                      .toFixed(0)}
+                  </p>
                 </div>
-                <button className="bg-[#d4af37] text-black px-6 py-3 rounded-xl font-bold uppercase tracking-wider text-xs hover:brightness-110 transition-all">
-                  Review Order ({cart.reduce((acc, curr) => acc + curr.qty, 0)})
+                <button className="bg-white text-emerald-700 hover:bg-emerald-50 px-6 py-3 rounded-full font-bold uppercase tracking-wider text-sm transition-colors shadow-lg">
+                  View ({cart.reduce((acc, curr) => acc + curr.qty, 0)})
                 </button>
               </motion.div>
             )}
