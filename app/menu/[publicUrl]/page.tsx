@@ -571,7 +571,13 @@ export default function PublicMenuPage() {
                           <motion.div
                             className="absolute -left-10 top-0 h-full w-12 bg-white/30 blur-md"
                             animate={{ x: [-50, 210] }}
-                            transition={{ duration: 2.6, repeat: Infinity, repeatDelay: 1.5, ease: "easeInOut", delay: idx * 0.12 }}
+                            transition={{
+                              duration: 2.6,
+                              repeat: Infinity,
+                              repeatDelay: 1.5,
+                              ease: "easeInOut",
+                              delay: idx * 0.12,
+                            }}
                           />
 
                           {/* Badges */}
