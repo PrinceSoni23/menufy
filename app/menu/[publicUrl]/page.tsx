@@ -107,6 +107,7 @@ export default function PublicMenuPage() {
   const [selectedDish, setSelectedDish] = useState<MenuItem | null>(null);
   const [activeTab, setActiveTab] = useState<"details" | "3d">("details");
   const [cart, setCart] = useState<{ item: MenuItem; qty: number }[]>([]);
+  const [vegOnly, setVegOnly] = useState(false);
   const [modelLoadError, setModelLoadError] = useState<string | null>(null);
   const [modelLoading, setModelLoading] = useState(false);
   const modelViewerRef = useRef<any>(null);
@@ -227,6 +228,9 @@ export default function PublicMenuPage() {
           item.description.toLowerCase().includes(searchQuery.toLowerCase())),
     );
   }
+  if (vegOnly) {
+    displayItems = displayItems.filter(item => !!item.isVegetarian);
+  }
 
   // Animation Variants
   const pageVariants = {
@@ -271,25 +275,25 @@ export default function PublicMenuPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin shadow-[0_0_15px_rgba(255,107,53,0.3)]"></div>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin shadow-[0_0_18px_rgba(16,185,129,0.30)]"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-4">
         <div className="text-5xl border border-red-200 rounded-full p-4 mb-6 bg-red-50">
           ⚠️
         </div>
-        <h2 className="text-gray-900 text-3xl font-bold mb-2">Oops!</h2>
-        <p className="text-gray-600 text-lg mb-8 font-medium text-center">
+        <h2 className="text-slate-900 text-3xl font-bold mb-2">Oops!</h2>
+        <p className="text-slate-600 text-lg mb-8 font-medium text-center">
           {error}
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="px-8 py-3 border-2 border-orange-500 text-orange-500 rounded-lg uppercase tracking-wider text-sm font-bold hover:bg-orange-500 hover:text-white transition-colors"
+          className="px-8 py-3 border-2 border-emerald-500 text-emerald-600 rounded-full uppercase tracking-wider text-sm font-bold hover:bg-emerald-500 hover:text-white transition-colors"
         >
           Retry
         </button>
@@ -309,6 +313,14 @@ export default function PublicMenuPage() {
 
       <div className="min-h-screen bg-linear-to-br from-white via-slate-50 to-emerald-50/30 text-slate-900 font-sans selection:bg-emerald-500 selection:text-white overflow-x-hidden pb-40">
         <div className="fixed inset-0 pointer-events-none">
+          <div
+            className="absolute inset-0 opacity-[0.28]"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at top left, rgba(16,185,129,0.10) 0, transparent 28%), radial-gradient(circle at top right, rgba(148,163,184,0.12) 0, transparent 24%), radial-gradient(circle at bottom left, rgba(34,197,94,0.10) 0, transparent 26%), linear-gradient(rgba(15,23,42,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,0.04) 1px, transparent 1px)",
+              backgroundSize: "auto, auto, auto, 24px 24px, 24px 24px",
+            }}
+          />
           {/* Animated background gradients */}
           <motion.div
             className="absolute top-0 right-0 w-96 h-96 bg-emerald-200/20 rounded-full blur-3xl"
@@ -345,7 +357,7 @@ export default function PublicMenuPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7, duration: 0.6 }}
-              className="text-sm sm:text-base text-slate-600 font-semibold tracking-[0.14em] uppercase mb-5"
+              className="text-sm sm:text-base text-slate-600 font-semibold mb-5"
             >
               {restaurant?.description || "Discover Culinary Excellence"}
             </motion.p>
@@ -355,6 +367,25 @@ export default function PublicMenuPage() {
               transition={{ delay: 0.9, duration: 0.6 }}
               className="h-1 w-24 bg-linear-to-r from-emerald-400 to-green-500 rounded-full"
             />
+            <div className="mt-5 grid grid-cols-3 gap-3">
+              {[
+                { label: "Fast delivery", value: "20-30 min" },
+                { label: "Freshly made", value: "Daily" },
+                { label: "Top rated", value: "4.5+" },
+              ].map(stat => (
+                <div
+                  key={stat.label}
+                  className="rounded-3xl border border-slate-200 bg-white/80 px-3 py-3 shadow-sm backdrop-blur"
+                >
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                    {stat.label}
+                  </p>
+                  <p className="mt-1 text-sm font-black text-slate-900">
+                    {stat.value}
+                  </p>
+                </div>
+              ))}
+            </div>
           </motion.header>
 
           {/* Sticky Search & Filter Bar */}
@@ -364,19 +395,20 @@ export default function PublicMenuPage() {
             transition={{ delay: 0.2, duration: 0.6 }}
             className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 py-4 px-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]"
           >
-            <div className="max-w-140 mx-auto lg:max-w-5xl">
-              {/* Search Input */}
-              <motion.div className="relative mb-4 group">
-                <motion.input
+            <div className="max-w-140 mx-auto lg:max-w-5xl space-y-3">
+              <motion.div
+                whileFocus={{ scale: 1.01 }}
+                className="relative group"
+              >
+                <input
                   type="text"
-                  placeholder="Search dishes, ingredients..."
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-100 border border-slate-200 text-slate-900 px-6 py-4 pl-14 pr-14 rounded-full focus:outline-none focus:border-emerald-400 focus:shadow-lg focus:shadow-emerald-200/30 transition-all font-semibold placeholder:text-slate-500/80"
-                  whileFocus={{ scale: 1.02 }}
+                  placeholder="Search for paneer, thali, biryani..."
+                  className="w-full rounded-full border border-slate-200 bg-slate-100 py-3.5 pl-12 pr-4 text-sm font-semibold text-slate-900 placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 focus:bg-white transition-all"
                 />
                 <svg
-                  className="w-6 h-6 absolute left-5 top-4 text-slate-400 group-focus-within:text-emerald-600 transition-colors"
+                  className="w-5 h-5 absolute left-4 top-3.5 text-slate-400 group-focus-within:text-emerald-600 transition-colors"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -384,42 +416,95 @@ export default function PublicMenuPage() {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2.5}
+                    strokeWidth={2.3}
                     d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
                   />
                 </svg>
               </motion.div>
 
-              {/* Category Tabs */}
-              {!searchQuery && categories.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3, duration: 0.6 }}
-                  className="flex overflow-x-auto hide-scrollbar gap-3 px-1 pb-1"
+              <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1">
+                <button
+                  onClick={() => setVegOnly(prev => !prev)}
+                  className={`shrink-0 rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.17em] border transition-colors ${vegOnly ? "bg-emerald-600 border-emerald-600 text-white" : "bg-white border-slate-200 text-slate-600 hover:border-emerald-300 hover:text-emerald-700"}`}
                 >
-                  {categories.map((cat, idx) => (
-                    <motion.button
-                      key={cat}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => handleTurnPage(idx)}
-                      className={`shrink-0 px-5 py-3 rounded-full whitespace-nowrap font-bold text-sm tracking-wide transition-all border ${
-                        idx === selectedCategoryIndex
-                          ? "bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-200 scale-105"
-                          : "bg-white text-slate-700 border-slate-200 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
-                      }`}
-                    >
-                      {cat}
-                    </motion.button>
-                  ))}
-                </motion.div>
-              )}
+                  Veg only
+                </button>
+                <span className="shrink-0 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] bg-white border border-slate-200 text-slate-500">
+                  Sleek picks
+                </span>
+                <span className="shrink-0 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] bg-white border border-slate-200 text-slate-500">
+                  Fast prep
+                </span>
+              </div>
             </div>
           </motion.div>
 
+          {!searchQuery && categories.length > 0 && (
+            <div className="px-4 pt-5">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-bold text-slate-700">
+                  Popular categories
+                </p>
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-[0.22em]">
+                  Swipe
+                </p>
+              </div>
+              <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
+                {categories.map(cat => {
+                  const sampleItem = menuItems.find(
+                    item => (item.category || "Other") === cat,
+                  );
+                  const isActive = cat === currentCategory;
+                  return (
+                    <motion.button
+                      key={`rail-${cat}`}
+                      onClick={() => handleTurnPage(categories.indexOf(cat))}
+                      className="shrink-0 flex flex-col items-center gap-2"
+                      whileHover={{ y: -3 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <div
+                        className={`w-18 h-18 rounded-full border-4 ${isActive ? "border-emerald-500 shadow-lg shadow-emerald-200" : "border-white shadow-[0_8px_24px_rgba(15,23,42,0.08)]"} bg-white overflow-hidden`}
+                      >
+                        {sampleItem?.imageUrl2D ? (
+                          <img
+                            src={sampleItem.imageUrl2D}
+                            alt={cat}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-linear-to-br from-emerald-100 to-slate-100 flex items-center justify-center text-emerald-700 font-black">
+                            {cat.slice(0, 1).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                      <span
+                        className={`text-sm font-semibold whitespace-nowrap ${isActive ? "text-slate-900" : "text-slate-600"}`}
+                      >
+                        {cat}
+                      </span>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Menu Items Grid */}
           <div className="relative mt-12 px-4">
+            <div className="flex items-center justify-between mb-4 px-1">
+              <div>
+                <p className="text-sm font-black text-slate-900">
+                  Choose your craving
+                </p>
+                <p className="text-xs uppercase tracking-[0.22em] text-slate-400 mt-1">
+                  Handpicked from the menu
+                </p>
+              </div>
+              <div className="rounded-full border border-slate-200 bg-white px-3 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-emerald-700 shadow-sm">
+                {displayItems.length} items
+              </div>
+            </div>
             <AnimatePresence custom={turnDirection} mode="wait">
               <motion.div
                 key={searchQuery ? "search" : currentCategory}
@@ -442,7 +527,7 @@ export default function PublicMenuPage() {
                       onClick={() => setSelectedDish(item)}
                       className="group cursor-pointer"
                     >
-                      <motion.div className="bg-white border border-slate-200 rounded-[1.75rem] overflow-hidden shadow-[0_12px_30px_rgba(15,23,42,0.06)] hover:shadow-[0_18px_40px_rgba(15,23,42,0.10)] hover:border-emerald-200 transition-all duration-300 flex flex-col h-full hover:bg-white">
+                      <motion.div className="bg-white border border-slate-200 rounded-4xl overflow-hidden shadow-[0_12px_30px_rgba(15,23,42,0.06)] hover:shadow-[0_18px_40px_rgba(15,23,42,0.10)] hover:border-emerald-200 transition-all duration-300 flex flex-col h-full hover:bg-white relative">
                         {/* Image Container */}
                         <div className="relative h-40 sm:h-48 overflow-hidden bg-linear-to-br from-slate-100 to-emerald-50">
                           {item.imageUrl2D ? (
@@ -477,6 +562,16 @@ export default function PublicMenuPage() {
                             initial={{ opacity: 0 }}
                             whileHover={{ opacity: 1 }}
                             className="absolute inset-0 bg-linear-to-t from-slate-900/25 via-transparent to-transparent group-hover:from-slate-900/45 transition-all duration-300"
+                          />
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.96 }}
+                            whileHover={{ opacity: 1, scale: 1 }}
+                            className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_40%)] pointer-events-none"
+                          />
+                          <motion.div
+                            className="absolute -left-10 top-0 h-full w-12 bg-white/30 blur-md"
+                            animate={{ x: [-50, 210] }}
+                            transition={{ duration: 2.6, repeat: Infinity, repeatDelay: 1.5, ease: "easeInOut", delay: idx * 0.12 }}
                           />
 
                           {/* Badges */}
@@ -526,11 +621,24 @@ export default function PublicMenuPage() {
                             </div>
                             <motion.div className="h-1 w-10 bg-linear-to-r from-emerald-400 to-green-500 rounded-full group-hover:w-full transition-all duration-300" />
                           </div>
-                          {item.description && (
-                            <p className="text-slate-500 text-[12px] sm:text-sm font-medium line-clamp-2 leading-snug">
-                              {item.description}
-                            </p>
-                          )}
+                          <div className="flex items-end justify-between gap-3">
+                            {item.description ? (
+                              <p className="text-slate-500 text-[12px] sm:text-sm font-medium line-clamp-2 leading-snug pr-2">
+                                {item.description}
+                              </p>
+                            ) : (
+                              <div />
+                            )}
+                            <button
+                              onClick={e => {
+                                e.stopPropagation();
+                                addToCart(item);
+                              }}
+                              className="shrink-0 px-4 py-2 rounded-full border border-slate-200 bg-white text-emerald-700 text-xs sm:text-sm font-black uppercase tracking-[0.18em] shadow-sm hover:bg-emerald-50 hover:border-emerald-300 transition-colors"
+                            >
+                              ADD
+                            </button>
+                          </div>
                         </div>
                       </motion.div>
                     </motion.div>
@@ -848,6 +956,7 @@ export default function PublicMenuPage() {
                 initial={{ y: 100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 100, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 260, damping: 22 }}
                 className="fixed bottom-4 left-3 right-3 md:left-1/2 md:right-auto md:-translate-x-1/2 md:min-w-105 z-40 bg-emerald-600 border border-emerald-700 text-white p-4 rounded-3xl shadow-[0_16px_40px_rgba(16,185,129,0.30)] flex justify-between items-center backdrop-blur-xl"
               >
                 <div className="pl-2">
