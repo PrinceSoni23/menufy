@@ -621,24 +621,34 @@ export default function PublicMenuPage() {
       />
       {!introDone && <IntroCinematic onComplete={() => setIntroDone(true)} />}
 
-      <div className="min-h-screen bg-linear-to-br from-white via-slate-50 to-emerald-50/30 text-slate-900 font-sans selection:bg-emerald-500 selection:text-white overflow-x-hidden pb-40">
+      <div className="min-h-screen bg-linear-to-br from-white via-amber-50/60 to-rose-50/40 text-slate-900 font-sans selection:bg-emerald-500 selection:text-white overflow-x-hidden pb-40">
         <div className="fixed inset-0 pointer-events-none">
           <div
-            className="absolute inset-0 opacity-[0.28]"
+            className="absolute inset-0 opacity-[0.32]"
             style={{
               backgroundImage:
-                "radial-gradient(circle at top left, rgba(16,185,129,0.10) 0, transparent 28%), radial-gradient(circle at top right, rgba(148,163,184,0.12) 0, transparent 24%), radial-gradient(circle at bottom left, rgba(34,197,94,0.10) 0, transparent 26%), linear-gradient(rgba(15,23,42,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,0.04) 1px, transparent 1px)",
+                "radial-gradient(circle at top left, rgba(16,185,129,0.14) 0, transparent 28%), radial-gradient(circle at top right, rgba(251,191,36,0.18) 0, transparent 22%), radial-gradient(circle at 12% 78%, rgba(244,114,182,0.14) 0, transparent 18%), radial-gradient(circle at bottom right, rgba(34,197,94,0.12) 0, transparent 26%), radial-gradient(circle at 68% 20%, rgba(59,130,246,0.10) 0, transparent 18%), linear-gradient(rgba(15,23,42,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,0.035) 1px, transparent 1px)",
               backgroundSize: "auto, auto, auto, 24px 24px, 24px 24px",
             }}
           />
+          <motion.div
+            className="absolute top-20 left-6 sm:left-12 w-28 h-28 rounded-full bg-amber-300/30 blur-3xl"
+            animate={{ y: [0, 18, 0], x: [0, 10, 0], scale: [1, 1.12, 1] }}
+            transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute top-36 right-10 sm:right-16 w-24 h-24 rounded-full bg-rose-300/26 blur-3xl"
+            animate={{ y: [0, -16, 0], x: [0, -8, 0], scale: [1, 1.1, 1] }}
+            transition={{ duration: 7.5, repeat: Infinity, ease: "easeInOut" }}
+          />
           {/* Animated background gradients */}
           <motion.div
-            className="absolute top-0 right-0 w-96 h-96 bg-emerald-200/20 rounded-full blur-3xl"
+            className="absolute top-0 right-0 w-96 h-96 bg-emerald-200/26 rounded-full blur-3xl"
             animate={{ y: [0, 30, 0], x: [0, -20, 0] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           />
           <motion.div
-            className="absolute bottom-0 left-0 w-96 h-96 bg-sky-200/15 rounded-full blur-3xl"
+            className="absolute bottom-0 left-0 w-96 h-96 bg-sky-200/18 rounded-full blur-3xl"
             animate={{ y: [0, -30, 0], x: [0, 20, 0] }}
             transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
           />
@@ -650,32 +660,34 @@ export default function PublicMenuPage() {
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
-            className="pt-8 pb-5 px-4 sm:px-6 text-left border-b border-slate-200/80"
+            className="relative pt-8 pb-4 px-4 sm:px-6 text-left border-b border-slate-200/55"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 text-[11px] font-bold uppercase tracking-[0.25em] mb-4 shadow-sm">
+            <div className="absolute -top-4 right-4 hidden sm:block w-28 h-28 rounded-full bg-linear-to-br from-emerald-200/25 via-amber-200/20 to-rose-200/20 blur-3xl" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-200/70 bg-linear-to-r from-emerald-50/80 via-amber-50/80 to-rose-50/80 text-emerald-700 text-[11px] font-bold uppercase tracking-[0.25em] mb-3 shadow-none backdrop-blur-sm">
+              <motion.span
+                className="h-2 w-2 rounded-full bg-linear-to-r from-emerald-500 via-amber-400 to-rose-500 shadow-[0_0_12px_rgba(16,185,129,0.5)]"
+                animate={{ scale: [1, 1.25, 1], opacity: [1, 0.6, 1] }}
+                transition={{
+                  duration: 1.8,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
               Freshly curated menu
             </div>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.6 }}
-              className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 mb-2 tracking-tight"
+              className="text-3xl sm:text-4xl md:text-5xl font-black mb-3 tracking-tight bg-linear-to-r from-slate-900 via-emerald-700 to-rose-600 bg-clip-text text-transparent drop-shadow-[0_10px_24px_rgba(244,114,182,0.08)]"
             >
               {restaurant?.name || "Premium Menu"}
             </motion.h1>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7, duration: 0.6 }}
-              className="text-sm sm:text-base text-slate-600 font-semibold mb-5"
-            >
-              {restaurant?.description || "Discover Culinary Excellence"}
-            </motion.p>
             <motion.div
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
-              transition={{ delay: 0.9, duration: 0.6 }}
-              className="h-1 w-24 bg-linear-to-r from-emerald-400 to-green-500 rounded-full"
+              transition={{ delay: 0.65, duration: 0.55 }}
+              className="h-1 w-28 bg-linear-to-r from-emerald-400 via-amber-400 to-rose-400 rounded-full shadow-[0_0_22px_rgba(244,114,182,0.24)]"
             />
             <div className="mt-5 grid grid-cols-3 gap-3">
               {[
@@ -688,18 +700,27 @@ export default function PublicMenuPage() {
                   initial={{ opacity: 0, y: 20, scale: 0.9 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{
-                    delay: 1.1 + idx * 0.12,
+                    delay: 0.85 + idx * 0.1,
                     duration: 0.5,
                     ease: "easeOut",
                   }}
-                  whileHover={{ scale: 1.05, y: -4 }}
-                  className="rounded-3xl border border-slate-200 bg-white/80 px-3 py-3 shadow-sm backdrop-blur hover:shadow-lg hover:border-emerald-300 transition-all cursor-pointer"
+                  whileHover={{
+                    scale: 1.04,
+                    y: -4,
+                    rotate: idx === 1 ? 1.5 : -1.5,
+                  }}
+                  className="rounded-3xl border border-white/70 bg-linear-to-br from-white/60 via-white/50 to-amber-50/45 px-3 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.04)] backdrop-blur-xl hover:bg-white/80 transition-all cursor-pointer"
                 >
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
-                    {stat.label}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`h-2.5 w-2.5 rounded-full ${idx === 0 ? "bg-emerald-500" : idx === 1 ? "bg-amber-500" : "bg-rose-500"}`}
+                    />
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                      {stat.label}
+                    </p>
+                  </div>
                   <motion.p
-                    className="mt-1 text-sm font-black text-slate-900"
+                    className={`mt-1 text-sm font-black ${idx === 0 ? "text-emerald-700" : idx === 1 ? "text-amber-700" : "text-rose-700"}`}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1.2 + idx * 0.12, duration: 0.4 }}
@@ -716,9 +737,10 @@ export default function PublicMenuPage() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 py-4 px-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]"
+            className="sticky top-0 z-40 bg-linear-to-r from-white/60 via-amber-50/55 to-rose-50/55 backdrop-blur-2xl border-b border-slate-200/55 py-3.5 px-4 shadow-[0_6px_18px_rgba(15,23,42,0.035)]"
           >
-            <div className="max-w-140 mx-auto lg:max-w-5xl space-y-3">
+            <div className="max-w-140 mx-auto lg:max-w-5xl space-y-2.5 relative">
+              <div className="absolute inset-x-8 -top-3 h-8 bg-linear-to-r from-emerald-200/0 via-amber-200/18 to-rose-200/0 blur-2xl pointer-events-none" />
               <motion.div
                 whileFocus={{ scale: 1.01 }}
                 className="relative group"
@@ -728,7 +750,7 @@ export default function PublicMenuPage() {
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Search for paneer, thali, biryani..."
-                  className="w-full rounded-full border border-slate-200 bg-slate-100 py-3.5 pl-12 pr-4 text-sm font-semibold text-slate-900 placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 focus:bg-white transition-all"
+                  className="w-full rounded-full border border-white/70 bg-white/80 py-3.25 pl-12 pr-4 text-sm font-semibold text-slate-900 placeholder:text-slate-500 focus:outline-none focus:border-emerald-200 focus:bg-white transition-all shadow-[0_8px_24px_rgba(15,23,42,0.05)]"
                 />
                 <svg
                   className="w-5 h-5 absolute left-4 top-3.5 text-slate-400 group-focus-within:text-emerald-600 transition-colors"
@@ -748,15 +770,18 @@ export default function PublicMenuPage() {
               <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1">
                 <button
                   onClick={() => setVegOnly(prev => !prev)}
-                  className={`shrink-0 rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.17em] border transition-colors ${vegOnly ? "bg-emerald-600 border-emerald-600 text-white" : "bg-white border-slate-200 text-slate-600 hover:border-emerald-300 hover:text-emerald-700"}`}
+                  className={`shrink-0 rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.17em] border transition-all ${vegOnly ? "bg-linear-to-r from-emerald-500 via-teal-500 to-lime-500 border-emerald-500 text-white shadow-sm" : "bg-white/60 border-slate-200/60 text-slate-500 hover:border-emerald-200 hover:text-emerald-700"}`}
                 >
                   Veg only
                 </button>
-                <span className="shrink-0 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] bg-white border border-slate-200 text-slate-500">
+                <span className="shrink-0 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] bg-linear-to-r from-amber-50/90 to-yellow-50/90 border border-amber-100 text-amber-700 shadow-[0_6px_18px_rgba(251,191,36,0.10)]">
                   Sleek picks
                 </span>
-                <span className="shrink-0 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] bg-white border border-slate-200 text-slate-500">
+                <span className="shrink-0 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] bg-linear-to-r from-rose-50/90 to-pink-50/90 border border-rose-100 text-rose-700 shadow-[0_6px_18px_rgba(244,114,182,0.10)]">
                   Fast prep
+                </span>
+                <span className="shrink-0 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] bg-linear-to-r from-teal-50/90 to-cyan-50/90 border border-teal-100 text-teal-700 shadow-[0_6px_18px_rgba(45,212,191,0.10)]">
+                  Fresh drop
                 </span>
               </div>
             </div>
@@ -786,11 +811,15 @@ export default function PublicMenuPage() {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.5 + idx * 0.08 }}
-                      whileHover={{ y: -6, scale: 1.1 }}
+                      whileHover={{
+                        y: -8,
+                        scale: 1.12,
+                        rotate: idx % 2 === 0 ? 2 : -2,
+                      }}
                       whileTap={{ scale: 0.92 }}
                     >
                       <div
-                        className={`w-18 h-18 rounded-full border-4 ${isActive ? "border-emerald-500 shadow-lg shadow-emerald-400/60" : "border-white shadow-[0_8px_24px_rgba(15,23,42,0.08)] hover:shadow-[0_12px_32px_rgba(16,185,129,0.20)]"} bg-white overflow-hidden relative transition-all duration-300`}
+                        className={`w-18 h-18 rounded-full border-4 ${isActive ? "border-emerald-500 shadow-[0_0_0_6px_rgba(16,185,129,0.10),0_18px_36px_rgba(16,185,129,0.22)]" : "border-white shadow-[0_8px_24px_rgba(15,23,42,0.08)] hover:shadow-[0_12px_32px_rgba(16,185,129,0.20)]"} bg-linear-to-br from-white via-white to-amber-50/50 overflow-hidden relative transition-all duration-300`}
                       >
                         {sampleItem?.imageUrl2D ? (
                           <img
@@ -799,7 +828,7 @@ export default function PublicMenuPage() {
                             className="w-full h-full object-cover will-change-transform"
                           />
                         ) : (
-                          <div className="w-full h-full bg-linear-to-br from-emerald-100 to-slate-100 flex items-center justify-center text-emerald-700 font-black">
+                          <div className="w-full h-full bg-linear-to-br from-emerald-100 via-amber-100 to-rose-100 flex items-center justify-center text-emerald-700 font-black">
                             {cat.slice(0, 1).toUpperCase()}
                           </div>
                         )}
@@ -838,7 +867,7 @@ export default function PublicMenuPage() {
                   Handpicked from the menu
                 </p>
               </div>
-              <div className="rounded-full border border-slate-200 bg-white px-3 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-emerald-700 shadow-sm">
+              <div className="rounded-full border border-white/70 bg-white/70 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-emerald-700 shadow-[0_8px_20px_rgba(15,23,42,0.05)] backdrop-blur-md">
                 {displayItems.length} items
               </div>
             </div>
@@ -867,17 +896,22 @@ export default function PublicMenuPage() {
                           duration: 0.6,
                           ease: "easeOut",
                         }}
-                        whileHover={{ y: -12, scale: 1.03, rotateX: 5 }}
+                        whileHover={{
+                          y: -12,
+                          scale: 1.03,
+                          rotateX: 5,
+                          rotateZ: idx % 2 === 0 ? 0.5 : -0.5,
+                        }}
                         whileTap={{ scale: 0.97 }}
                         onClick={() => setSelectedDish(item)}
                         className="group cursor-pointer perspective"
                       >
                         <motion.div
-                          className="bg-white border border-slate-200 rounded-4xl overflow-hidden shadow-[0_12px_30px_rgba(15,23,42,0.06)] hover:shadow-[0_24px_48px_rgba(16,185,129,0.15)] hover:border-emerald-300 transition-all duration-300 flex flex-col h-full hover:bg-white relative"
+                          className="bg-white/90 border border-slate-200/70 rounded-4xl overflow-hidden shadow-[0_12px_30px_rgba(15,23,42,0.06)] hover:shadow-[0_24px_48px_rgba(244,114,182,0.14)] hover:border-rose-300 transition-all duration-300 flex flex-col h-full relative"
                           style={{ transformStyle: "preserve-3d" }}
                         >
                           {/* Image Container */}
-                          <div className="relative h-40 sm:h-48 overflow-hidden bg-linear-to-br from-slate-100 to-emerald-50">
+                          <div className="relative h-40 sm:h-48 overflow-hidden bg-linear-to-br from-slate-100 via-amber-50 to-rose-50">
                             {item.imageUrl2D ? (
                               <motion.img
                                 whileHover={{ scale: 1.15, rotate: 3 }}
@@ -887,7 +921,7 @@ export default function PublicMenuPage() {
                                 className="w-full h-full object-cover will-change-transform"
                               />
                             ) : (
-                              <div className="w-full h-full flex flex-col items-center justify-center text-emerald-300">
+                              <div className="w-full h-full flex flex-col items-center justify-center text-rose-300">
                                 <svg
                                   className="w-20 h-20 mb-3"
                                   fill="none"
@@ -914,7 +948,7 @@ export default function PublicMenuPage() {
                             <motion.div
                               initial={{ opacity: 0, scale: 0.96 }}
                               whileHover={{ opacity: 1, scale: 1 }}
-                              className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_40%)] pointer-events-none"
+                              className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.24),transparent_40%)] pointer-events-none"
                             />
                             <motion.div
                               className="absolute -left-10 top-0 h-full w-12 bg-white/30 blur-md"
@@ -963,15 +997,15 @@ export default function PublicMenuPage() {
                           </div>
 
                           {/* Content */}
-                          <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between">
+                          <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between bg-linear-to-b from-white via-amber-50/10 to-rose-50/25">
                             <div className="mb-3">
                               <div className="flex justify-between items-start gap-3 mb-2">
                                 <motion.h3 className="text-[15px] sm:text-lg font-black text-slate-900 group-hover:text-emerald-700 transition-colors line-clamp-2 leading-tight">
                                   {item.name}
                                 </motion.h3>
                                 <motion.span
-                                  className="text-lg sm:text-xl font-black text-emerald-700 shrink-0"
-                                  whileHover={{ scale: 1.3, y: -6 }}
+                                  className="text-lg sm:text-xl font-black shrink-0 bg-linear-to-r from-emerald-700 via-amber-600 to-rose-600 bg-clip-text text-transparent"
+                                  whileHover={{ scale: 1.25, y: -6, rotate: 4 }}
                                   transition={{
                                     duration: 0.3,
                                     ease: "easeOut",
@@ -981,7 +1015,7 @@ export default function PublicMenuPage() {
                                 </motion.span>
                               </div>
                               <motion.div
-                                className="h-1 w-10 bg-linear-to-r from-emerald-400 to-green-500 rounded-full group-hover:w-full transition-all duration-300"
+                                className="h-1 w-10 bg-linear-to-r from-emerald-400 via-amber-400 to-rose-400 rounded-full group-hover:w-full transition-all duration-300"
                                 initial={{ width: "2.5rem" }}
                                 whileHover={{ width: "100%" }}
                                 transition={{ duration: 0.4, ease: "easeOut" }}
@@ -1000,16 +1034,16 @@ export default function PublicMenuPage() {
                                   e.stopPropagation();
                                   addToCart(item);
                                 }}
-                                className="shrink-0 px-4 py-2 rounded-full border border-slate-200 bg-white text-emerald-700 text-xs sm:text-sm font-black uppercase tracking-[0.18em] shadow-sm hover:bg-emerald-50 hover:border-emerald-300 transition-colors relative overflow-hidden"
-                                whileHover={{ scale: 1.12 }}
-                                whileTap={{ scale: 0.92 }}
+                                className="shrink-0 px-4 py-2 rounded-full border border-white/70 bg-linear-to-r from-rose-500 via-orange-500 to-amber-400 text-white text-xs sm:text-sm font-black uppercase tracking-[0.18em] shadow-[0_10px_24px_rgba(244,114,182,0.18)] hover:shadow-[0_14px_30px_rgba(251,191,36,0.20)] transition-colors relative overflow-hidden"
+                                whileHover={{ scale: 1.12, rotate: 2 }}
+                                whileTap={{ scale: 0.92, rotate: -2 }}
                                 initial={{ scale: 1 }}
                                 animate={{ scale: 1 }}
                               >
                                 <motion.span
                                   initial={{ opacity: 0 }}
                                   whileHover={{ opacity: 1 }}
-                                  className="absolute inset-0 bg-emerald-500/10"
+                                  className="absolute inset-0 bg-white/15"
                                 />
                                 ADD
                               </motion.button>
