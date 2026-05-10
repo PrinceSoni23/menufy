@@ -4,6 +4,7 @@ import { createElement, useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import { showToast } from "@/components/common/Toast";
 import { motion, AnimatePresence } from "framer-motion";
+import MenuCarousel from "@/components/MenuCarousel";
 import { MenuItem } from "@/lib/types";
 import Script from "next/script";
 import { API_BASE_URL } from "@/lib/constants";
@@ -879,180 +880,14 @@ export default function PublicMenuPage() {
                 initial="enter"
                 animate="center"
                 exit="exit"
-                className="grid grid-cols-2 gap-4 sm:gap-5 origin-center"
+                className="origin-center"
               >
                 {displayItems.length > 0 ? (
-                  displayItems.map((item, idx) => {
-                    const rowIndex = Math.floor(idx / 2);
-                    const colIndex = idx % 2;
-                    const staggerDelay = rowIndex * 0.12 + colIndex * 0.08;
-                    return (
-                      <motion.div
-                        key={item._id}
-                        initial={{ opacity: 0, y: 40, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        transition={{
-                          delay: staggerDelay,
-                          duration: 0.6,
-                          ease: "easeOut",
-                        }}
-                        whileHover={{
-                          y: -12,
-                          scale: 1.03,
-                          rotateX: 5,
-                          rotateZ: idx % 2 === 0 ? 0.5 : -0.5,
-                        }}
-                        whileTap={{ scale: 0.97 }}
-                        onClick={() => setSelectedDish(item)}
-                        className="group cursor-pointer perspective"
-                      >
-                        <motion.div
-                          className="bg-white/90 border border-slate-200/70 rounded-4xl overflow-hidden shadow-[0_12px_30px_rgba(15,23,42,0.06)] hover:shadow-[0_24px_48px_rgba(244,114,182,0.14)] hover:border-rose-300 transition-all duration-300 flex flex-col h-full relative"
-                          style={{ transformStyle: "preserve-3d" }}
-                        >
-                          {/* Image Container */}
-                          <div className="relative h-40 sm:h-48 overflow-hidden bg-linear-to-br from-slate-100 via-amber-50 to-rose-50">
-                            {item.imageUrl2D ? (
-                              <motion.img
-                                whileHover={{ scale: 1.15, rotate: 3 }}
-                                transition={{ duration: 0.6, ease: "easeOut" }}
-                                src={item.imageUrl2D}
-                                alt={item.name}
-                                className="w-full h-full object-cover will-change-transform"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex flex-col items-center justify-center text-rose-300">
-                                <svg
-                                  className="w-20 h-20 mb-3"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={1}
-                                    d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z"
-                                  />
-                                </svg>
-                                <span className="text-sm font-semibold">
-                                  No image
-                                </span>
-                              </div>
-                            )}
-                            <motion.div
-                              initial={{ opacity: 0 }}
-                              whileHover={{ opacity: 1 }}
-                              className="absolute inset-0 bg-linear-to-t from-slate-900/25 via-transparent to-transparent group-hover:from-slate-900/45 transition-all duration-300"
-                            />
-                            <motion.div
-                              initial={{ opacity: 0, scale: 0.96 }}
-                              whileHover={{ opacity: 1, scale: 1 }}
-                              className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.24),transparent_40%)] pointer-events-none"
-                            />
-                            <motion.div
-                              className="absolute -left-10 top-0 h-full w-12 bg-white/30 blur-md"
-                              animate={{ x: [-50, 210] }}
-                              transition={{
-                                duration: 2.6,
-                                repeat: Infinity,
-                                repeatDelay: 1.5,
-                                ease: "easeInOut",
-                                delay: idx * 0.12,
-                              }}
-                            />
-
-                            {/* Badges */}
-                            <motion.div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
-                              {item.arEnabled && (
-                                <motion.div
-                                  whileHover={{ scale: 1.1 }}
-                                  className="bg-white/95 backdrop-blur border border-emerald-300 text-emerald-700 px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wider flex items-center gap-2 shadow-lg"
-                                >
-                                  <svg
-                                    className="w-4 h-4"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"
-                                    />
-                                  </svg>
-                                  3D
-                                </motion.div>
-                              )}
-                              {item.isVegetarian && (
-                                <motion.div
-                                  whileHover={{ scale: 1.1 }}
-                                  className="bg-white/95 backdrop-blur border border-green-500 text-green-700 px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wider shadow-lg"
-                                >
-                                  🌱 VEG
-                                </motion.div>
-                              )}
-                            </motion.div>
-                          </div>
-
-                          {/* Content */}
-                          <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between bg-linear-to-b from-white via-amber-50/10 to-rose-50/25">
-                            <div className="mb-3">
-                              <div className="flex justify-between items-start gap-3 mb-2">
-                                <motion.h3 className="text-[15px] sm:text-lg font-black text-slate-900 group-hover:text-emerald-700 transition-colors line-clamp-2 leading-tight">
-                                  {item.name}
-                                </motion.h3>
-                                <motion.span
-                                  className="text-lg sm:text-xl font-black shrink-0 bg-linear-to-r from-emerald-700 via-amber-600 to-rose-600 bg-clip-text text-transparent"
-                                  whileHover={{ scale: 1.25, y: -6, rotate: 4 }}
-                                  transition={{
-                                    duration: 0.3,
-                                    ease: "easeOut",
-                                  }}
-                                >
-                                  ₹{Number(item.price).toFixed(0)}
-                                </motion.span>
-                              </div>
-                              <motion.div
-                                className="h-1 w-10 bg-linear-to-r from-emerald-400 via-amber-400 to-rose-400 rounded-full group-hover:w-full transition-all duration-300"
-                                initial={{ width: "2.5rem" }}
-                                whileHover={{ width: "100%" }}
-                                transition={{ duration: 0.4, ease: "easeOut" }}
-                              />
-                            </div>
-                            <div className="flex items-end justify-between gap-3">
-                              {item.description ? (
-                                <p className="text-slate-500 text-[12px] sm:text-sm font-medium line-clamp-2 leading-snug pr-2">
-                                  {item.description}
-                                </p>
-                              ) : (
-                                <div />
-                              )}
-                              <motion.button
-                                onClick={e => {
-                                  e.stopPropagation();
-                                  addToCart(item);
-                                }}
-                                className="shrink-0 px-4 py-2 rounded-full border border-white/70 bg-linear-to-r from-rose-500 via-orange-500 to-amber-400 text-white text-xs sm:text-sm font-black uppercase tracking-[0.18em] shadow-[0_10px_24px_rgba(244,114,182,0.18)] hover:shadow-[0_14px_30px_rgba(251,191,36,0.20)] transition-colors relative overflow-hidden"
-                                whileHover={{ scale: 1.12, rotate: 2 }}
-                                whileTap={{ scale: 0.92, rotate: -2 }}
-                                initial={{ scale: 1 }}
-                                animate={{ scale: 1 }}
-                              >
-                                <motion.span
-                                  initial={{ opacity: 0 }}
-                                  whileHover={{ opacity: 1 }}
-                                  className="absolute inset-0 bg-white/15"
-                                />
-                                ADD
-                              </motion.button>
-                            </div>
-                          </div>
-                        </motion.div>
-                      </motion.div>
-                    );
-                  })
+                  <MenuCarousel
+                    items={displayItems}
+                    onSelect={setSelectedDish}
+                    addToCart={addToCart}
+                  />
                 ) : (
                   <motion.div
                     initial={{ opacity: 0 }}
