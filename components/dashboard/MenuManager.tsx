@@ -68,6 +68,7 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploading3D, setUploading3D] = useState(false);
+  const [upload3DProgress, setUpload3DProgress] = useState(0);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [model3DName, setModel3DName] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -279,14 +280,23 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
         ); // DEBUG
 
         try {
+          setUploading3D(true);
+          setUpload3DProgress(0);
+
           // Upload to the 3D model endpoint using uploadFile helper (handles FormData)
           const uploadResponse = await apiClient.uploadFile(
             relativeEndpoint,
             formDataForModel.get("file") as File,
             "file",
             undefined,
-            { timeoutMs: 10 * 60 * 1000 },
+            {
+              timeoutMs: 10 * 60 * 1000,
+              onUploadProgress: progress => {
+                setUpload3DProgress(progress);
+              },
+            },
           );
+          setUpload3DProgress(100);
           console.log("[3D UPLOAD] Response:", uploadResponse); // DEBUG
           showToast("3D model uploaded successfully", "success");
         } catch (modelError: any) {
@@ -318,6 +328,8 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
               : "Item saved! 3D model upload failed - you can retry later",
             "warning",
           );
+        } finally {
+          setUploading3D(false);
         }
       } else {
         console.log("[3D UPLOAD] Skipping upload - missing file or item ID"); // DEBUG
@@ -387,6 +399,8 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
     });
     setImagePreview(null);
     setModel3DName(null);
+    setUpload3DProgress(0);
+    setUploading3D(false);
     setEditingId(null);
     setShowAddForm(false);
   };
@@ -628,6 +642,20 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
                       <span>{model3DName}</span>
                     </div>
                   )}
+                  {uploading3D && (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-xs text-purple-300">
+                        <span>Uploading 3D model...</span>
+                        <span>{upload3DProgress}%</span>
+                      </div>
+                      <div className="h-2 w-full rounded-full bg-slate-700/80 overflow-hidden">
+                        <div
+                          className="h-full bg-linear-to-r from-purple-500 to-violet-400 transition-all duration-200"
+                          style={{ width: `${upload3DProgress}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -652,9 +680,14 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   type="submit"
+                  disabled={uploading3D}
                   className="flex-1 px-6 py-3 bg-linear-to-r from-orange-500 to-amber-400 text-amber-950 font-bold rounded-lg hover:shadow-lg transition-all"
                 >
-                  {editingId ? "Update Item" : "Add Item"}
+                  {uploading3D
+                    ? `Uploading 3D... ${upload3DProgress}%`
+                    : editingId
+                      ? "Update Item"
+                      : "Add Item"}
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.05 }}

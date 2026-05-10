@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosError } from "axios";
+import axios, { AxiosInstance, AxiosError, AxiosProgressEvent } from "axios";
 import { API_BASE_URL, STORAGE_KEYS, ERROR_MESSAGES } from "./constants";
 import { ApiResponse, AuthResponse } from "./types";
 
@@ -186,7 +186,13 @@ class ApiClient {
     file: File,
     fieldName: string = "file",
     additionalData?: Record<string, any>,
-    options?: { timeoutMs?: number },
+    options?: {
+      timeoutMs?: number;
+      onUploadProgress?: (
+        progressPercent: number,
+        event: AxiosProgressEvent,
+      ) => void;
+    },
   ) {
     try {
       const formData = new FormData();
@@ -204,6 +210,12 @@ class ApiClient {
         headers: {},
         // 5 minutes for large file uploads; override per-call later if needed
         timeout: options?.timeoutMs ?? 5 * 60 * 1000,
+        onUploadProgress: event => {
+          const total = event.total ?? file.size;
+          const progressPercent =
+            total > 0 ? Math.round((event.loaded * 100) / total) : 0;
+          options?.onUploadProgress?.(progressPercent, event);
+        },
       });
 
       return response.data;
