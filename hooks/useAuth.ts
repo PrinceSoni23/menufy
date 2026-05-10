@@ -45,8 +45,6 @@ export function useAuth() {
         data,
       );
 
-      console.log("Register response:", response);
-
       // response is {success, message, data: {user, accessToken, refreshToken}}
       if (response?.data && response?.data.user && response?.data.accessToken) {
         const { user, accessToken, refreshToken } = response.data;
@@ -57,7 +55,6 @@ export function useAuth() {
         setIsAuthenticated(true);
         return { success: true, data: response.data };
       } else {
-        console.warn("Unexpected response structure:", response);
         setError("Invalid response from server");
         return { success: false, error: "Invalid response from server" };
       }
@@ -81,12 +78,9 @@ export function useAuth() {
         data,
       );
 
-      console.log("Login response:", response);
-
       // response is {success, message, data: {user, accessToken, refreshToken}}
       if (response?.data && response?.data.user && response?.data.accessToken) {
         const { user, accessToken, refreshToken } = response.data;
-        console.log("Setting auth tokens and user:", { user: user?.email });
         localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
         localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
         localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
@@ -94,7 +88,6 @@ export function useAuth() {
         setIsAuthenticated(true);
         return { success: true, data: response.data };
       } else {
-        console.warn("Unexpected response structure:", response);
         setError("Invalid response from server");
         return { success: false, error: "Invalid response from server" };
       }
