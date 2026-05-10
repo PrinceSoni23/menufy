@@ -75,6 +75,8 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
     description: "",
     price: "",
     category: "Main Course",
+    ingredients: "",
+    calories: "",
     imageUrl2D: "",
     model3DUrl: "",
     imageFile: null as File | null,
@@ -191,6 +193,10 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
         name: formData.name,
         description: formData.description,
         price: parseFloat(formData.price),
+        ingredients: formData.ingredients
+          ? formData.ingredients.split(",").map(s => s.trim())
+          : [],
+        calories: formData.calories ? Number(formData.calories) : undefined,
         category: formData.category,
         isActive: formData.isActive,
         restaurantId,
@@ -204,7 +210,9 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
       };
 
       if (editingId) {
-        submitData.model3DUrl = formData.model3DUrl || "";
+        if (formData.model3DUrl.trim()) {
+          submitData.model3DUrl = formData.model3DUrl.trim();
+        }
       }
 
       console.log("Submitting menu item with data:", submitData); // Debug log
@@ -342,11 +350,18 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
       description: item.description || "",
       price: item.price?.toString() || "",
       category: item.category || "Main Course",
+      ingredients: Array.isArray(item.ingredients)
+        ? item.ingredients.join(", ")
+        : item.ingredients || "",
+      calories:
+        item.calories !== undefined && item.calories !== null
+          ? String(item.calories)
+          : "",
       imageUrl2D: item.imageUrl2D || "",
       model3DUrl: item.model3DUrl || "",
       imageFile: null,
       model3DFile: null,
-      isActive: item.isActive || true,
+      isActive: item.isActive ?? true,
     });
     setImagePreview(item.imageUrl2D || null);
     setModel3DName(
@@ -362,6 +377,8 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
       description: "",
       price: "",
       category: "Main Course",
+      ingredients: "",
+      calories: "",
       imageUrl2D: "",
       model3DUrl: "",
       imageFile: null,
@@ -504,6 +521,37 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
                   rows={3}
                   className="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-2 text-slate-100 placeholder-slate-500 focus:border-orange-500 focus:outline-none"
                 />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-2">
+                    Ingredients (comma separated)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.ingredients}
+                    onChange={e =>
+                      setFormData({ ...formData, ingredients: e.target.value })
+                    }
+                    placeholder="e.g., tomato, lettuce, parmesan"
+                    className="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-2 text-slate-100 placeholder-slate-500 focus:border-orange-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-2">
+                    Calories (kcal)
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.calories}
+                    onChange={e =>
+                      setFormData({ ...formData, calories: e.target.value })
+                    }
+                    placeholder="e.g., 420"
+                    className="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-2 text-slate-100 placeholder-slate-500 focus:border-orange-500 focus:outline-none"
+                  />
+                </div>
               </div>
 
               <div>
@@ -708,11 +756,26 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
                         {item.description}
                       </p>
                     )}
+                    {item.ingredients && item.ingredients.length > 0 && (
+                      <p className="text-sm text-emerald-300 mb-2">
+                        {Array.isArray(item.ingredients)
+                          ? item.ingredients.join(", ")
+                          : String(item.ingredients)}
+                      </p>
+                    )}
 
                     <div className="flex items-center justify-between pt-2 border-t border-slate-700/50">
-                      <span className="text-lg font-bold text-orange-300">
-                        ${item.price?.toFixed(2)}
-                      </span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-lg font-bold text-orange-300">
+                          ${item.price?.toFixed(2)}
+                        </span>
+                        {item.calories !== undefined &&
+                        item.calories !== null ? (
+                          <span className="text-sm text-slate-400">
+                            {item.calories} kcal
+                          </span>
+                        ) : null}
+                      </div>
                       <div className="flex gap-2">
                         <motion.button
                           whileHover={{ scale: 1.1 }}

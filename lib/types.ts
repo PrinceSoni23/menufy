@@ -99,6 +99,7 @@ export interface MenuItem {
   arEnabled?: boolean;
   scaling?: number;
   calories?: number;
+  ingredients?: string[] | string;
   views?: number;
   clicks?: number;
   arViews?: number;

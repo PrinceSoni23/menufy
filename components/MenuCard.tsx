@@ -20,8 +20,11 @@ export default function MenuCard({
   isActive = false,
 }: Props) {
   const categoryLabel = (item.category || "IndianDish").replace(/\s+/g, "");
-  const ingredientText =
-    item.description || "Rice, Fried Chicken, Special Spices";
+  const ingredientText = item.ingredients
+    ? Array.isArray(item.ingredients)
+      ? item.ingredients.join(", ")
+      : String(item.ingredients)
+    : item.description || "Rice, Fried Chicken, Special Spices";
 
   return (
     <motion.article
@@ -162,18 +165,15 @@ export default function MenuCard({
                 <div className="pt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#3d342d]">
                   Calories
                 </div>
-                <div className="space-y-1 text-[11px] leading-[1.18] text-[#756961]">
-                  <div>
-                    Total Fat {Math.max(8, Math.round(Number(item.price) / 2))}g
-                  </div>
-                  <div>
-                    Saturated Fat{" "}
-                    {Math.max(4, Math.round(Number(item.price) / 5))}g
-                  </div>
-                  <div>
-                    Trans Fat {Math.max(1, Math.round(Number(item.price) / 20))}
-                    g
-                  </div>
+                <div className="space-y-1 text-[13px] font-bold leading-[1.18] text-[#756961]">
+                  {item.calories !== undefined && item.calories !== null ? (
+                    <div>{item.calories} kcal</div>
+                  ) : (
+                    <div className="text-[11px] leading-[1.18] text-[#756961]">
+                      Total Fat{" "}
+                      {Math.max(8, Math.round(Number(item.price) / 2))}g
+                    </div>
+                  )}
                 </div>
               </div>
             )}
