@@ -64,97 +64,43 @@ export default function MenuCard({
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1">
                 <h3
-                  className={`font-serif font-bold leading-[0.95] tracking-[-0.03em] ${
-                    isActive
-                      ? "text-[22px] text-white"
-                      : "text-[17px] text-[#2f8b4e]"
+                  className={`font-serif font-bold leading-[0.95] tracking-[-0.03em] text-[17px] ${
+                    isActive ? "text-white" : "text-[#2f8b4e]"
                   }`}
                 >
                   {item.name}
                 </h3>
-                {isActive ? (
-                  <div className="mt-2 text-[11px] uppercase tracking-[0.16em] text-white/72">
-                    ⏱ 12:00 Mins. Required | #{categoryLabel}
-                  </div>
-                ) : (
-                  <div className="mt-2 text-[11px] uppercase tracking-[0.16em] text-[#4e463e]">
-                    Ingredience
-                  </div>
-                )}
+                <div className="mt-2 text-[11px] uppercase tracking-[0.16em] text-[#4e463e]">
+                  Ingredients
+                </div>
               </div>
 
               <div
-                className={`${isActive ? "text-white" : "text-[#2f8b4e]"} text-lg font-black`}
+                className={`text-lg font-black ${isActive ? "text-white" : "text-[#2f8b4e]"}`}
               >
                 ₹{Number(item.price).toFixed(0)}
               </div>
             </div>
 
             {isActive ? (
-              <div className="mt-4 space-y-2.5 text-white">
-                <div className="grid grid-cols-3 gap-1.5">
-                  <div>
-                    <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/55">
-                      Portion
-                    </div>
-                    <div className="flex gap-1">
-                      {["Q", "H", "F"].map(v => (
-                        <span
-                          key={v}
-                          className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-white text-[11px] font-bold text-[#2f8b4e] shadow-sm"
-                        >
-                          {v}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/55">
-                      Spicy
-                    </div>
-                    <div className="flex gap-1">
-                      {["Normal", "Extra"].map(v => (
-                        <span
-                          key={v}
-                          className="inline-flex rounded-md border border-white/18 bg-white/12 px-2.5 py-1 text-[10px] font-semibold text-white"
-                        >
-                          {v}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/55">
-                      Dine
-                    </div>
-                    <div className="flex gap-1">
-                      {["Out", "In"].map(v => (
-                        <span
-                          key={v}
-                          className="inline-flex rounded-md border border-white/18 bg-white/12 px-2.5 py-1 text-[10px] font-semibold text-white"
-                        >
-                          {v}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-[20px] bg-black/10 p-2.5 text-[11px] leading-relaxed text-white/82">
+              <div className="mt-2.5 space-y-1.5 pb-1">
+                <div className="text-[11px] leading-tight text-white">
                   {ingredientText}
                 </div>
 
-                <motion.button
-                  onClick={e => {
-                    e.stopPropagation();
-                    addToCart(item);
-                  }}
-                  className="mt-0.5 inline-flex w-full items-center justify-center rounded-full bg-white px-4 py-3 text-[11px] font-black uppercase tracking-[0.24em] text-[#2f8b4e] shadow-[0_10px_26px_rgba(0,0,0,0.12)]"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Add to Order List
-                </motion.button>
+                <div className="pt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+                  Calories
+                </div>
+                <div className="space-y-1 text-[13px] font-bold leading-[1.18] text-white">
+                  {item.calories !== undefined && item.calories !== null ? (
+                    <div>{item.calories} kcal</div>
+                  ) : (
+                    <div className="text-[11px] leading-[1.18] text-white">
+                      Total Fat{" "}
+                      {Math.max(8, Math.round(Number(item.price) / 2))}g
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
               <div className="mt-2.5 space-y-1.5 pb-1">

@@ -441,6 +441,41 @@ export default function PublicMenuPage() {
   // Search and filters
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Scroll to top on mount and route change
+  useEffect(() => {
+    // Scroll immediately
+    if (typeof window !== "undefined") {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+
+      // Also scroll again after a tiny delay to override any animations
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      }, 0);
+
+      // And one more time after paint
+      requestAnimationFrame(() => {
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      });
+    }
+  }, [publicUrl]);
+
+  // Also scroll to top when intro completes
+  useEffect(() => {
+    if (introDone && typeof window !== "undefined") {
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      }, 100);
+    }
+  }, [introDone]);
+
   useEffect(() => {
     setModelLoadError(null);
     setModelLoading(false);
@@ -456,6 +491,10 @@ export default function PublicMenuPage() {
       }
       try {
         setLoading(true);
+        // Scroll to top when page loads
+        if (typeof window !== "undefined") {
+          window.scrollTo(0, 0);
+        }
         setError(null);
         const qrResponse = await fetch(
           `${API_BASE}/qrcode/public/${publicUrl}`,
