@@ -87,7 +87,9 @@ export function useQRCode() {
 
       const response = await apiClient.post<any>(
         `/qrcode/restaurant/${restaurantId}/generate`,
-        {},
+        {
+          appUrl: window.location.origin,
+        },
       );
 
       console.log("[useQRCode] Generate response:", response);
