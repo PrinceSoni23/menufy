@@ -2,23 +2,40 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { apiClient } from "@/lib/api-client";
+import { API_ENDPOINTS } from "@/lib/constants";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useMenu } from "@/hooks/useMenu";
+
+// Import DashboardSummary from types instead of defining locally
+import { DashboardSummary } from "@/lib/types";
 
 export default function DashboardPage() {
   const { restaurants, fetchRestaurants } = useRestaurant();
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
+  const [hasSummary, setHasSummary] = useState(false);
+  const [stats, setStats] = useState<DashboardSummary>({
     totalRestaurants: 0,
     totalMenuItems: 0,
     totalQRScans: 0,
-    activeConversions: 0,
+    totalModelViews: 0,
+    modelViewsTrend: 0,
   });
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        await fetchRestaurants();
+        const restaurantLoad = fetchRestaurants();
+        const summaryResponse = await apiClient.get<DashboardSummary>(
+          API_ENDPOINTS.RESTAURANTS_SUMMARY,
+        );
+
+        if (summaryResponse.data) {
+          setStats(summaryResponse.data);
+          setHasSummary(true);
+        }
+
+        await restaurantLoad;
         setLoading(false);
       } catch (error) {
         console.error("Failed to load dashboard data:", error);
@@ -29,6 +46,10 @@ export default function DashboardPage() {
   }, [fetchRestaurants]);
 
   useEffect(() => {
+    if (hasSummary) {
+      return;
+    }
+
     const restaurantArray = Array.isArray(restaurants) ? restaurants : [];
     setStats({
       totalRestaurants: restaurantArray.length,
@@ -37,12 +58,16 @@ export default function DashboardPage() {
         0,
       ),
       totalQRScans: restaurantArray.reduce(
-        (sum, r) => sum + (r.stats?.qrScans || 0),
+        (sum, r) => sum + (r.totalScans || 0),
         0,
       ),
-      activeConversions: 0,
+      totalModelViews: restaurantArray.reduce(
+        (sum, r) => sum + (r.totalModelViews || 0),
+        0,
+      ),
+      modelViewsTrend: 0,
     });
-  }, [restaurants]);
+  }, [restaurants, hasSummary]);
 
   if (loading) {
     return (
@@ -128,17 +153,31 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-slate-400 text-sm mb-1 uppercase tracking-[0.14em]">
-                Conversions
+                Total Model Views
               </p>
-              <p className="text-4xl font-bold text-lime-200">
-                {stats.activeConversions}
-              </p>
+              <div className="flex items-baseline gap-3">
+                <p className="text-4xl font-bold text-lime-200">
+                  {stats.totalModelViews}
+                </p>
+                {stats.modelViewsTrend !== 0 && (
+                  <span
+                    className={`text-sm font-semibold ${
+                      stats.modelViewsTrend > 0
+                        ? "text-green-400"
+                        : "text-red-400"
+                    }`}
+                  >
+                    {stats.modelViewsTrend > 0 ? "↑" : "↓"}{" "}
+                    {Math.abs(stats.modelViewsTrend)}%
+                  </span>
+                )}
+              </div>
             </div>
             <span className="text-xs rounded-full border border-cyan-200/30 px-2 py-1 text-cyan-100 uppercase tracking-[0.12em]">
-              CV
+              3D
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-4">In progress</p>
+          <p className="text-xs text-slate-500 mt-4">Model views this month</p>
         </div>
       </div>
 
@@ -171,7 +210,7 @@ export default function DashboardPage() {
           <div className="space-y-3 text-sm text-slate-400">
             <p>{stats.totalMenuItems} menu items currently active</p>
             <p>{stats.totalQRScans} total QR interactions tracked</p>
-            <p>{stats.activeConversions} conversions running right now</p>
+            <p>{stats.totalModelViews} total model views tracked</p>
           </div>
         </div>
       </div>
@@ -216,4 +255,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-

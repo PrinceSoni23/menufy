@@ -419,6 +419,7 @@ export default function PublicMenuPage() {
   const [modelLoadError, setModelLoadError] = useState<string | null>(null);
   const [modelLoading, setModelLoading] = useState(false);
   const modelViewerRef = useRef<any>(null);
+  const trackedArViewRef = useRef<string | null>(null);
 
   // Resolve model reference (filename or full URL) to a public URL
   const resolveModelUrl = (ref?: string) => {
@@ -480,6 +481,25 @@ export default function PublicMenuPage() {
     setModelLoadError(null);
     setModelLoading(false);
   }, [selectedDish?._id, selectedDish?.model3DUrl, activeTab]);
+
+  useEffect(() => {
+    const trackModelView = async () => {
+      if (!selectedDish?._id || activeTab !== "3d") return;
+      if (trackedArViewRef.current === selectedDish._id) return;
+
+      trackedArViewRef.current = selectedDish._id;
+
+      try {
+        await fetch(`${API_BASE}/menu/${selectedDish._id}/ar-view`, {
+          method: "POST",
+        });
+      } catch (error) {
+        console.warn("Failed to track 3D model view:", error);
+      }
+    };
+
+    trackModelView();
+  }, [activeTab, selectedDish?._id]);
 
   // Load data
   useEffect(() => {
@@ -618,6 +638,14 @@ export default function PublicMenuPage() {
     });
     showToast(`${item.name} added`, "success");
     setSelectedDish(null);
+  };
+
+  const openModelView = () => {
+    if (selectedDish?._id) {
+      trackedArViewRef.current = null;
+    }
+    setActiveTab("3d");
+    setModelLoading(true);
   };
 
   if (loading) {
@@ -1121,10 +1149,7 @@ export default function PublicMenuPage() {
                             Photo
                           </button>
                           <button
-                            onClick={() => {
-                              setActiveTab("3d");
-                              setModelLoading(true);
-                            }}
+                            onClick={openModelView}
                             className={`px-4 py-2 text-[11px] font-semibold rounded-full transition-all tracking-wide ${
                               activeTab === "3d"
                                 ? "bg-linear-to-r from-emerald-600 to-emerald-500 text-white shadow-lg"

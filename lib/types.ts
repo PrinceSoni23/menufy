@@ -1,3 +1,12 @@
+// Dashboard
+export interface DashboardSummary {
+  totalRestaurants: number;
+  totalMenuItems: number;
+  totalQRScans: number;
+  totalModelViews: number;
+  modelViewsTrend: number; // percentage change from previous month
+}
+
 // User & Auth
 export interface User {
   _id: string;
@@ -51,6 +60,9 @@ export interface Restaurant {
   };
   publicUrl?: string;
   totalMenuItems?: number;
+  totalScans?: number;
+  totalViews?: number;
+  averageRating?: number;
   isActive?: boolean;
   theme?: {
     primaryColor: string;

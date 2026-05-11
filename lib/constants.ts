@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
 
   // Restaurants
   RESTAURANTS: "/restaurants",
+  RESTAURANTS_SUMMARY: "/restaurants/summary",
   RESTAURANT_DETAIL: (id: string) => `/restaurants/${id}`,
   RESTAURANT_STATS: (id: string) => `/restaurants/${id}/stats`,
 
