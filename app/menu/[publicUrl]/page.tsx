@@ -420,6 +420,7 @@ export default function PublicMenuPage() {
   const [modelLoading, setModelLoading] = useState(false);
   const modelViewerRef = useRef<any>(null);
   const trackedArViewRef = useRef<string | null>(null);
+  // Note: scans will be sent on every public menu load/refresh
 
   // Resolve model reference (filename or full URL) to a public URL
   const resolveModelUrl = (ref?: string) => {
@@ -525,6 +526,17 @@ export default function PublicMenuPage() {
         }
         const rId = qrData.data.restaurantId;
         setRestaurantId(rId);
+
+        const qrCodeToken = qrData.data?.qrCode?.code;
+        if (qrCodeToken) {
+          try {
+            await fetch(`${API_BASE}/qrcode/scan/${qrCodeToken}`, {
+              method: "POST",
+            });
+          } catch (scanError) {
+            console.warn("Failed to track QR scan:", scanError);
+          }
+        }
 
         try {
           const restaurantRes = await fetch(
