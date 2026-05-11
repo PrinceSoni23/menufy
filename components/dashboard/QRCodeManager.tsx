@@ -67,6 +67,19 @@ export default function QRCodeManager({
 
   const generateQRCode = async () => {
     try {
+      // If a QR code already exists, require a double-confirmation from the user
+      if (qrCode) {
+        const ok1 = window.confirm(
+          "This will regenerate your QR code and invalidate the previous one. Continue?",
+        );
+        if (!ok1) return;
+
+        const ok2 = window.confirm(
+          "This action is irreversible and cannot be reverted. Are you absolutely sure?",
+        );
+        if (!ok2) return;
+      }
+
       setLoading(true);
       const publicUrl = restaurantName.toLowerCase().replace(/\s+/g, "-");
       console.log("Generating QR code with:", {
