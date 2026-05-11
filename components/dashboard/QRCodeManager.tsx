@@ -27,12 +27,14 @@ export default function QRCodeManager({
     try {
       setLoading(true);
       const response = await apiClient.get(`/qrcode/${restaurantId}`);
+      // Response type may be unknown; cast to any for flexible extraction
+      const res = response as any;
       // Handle nested response structure: data.qrCode
       const data =
-        response.data?.data?.qrCode ||
-        response.data?.qrCode ||
-        response.data?.data ||
-        response.data;
+        res.data?.data?.qrCode ||
+        res.data?.qrCode ||
+        res.data?.data ||
+        res.data;
       console.log("Loaded QR code:", data);
       setQrCode(data);
 
@@ -41,11 +43,12 @@ export default function QRCodeManager({
         const analyticsRes = await apiClient.get(
           `/qrcode/${restaurantId}/analytics`,
         );
+        const ares = analyticsRes as any;
         const analyticsData =
-          analyticsRes.data?.data?.analytics ||
-          analyticsRes.data?.analytics ||
-          analyticsRes.data?.data ||
-          analyticsRes.data;
+          ares.data?.data?.analytics ||
+          ares.data?.analytics ||
+          ares.data?.data ||
+          ares.data;
         setAnalytics(analyticsData);
       } catch (err) {
         console.log("Could not load analytics");
@@ -91,17 +94,19 @@ export default function QRCodeManager({
       const response = await apiClient.post("/qrcode/generate", {
         restaurantId,
         publicUrl,
+        appUrl: window.location.origin,
       });
 
-      console.log("Generate response:", response);
-      console.log("Generate response.data:", response.data);
+      const res = response as any;
+      console.log("Generate response:", res);
+      console.log("Generate response.data:", res.data);
 
       // Handle nested response structure: data.qrCode
       const data =
-        response.data?.data?.qrCode ||
-        response.data?.qrCode ||
-        response.data?.data ||
-        response.data;
+        res.data?.data?.qrCode ||
+        res.data?.qrCode ||
+        res.data?.data ||
+        res.data;
       console.log("Extracted QR code data:", data);
 
       if (!data) {
@@ -182,7 +187,7 @@ export default function QRCodeManager({
           {/* QR Code Card */}
           <motion.div
             whileHover={{ y: -4 }}
-            className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl p-8 flex flex-col items-center justify-center"
+            className="bg-linear-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl p-8 flex flex-col items-center justify-center"
           >
             <div className="mb-4 text-sm font-semibold text-slate-300">
               Your Digital Menu QR Code
@@ -199,7 +204,7 @@ export default function QRCodeManager({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={downloadQRCode}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg hover:shadow-lg hover:shadow-blue-500/50 transition-all"
+                className="flex-1 px-4 py-3 bg-linear-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg hover:shadow-lg hover:shadow-blue-500/50 transition-all"
               >
                 📥 Download
               </motion.button>
@@ -208,7 +213,7 @@ export default function QRCodeManager({
                 whileTap={{ scale: 0.95 }}
                 onClick={generateQRCode}
                 disabled={loading}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg hover:shadow-purple-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-4 py-3 bg-linear-to-r from-purple-500 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg hover:shadow-purple-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "🔄 Regenerating..." : "🔄 Regenerate"}
               </motion.button>
@@ -219,7 +224,7 @@ export default function QRCodeManager({
           <motion.div className="space-y-4">
             <motion.div
               whileHover={{ y: -4 }}
-              className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl p-6"
+              className="bg-linear-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl p-6"
             >
               <h3 className="text-lg font-bold text-slate-100 mb-4">
                 Menu Link
@@ -253,7 +258,7 @@ export default function QRCodeManager({
             {analytics && (
               <motion.div
                 whileHover={{ y: -4 }}
-                className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl p-6"
+                className="bg-linear-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl p-6"
               >
                 <h3 className="text-lg font-bold text-slate-100 mb-4">
                   📊 Analytics
@@ -308,7 +313,7 @@ export default function QRCodeManager({
             whileTap={{ scale: 0.95 }}
             onClick={generateQRCode}
             disabled={loading}
-            className="px-8 py-3 bg-gradient-to-r from-orange-500 to-amber-400 text-amber-950 font-bold rounded-lg hover:shadow-lg hover:shadow-orange-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-8 py-3 bg-linear-to-r from-orange-500 to-amber-400 text-amber-950 font-bold rounded-lg hover:shadow-lg hover:shadow-orange-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "🔄 Generating..." : "Generate QR Code"}
           </motion.button>
