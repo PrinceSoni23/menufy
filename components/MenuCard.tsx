@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { MenuItem } from "@/lib/types";
+import CachedImage from "./CachedImage";
 
 type Props = {
   item: MenuItem;
@@ -45,13 +45,10 @@ export default function MenuCard({
         <div className="relative pt-6.5">
           <div className="mx-auto -mt-10 mb-1 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-white shadow-[0_12px_24px_rgba(0,0,0,0.16)] ring-4 ring-white/95">
             {item.imageUrl2D ? (
-              <Image
+              <CachedImage
                 src={item.imageUrl2D}
                 alt={item.name}
-                width={96}
-                height={96}
                 className="h-full w-full object-cover"
-                unoptimized
               />
             ) : (
               <div className="text-xl font-black text-[#2f8b4e]">

@@ -8,6 +8,11 @@ import MenuCarousel from "@/components/MenuCarousel";
 import { MenuItem } from "@/lib/types";
 import Script from "next/script";
 import { API_BASE_URL } from "@/lib/constants";
+import {
+  getCachedResponse,
+  putCachedResponse,
+  fetchViaProxy,
+} from "@/lib/mediaCache";
 
 const API_BASE =
   API_BASE_URL ||
@@ -453,6 +458,108 @@ export default function PublicMenuPage() {
     console.log("[3D Model] resolved (filename -> images)", { ref, resolved });
     return resolved;
   };
+
+  // Client-side cached URLs for selected dish media (blob URLs when proxied)
+  const [cachedImageSrc, setCachedImageSrc] = useState<string | null>(null);
+  const [cachedModelSrc, setCachedModelSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    let imageBlobUrl: string | null = null;
+    let modelBlobUrl: string | null = null;
+
+    async function loadCached() {
+      setCachedImageSrc(null);
+      setCachedModelSrc(null);
+      if (!selectedDish) return;
+
+      const apiBase = API_BASE.replace(/\/$/, "");
+
+      if (selectedDish.imageUrl2D) {
+        try {
+          const cachedImage = await getCachedResponse(selectedDish.imageUrl2D);
+          if (cachedImage) {
+            console.info(
+              `[MenuPage] image FRONTEND CACHE -> ${selectedDish.name}`,
+            );
+            const blob = await cachedImage.blob();
+            imageBlobUrl = URL.createObjectURL(blob);
+            if (mounted) setCachedImageSrc(imageBlobUrl);
+          } else {
+            const resp = await fetchViaProxy(apiBase, selectedDish.imageUrl2D);
+            if (resp.ok) {
+              const sourceLabel =
+                resp.headers.get("X-Media-Source") || "cloudinary";
+              console.info(
+                `[MenuPage] image ${sourceLabel.toUpperCase()} -> ${selectedDish.name}`,
+              );
+              await putCachedResponse(selectedDish.imageUrl2D, resp.clone());
+              const blob = await resp.blob();
+              imageBlobUrl = URL.createObjectURL(blob);
+              if (mounted) setCachedImageSrc(imageBlobUrl);
+            } else {
+              console.warn(
+                `[MenuPage] image proxy failed -> direct source ${selectedDish.name}`,
+              );
+              if (mounted) setCachedImageSrc(selectedDish.imageUrl2D);
+            }
+          }
+        } catch (err) {
+          console.warn(
+            `[MenuPage] image fetch error -> direct source ${selectedDish.name}`,
+            err,
+          );
+          if (mounted) setCachedImageSrc(selectedDish.imageUrl2D);
+        }
+      }
+
+      if (selectedDish.model3DUrl) {
+        try {
+          const cachedModel = await getCachedResponse(selectedDish.model3DUrl);
+          if (cachedModel) {
+            console.info(
+              `[MenuPage] model FRONTEND CACHE -> ${selectedDish.name}`,
+            );
+            const blob = await cachedModel.blob();
+            modelBlobUrl = URL.createObjectURL(blob);
+            if (mounted) setCachedModelSrc(modelBlobUrl);
+          } else {
+            const resp = await fetchViaProxy(apiBase, selectedDish.model3DUrl);
+            if (resp.ok) {
+              const sourceLabel =
+                resp.headers.get("X-Media-Source") || "cloudinary";
+              console.info(
+                `[MenuPage] model ${sourceLabel.toUpperCase()} -> ${selectedDish.name}`,
+              );
+              await putCachedResponse(selectedDish.model3DUrl, resp.clone());
+              const blob = await resp.blob();
+              modelBlobUrl = URL.createObjectURL(blob);
+              if (mounted) setCachedModelSrc(modelBlobUrl);
+            } else {
+              console.warn(
+                `[MenuPage] model proxy failed -> direct source ${selectedDish.name}`,
+              );
+              if (mounted) setCachedModelSrc(selectedDish.model3DUrl);
+            }
+          }
+        } catch (err) {
+          console.warn(
+            `[MenuPage] model fetch error -> direct source ${selectedDish.name}`,
+            err,
+          );
+          if (mounted) setCachedModelSrc(selectedDish.model3DUrl);
+        }
+      }
+    }
+
+    loadCached();
+
+    return () => {
+      mounted = false;
+      if (imageBlobUrl) URL.revokeObjectURL(imageBlobUrl);
+      if (modelBlobUrl) URL.revokeObjectURL(modelBlobUrl);
+    };
+  }, [selectedDish]);
 
   // Search and filters
   const [searchQuery, setSearchQuery] = useState("");
@@ -1047,7 +1154,11 @@ export default function PublicMenuPage() {
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.4 }}
-                            src={selectedDish.imageUrl2D || "/placeholder.jpg"}
+                            src={
+                              cachedImageSrc ||
+                              selectedDish.imageUrl2D ||
+                              "/placeholder.jpg"
+                            }
                             alt={selectedDish.name}
                             className="w-full h-full object-cover rounded-3xl"
                           />
@@ -1107,9 +1218,9 @@ export default function PublicMenuPage() {
                                   )}
                                   {createElement("model-viewer", {
                                     ref: modelViewerRef,
-                                    src: resolveModelUrl(
-                                      selectedDish.model3DUrl,
-                                    ),
+                                    src:
+                                      cachedModelSrc ||
+                                      resolveModelUrl(selectedDish.model3DUrl),
                                     "auto-rotate": true,
                                     "camera-controls": true,
                                     "shadow-intensity": "1",
