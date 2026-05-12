@@ -435,8 +435,22 @@ export default function PublicMenuPage() {
       return r;
     }
 
+    // If the ref looks like a filename, determine whether it's a model or image
+    const ext = (ref.split("?")[0].match(/\.[0-9a-zA-Z]+$/) || [
+      "",
+    ])[0].toLowerCase();
+    if (ext === ".glb" || ext === ".gltf" || ext === ".obj") {
+      const resolvedModel = `${apiRoot}/uploads/3d-models/${ref}`;
+      console.log("[3D Model] resolved (filename -> 3d-models)", {
+        ref,
+        resolved: resolvedModel,
+      });
+      return resolvedModel;
+    }
+
+    // Default to images path for other filename-like refs
     const resolved = `${apiRoot}/uploads/images/${ref}`;
-    console.log("[3D Model] resolved", { ref, resolved });
+    console.log("[3D Model] resolved (filename -> images)", { ref, resolved });
     return resolved;
   };
 
