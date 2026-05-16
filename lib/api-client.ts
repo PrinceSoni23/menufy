@@ -80,14 +80,16 @@ class ApiClient {
   // Auth Methods
   private getAccessToken(): string | null {
     if (typeof window !== "undefined") {
-      return localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+      const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+      return token && token !== "undefined" && token !== "null" ? token : null;
     }
     return null;
   }
 
   private getRefreshToken(): string | null {
     if (typeof window !== "undefined") {
-      return localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+      const token = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+      return token && token !== "undefined" && token !== "null" ? token : null;
     }
     return null;
   }
@@ -114,14 +116,20 @@ class ApiClient {
       throw new Error("No refresh token available");
     }
 
-    const response = await this.client.post<AuthResponse>(
-      "/auth/refresh-token",
-      {
-        refreshToken,
-      },
-    );
+    const response = await this.client.post<AuthResponse>("/auth/refresh", {
+      refreshToken,
+    });
 
-    const { accessToken, refreshToken: newRefreshToken } = response.data;
+    const payload = response.data?.data ?? response.data;
+    const { accessToken, refreshToken: newRefreshToken } = payload as {
+      accessToken?: string;
+      refreshToken?: string;
+    };
+
+    if (!accessToken || !newRefreshToken) {
+      throw new Error("Invalid refresh token response");
+    }
+
     this.setTokens(accessToken, newRefreshToken);
     return accessToken;
   }
@@ -246,6 +254,10 @@ class ApiClient {
           break;
         case 401:
           errMessage = message || ERROR_MESSAGES.UNAUTHORIZED;
+          break;
+        case 429:
+          errMessage =
+            message || "Too many requests. Please wait a moment and try again.";
           break;
         case 403:
           errMessage = message || ERROR_MESSAGES.FORBIDDEN;

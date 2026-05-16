@@ -425,7 +425,56 @@ export default function PublicMenuPage() {
   const [modelLoading, setModelLoading] = useState(false);
   const modelViewerRef = useRef<any>(null);
   const trackedArViewRef = useRef<string | null>(null);
+  const trackedMenuViewRef = useRef<string | null>(null);
+  const deviceIdRef = useRef<string>("");
+  const sessionIdRef = useRef<string>("");
   // Note: scans will be sent on every public menu load/refresh
+
+  // Initialize device and session IDs synchronously (before useEffects)
+  if (typeof window !== "undefined") {
+    if (!deviceIdRef.current) {
+      const storageKey = "ar-menu-device-id";
+      const existing =
+        typeof window !== "undefined" && localStorage
+          ? localStorage.getItem(storageKey)
+          : null;
+      if (existing && existing !== "undefined" && existing !== "null") {
+        deviceIdRef.current = existing;
+      } else {
+        const created =
+          typeof crypto !== "undefined" && crypto.randomUUID
+            ? crypto.randomUUID()
+            : `device-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        if (typeof window !== "undefined" && localStorage) {
+          localStorage.setItem(storageKey, created);
+        }
+        deviceIdRef.current = created;
+      }
+    }
+    if (!sessionIdRef.current) {
+      sessionIdRef.current =
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `session-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    }
+  }
+
+  const getOrCreateDeviceId = () => {
+    if (typeof window === "undefined") return "server";
+
+    const storageKey = "ar-menu-device-id";
+    const existing = localStorage.getItem(storageKey);
+    if (existing && existing !== "undefined" && existing !== "null") {
+      return existing;
+    }
+
+    const created =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `device-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    localStorage.setItem(storageKey, created);
+    return created;
+  };
 
   // Resolve model reference (filename or full URL) to a public URL
   const resolveModelUrl = (ref?: string) => {
@@ -464,11 +513,12 @@ export default function PublicMenuPage() {
   const [cachedModelSrc, setCachedModelSrc] = useState<string | null>(null);
 
   useEffect(() => {
-    let mounted = true;
+    let cancelled = false;
     let imageBlobUrl: string | null = null;
     let modelBlobUrl: string | null = null;
 
     async function loadCached() {
+      if (cancelled) return;
       setCachedImageSrc(null);
       setCachedModelSrc(null);
       if (!selectedDish) return;
@@ -477,16 +527,19 @@ export default function PublicMenuPage() {
 
       if (selectedDish.imageUrl2D) {
         try {
+          if (cancelled) return;
           const cachedImage = await getCachedResponse(selectedDish.imageUrl2D);
+          if (cancelled) return;
           if (cachedImage) {
             console.info(
               `[MenuPage] image FRONTEND CACHE -> ${selectedDish.name}`,
             );
             const blob = await cachedImage.blob();
             imageBlobUrl = URL.createObjectURL(blob);
-            if (mounted) setCachedImageSrc(imageBlobUrl);
+            if (!cancelled) setCachedImageSrc(imageBlobUrl);
           } else {
             const resp = await fetchViaProxy(apiBase, selectedDish.imageUrl2D);
+            if (cancelled) return;
             if (resp.ok) {
               const sourceLabel =
                 resp.headers.get("X-Media-Source") || "cloudinary";
@@ -494,37 +547,43 @@ export default function PublicMenuPage() {
                 `[MenuPage] image ${sourceLabel.toUpperCase()} -> ${selectedDish.name}`,
               );
               await putCachedResponse(selectedDish.imageUrl2D, resp.clone());
+              if (cancelled) return;
               const blob = await resp.blob();
               imageBlobUrl = URL.createObjectURL(blob);
-              if (mounted) setCachedImageSrc(imageBlobUrl);
+              if (!cancelled) setCachedImageSrc(imageBlobUrl);
             } else {
               console.warn(
                 `[MenuPage] image proxy failed -> direct source ${selectedDish.name}`,
               );
-              if (mounted) setCachedImageSrc(selectedDish.imageUrl2D);
+              if (!cancelled) setCachedImageSrc(selectedDish.imageUrl2D);
             }
           }
         } catch (err) {
-          console.warn(
-            `[MenuPage] image fetch error -> direct source ${selectedDish.name}`,
-            err,
-          );
-          if (mounted) setCachedImageSrc(selectedDish.imageUrl2D);
+          if (!cancelled) {
+            console.warn(
+              `[MenuPage] image fetch error -> direct source ${selectedDish.name}`,
+              err,
+            );
+            setCachedImageSrc(selectedDish.imageUrl2D);
+          }
         }
       }
 
       if (selectedDish.model3DUrl) {
         try {
+          if (cancelled) return;
           const cachedModel = await getCachedResponse(selectedDish.model3DUrl);
+          if (cancelled) return;
           if (cachedModel) {
             console.info(
               `[MenuPage] model FRONTEND CACHE -> ${selectedDish.name}`,
             );
             const blob = await cachedModel.blob();
             modelBlobUrl = URL.createObjectURL(blob);
-            if (mounted) setCachedModelSrc(modelBlobUrl);
+            if (!cancelled) setCachedModelSrc(modelBlobUrl);
           } else {
             const resp = await fetchViaProxy(apiBase, selectedDish.model3DUrl);
+            if (cancelled) return;
             if (resp.ok) {
               const sourceLabel =
                 resp.headers.get("X-Media-Source") || "cloudinary";
@@ -532,22 +591,25 @@ export default function PublicMenuPage() {
                 `[MenuPage] model ${sourceLabel.toUpperCase()} -> ${selectedDish.name}`,
               );
               await putCachedResponse(selectedDish.model3DUrl, resp.clone());
+              if (cancelled) return;
               const blob = await resp.blob();
               modelBlobUrl = URL.createObjectURL(blob);
-              if (mounted) setCachedModelSrc(modelBlobUrl);
+              if (!cancelled) setCachedModelSrc(modelBlobUrl);
             } else {
               console.warn(
                 `[MenuPage] model proxy failed -> direct source ${selectedDish.name}`,
               );
-              if (mounted) setCachedModelSrc(selectedDish.model3DUrl);
+              if (!cancelled) setCachedModelSrc(selectedDish.model3DUrl);
             }
           }
         } catch (err) {
-          console.warn(
-            `[MenuPage] model fetch error -> direct source ${selectedDish.name}`,
-            err,
-          );
-          if (mounted) setCachedModelSrc(selectedDish.model3DUrl);
+          if (!cancelled) {
+            console.warn(
+              `[MenuPage] model fetch error -> direct source ${selectedDish.name}`,
+              err,
+            );
+            setCachedModelSrc(selectedDish.model3DUrl);
+          }
         }
       }
     }
@@ -555,11 +617,22 @@ export default function PublicMenuPage() {
     loadCached();
 
     return () => {
-      mounted = false;
+      cancelled = true;
       if (imageBlobUrl) URL.revokeObjectURL(imageBlobUrl);
       if (modelBlobUrl) URL.revokeObjectURL(modelBlobUrl);
     };
   }, [selectedDish]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      deviceIdRef.current = getOrCreateDeviceId();
+      // sessionId is per-page-load (new on hard refresh)
+      sessionIdRef.current =
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `session-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    }
+  }, []);
 
   // Search and filters
   const [searchQuery, setSearchQuery] = useState("");
@@ -586,17 +659,6 @@ export default function PublicMenuPage() {
         document.body.scrollTop = 0;
       });
     }
-  }, [publicUrl]);
-
-  // Also scroll to top when intro completes
-  useEffect(() => {
-    if (introDone && typeof window !== "undefined") {
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-      }, 100);
-    }
   }, [introDone]);
 
   useEffect(() => {
@@ -614,6 +676,12 @@ export default function PublicMenuPage() {
       try {
         await fetch(`${API_BASE}/menu/${selectedDish._id}/ar-view`, {
           method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sessionId: sessionIdRef.current,
+            deviceType: "Web",
+            deviceId: deviceIdRef.current,
+          }),
         });
       } catch (error) {
         console.warn("Failed to track 3D model view:", error);
@@ -653,9 +721,33 @@ export default function PublicMenuPage() {
           try {
             await fetch(`${API_BASE}/qrcode/scan/${qrCodeToken}`, {
               method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                deviceId: deviceIdRef.current,
+                sessionId: sessionIdRef.current,
+              }),
             });
           } catch (scanError) {
             console.warn("Failed to track QR scan:", scanError);
+          }
+        }
+
+        if (trackedMenuViewRef.current !== rId) {
+          trackedMenuViewRef.current = rId;
+          try {
+            await fetch(`${API_BASE}/analytics/track`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                restaurantId: rId,
+                eventType: "view_menu",
+                deviceType: "Web",
+                sessionId: sessionIdRef.current,
+                deviceId: deviceIdRef.current,
+              }),
+            });
+          } catch (menuViewError) {
+            console.warn("Failed to track menu view:", menuViewError);
           }
         }
 
@@ -769,8 +861,41 @@ export default function PublicMenuPage() {
       }
       return [...prev, { item, qty: 1 }];
     });
+    if (restaurantId) {
+      fetch(`${API_BASE}/analytics/track`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          restaurantId,
+          eventType: "add_to_cart",
+          deviceType: "Web",
+          sessionId: sessionIdRef.current,
+          deviceId: deviceIdRef.current,
+          menuItemId: item._id,
+        }),
+      }).catch(error => {
+        console.warn("Failed to track add to cart:", error);
+      });
+    }
     showToast(`${item.name} added`, "success");
     setSelectedDish(null);
+  };
+
+  const handleSelectDish = (item: MenuItem) => {
+    if (restaurantId) {
+      fetch(`${API_BASE}/menu/${item._id}/view`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId: sessionIdRef.current,
+          deviceId: deviceIdRef.current,
+          deviceType: "Web",
+        }),
+      }).catch(error => {
+        console.warn("Failed to track menu item view:", error);
+      });
+    }
+    setSelectedDish(item);
   };
 
   const openModelView = () => {
@@ -1085,7 +1210,7 @@ export default function PublicMenuPage() {
                 {displayItems.length > 0 ? (
                   <MenuCarousel
                     items={displayItems}
-                    onSelect={setSelectedDish}
+                    onSelect={handleSelectDish}
                     addToCart={addToCart}
                   />
                 ) : (

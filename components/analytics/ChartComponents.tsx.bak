@@ -1,0 +1,900 @@
+"use client";
+
+import { ReactNode } from "react";
+
+interface MetricCardProps {
+  title: string;
+  value: string | number;
+  subtitle?: string;
+  icon?: ReactNode;
+  trend?: {
+    value: number;
+    isPositive: boolean;
+  };
+  color?: "cyan" | "purple" | "blue" | "green" | "orange" | "red" | "pink";
+}
+
+const colorClasses = {
+  cyan: "text-cyan-400 shadow-cyan-500/20",
+  purple: "text-purple-400 shadow-purple-500/20",
+  blue: "text-blue-400 shadow-blue-500/20",
+  green: "text-green-400 shadow-green-500/20",
+  orange: "text-orange-400 shadow-orange-500/20",
+  red: "text-red-400 shadow-red-500/20",
+  pink: "text-pink-400 shadow-pink-500/20",
+};
+
+export function MetricCard({
+  title,
+  value,
+  subtitle,
+  icon,
+  trend,
+  color = "cyan",
+}: MetricCardProps) {
+  return (
+    <div className={`card hover:shadow-lg hover:shadow-${color}-500/20`}>
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <p className="text-slate-400 text-sm mb-2">{title}</p>
+          <p className={`text-4xl font-bold ${colorClasses[color]}`}>{value}</p>
+          {subtitle && (
+            <p className="text-xs text-slate-500 mt-2">{subtitle}</p>
+          )}
+        </div>
+        {icon && <div className="text-3xl opacity-20">{icon}</div>}
+      </div>
+
+      {trend && (
+        <div className="mt-3 flex items-center gap-1">
+          <span
+            className={`text-xs font-semibold ${trend.isPositive ? "text-green-400" : "text-red-400"}`}
+          >
+            {trend.isPositive ? "↑" : "↓"} {Math.abs(trend.value)}%
+          </span>
+          <span className="text-xs text-slate-500">vs last month</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface BarChartProps {
+  data: Array<{
+    label: string;
+    value: number;
+  }>;
+  title: string;
+  maxValue?: number;
+  color?: string;
+}
+
+export function SimpleBarChart({
+  data,
+  title,
+  maxValue,
+  color = "cyan",
+}: BarChartProps) {
+  const max = maxValue || Math.max(...data.map(d => d.value), 1);
+
+  const colorMap: { [key: string]: string } = {
+    cyan: "bg-cyan-500",
+    purple: "bg-purple-500",
+    blue: "bg-blue-500",
+    green: "bg-green-500",
+    orange: "bg-orange-500",
+  };
+
+  return (
+    <div className="card">
+      <h3 className="text-lg font-semibold text-slate-200 mb-6">{title}</h3>
+      <div className="space-y-4">
+        {data.map((item, idx) => (
+          <div key={idx}>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-slate-400">{item.label}</span>
+              <span className="text-sm font-semibold text-slate-200">
+                {item.value}
+              </span>
+            </div>
+            <div className="w-full bg-slate-700/30 rounded h-2 overflow-hidden">
+              <div
+                className={`${colorMap[color]} h-full transition-all duration-300`}
+                style={{ width: `${(item.value / max) * 100}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+interface LineChartProps {
+  data: Array<{
+    label: string;
+    value: number;
+  }>;
+  title: string;
+}
+
+export function SimpleLineChart({ data, title }: LineChartProps) {
+  if (data.length === 0) return null;
+
+  const max = Math.max(...data.map(d => d.value), 1);
+  const points = data.map((d, i) => ({
+    x: (i / Math.max(data.length - 1, 1)) * 100,
+    y: ((max - d.value) / max) * 100,
+    value: d.value,
+    label: d.label,
+  }));
+
+  const pathD = points
+    .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`)
+    .join(" ");
+
+  return (
+    <div className="card">
+      <h3 className="text-lg font-semibold text-slate-200 mb-6">{title}</h3>
+      <svg
+        viewBox="0 0 100 60"
+        className="w-full h-64 mb-4"
+        preserveAspectRatio="none"
+      >
+        {/* Grid lines */}
+        {[0, 25, 50, 75, 100].map((y, i) => (
+          <line
+            key={`grid-${i}`}
+            x1="0"
+            y1={y}
+            x2="100"
+            y2={y}
+            stroke="rgba(148, 163, 184, 0.1)"
+            strokeWidth="0.5"
+          />
+        ))}
+
+        {/* Path */}
+        <path
+          d={pathD}
+          fill="none"
+          stroke="url(#gradient)"
+          strokeWidth="1.5"
+          vectorEffect="non-scaling-stroke"
+        />
+
+        {/* Gradient definition */}
+        <defs>
+          <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="rgba(34, 211, 238, 0.8)" />
+            <stop offset="100%" stopColor="rgba(34, 211, 238, 0)" />
+          </linearGradient>
+        </defs>
+
+        {/* Fill under line */}
+        <path
+          d={`${pathD} L 100 60 L 0 60 Z`}
+          fill="url(#gradient)"
+          opacity="0.2"
+        />
+
+        {/* Points */}
+        {points.map((p, i) => (
+          <circle
+            key={`point-${i}`}
+            cx={p.x}
+            cy={p.y}
+            r="1.5"
+            fill="rgb(34, 211, 238)"
+            vectorEffect="non-scaling-stroke"
+          />
+        ))}
+      </svg>
+
+      {/* Legend */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 text-xs">
+        {data.map((d, i) => (
+          <div key={i} className="text-slate-400">
+            <div className="text-slate-300 font-medium">{d.label}</div>
+            <div className="text-cyan-400">{d.value}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+interface DoughnutChartProps {
+  data: Array<{
+    label: string;
+    value: number;
+  }>;
+  title: string;
+}
+
+export function DoughnutChart({ data, title }: DoughnutChartProps) {
+  const total = data.reduce((sum, d) => sum + d.value, 0);
+  const colors = [
+    "rgb(34, 211, 238)", // cyan
+    "rgb(168, 85, 247)", // purple
+    "rgb(59, 130, 246)", // blue
+  ];
+
+  let cumulativeValue = 0;
+  const segments = data.map((d, idx) => {
+    const percentage = (d.value / total) * 100;
+    const startAngle = (cumulativeValue / total) * 360;
+    const endAngle = ((cumulativeValue + d.value) / total) * 360;
+    cumulativeValue += d.value;
+
+    const startRad = (startAngle - 90) * (Math.PI / 180);
+    const endRad = (endAngle - 90) * (Math.PI / 180);
+
+    const x1 = 50 + 40 * Math.cos(startRad);
+    const y1 = 50 + 40 * Math.sin(startRad);
+    const x2 = 50 + 40 * Math.cos(endRad);
+    const y2 = 50 + 40 * Math.sin(endRad);
+
+    const largeArc = percentage > 50 ? 1 : 0;
+
+    const path = `M 50 50 L ${x1} ${y1} A 40 40 0 ${largeArc} 1 ${x2} ${y2} Z`;
+
+    return {
+      path,
+      color: colors[idx % colors.length],
+      percentage,
+      label: d.label,
+      value: d.value,
+    };
+  });
+
+  return (
+    <div className="card">
+      <h3 className="text-lg font-semibold text-slate-200 mb-6">{title}</h3>
+      <div className="flex flex-col md:flex-row items-center gap-8">
+        <svg viewBox="0 0 100 100" className="w-40 h-40 flex-shrink-0">
+          {segments.map((seg, idx) => (
+            <path
+              key={idx}
+              d={seg.path}
+              fill={seg.color}
+              opacity="0.8"
+              className="hover:opacity-100 transition-opacity"
+            />
+          ))}
+          <circle cx="50" cy="50" r="25" fill="rgb(15, 23, 42)" />
+        </svg>
+
+        <div className="flex-1 space-y-2">
+          {segments.map((seg, idx) => (
+            <div key={idx} className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: seg.color }}
+                />
+                <span className="text-sm text-slate-400">{seg.label}</span>
+              </div>
+              <div className="text-right">
+                <div className="text-sm font-semibold text-slate-200">
+                  {seg.value}
+                </div>
+                <div className="text-xs text-slate-500">
+                  {seg.percentage.toFixed(1)}%
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface SalesHeatmapProps {
+  title: string;
+  data: {
+    summary: {
+      totalOrders: number;
+      totalRevenue: number;
+      averageOrderValue: number;
+      dataCoveragePct: number;
+    };
+    peaks: {
+      hour: {
+        hourLabel: string;
+      };
+      day: {
+        day: string;
+      };
+    };
+    max: {
+      cellRevenue: number;
+    };
+    hourOrder: Array<{ hour: number; hourLabel: string }>;
+    heatmap: Array<{
+      day: string;
+      cells: Array<{
+        hour: number;
+        orders: number;
+        revenue: number;
+      }>;
+      totalOrders: number;
+      totalRevenue: number;
+    }>;
+  };
+}
+
+function heatColor(ratio: number): string {
+  if (ratio <= 0) return "rgba(15, 23, 42, 0.55)";
+  if (ratio < 0.2) return "rgba(14, 116, 144, 0.35)";
+  if (ratio < 0.4) return "rgba(6, 182, 212, 0.45)";
+  if (ratio < 0.6) return "rgba(16, 185, 129, 0.5)";
+  if (ratio < 0.8) return "rgba(245, 158, 11, 0.55)";
+  return "rgba(239, 68, 68, 0.65)";
+}
+
+export function SalesHeatmapChart({ title, data }: SalesHeatmapProps) {
+  const maxRevenue = Math.max(data.max.cellRevenue, 1);
+
+  return (
+    <div className="card">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-5">
+        <div>
+          <h3 className="text-lg font-semibold text-slate-200">{title}</h3>
+          <p className="text-xs text-slate-400 mt-1">
+            Peak Day: <span className="text-cyan-300">{data.peaks.day.day}</span> | Peak Hour: <span className="text-cyan-300">{data.peaks.hour.hourLabel}</span>
+          </p>
+        </div>
+        <div className="grid grid-cols-2 gap-3 text-xs">
+          <div className="bg-slate-900/40 rounded-md px-3 py-2">
+            <p className="text-slate-400">Orders</p>
+            <p className="text-slate-100 font-semibold">{data.summary.totalOrders}</p>
+          </div>
+          <div className="bg-slate-900/40 rounded-md px-3 py-2">
+            <p className="text-slate-400">Revenue</p>
+            <p className="text-slate-100 font-semibold">${data.summary.totalRevenue.toFixed(2)}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="overflow-x-auto">
+        <div className="min-w-[940px]">
+          <div
+            className="grid gap-1 mb-2"
+            style={{ gridTemplateColumns: "130px repeat(24, minmax(24px, 1fr)) 120px" }}
+          >
+            <div className="text-[11px] text-slate-500">Day / Hour</div>
+            {data.hourOrder.map(hour => (
+              <div
+                key={hour.hour}
+                className="text-[10px] text-slate-500 text-center"
+              >
+                {hour.hour}
+              </div>
+            ))}
+            <div className="text-[11px] text-slate-500 text-right pr-2">Daily Totals</div>
+          </div>
+
+          {data.heatmap.map(row => (
+            <div
+              key={row.day}
+              className="grid gap-1 mb-1"
+              style={{ gridTemplateColumns: "130px repeat(24, minmax(24px, 1fr)) 120px" }}
+            >
+              <div className="text-xs text-slate-300 py-2">{row.day}</div>
+              {row.cells.map(cell => {
+                const ratio = cell.revenue / maxRevenue;
+                return (
+                  <div
+                    key={`${row.day}-${cell.hour}`}
+                    title={`${row.day} ${String(cell.hour).padStart(2, "0")}:00 | Orders: ${cell.orders} | Revenue: $${cell.revenue.toFixed(2)}`}
+                    className="h-7 rounded-sm border border-slate-800/80"
+                    style={{ background: heatColor(ratio) }}
+                  />
+                );
+              })}
+              <div className="text-[11px] text-right text-slate-400 py-2 pr-2">
+                <span className="text-slate-300 font-medium">{row.totalOrders}</span>
+                <span className="mx-1">|</span>
+                <span>${row.totalRevenue.toFixed(0)}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-4 flex items-center gap-3 text-[11px] text-slate-400">
+        <span>Low</span>
+        <div className="h-2 w-36 rounded-full bg-gradient-to-r from-slate-800 via-cyan-500 to-red-500" />
+        <span>High</span>
+        <span className="ml-auto">Coverage: {data.summary.dataCoveragePct}%</span>
+      </div>
+    </div>
+  );
+}
+
+interface CategoryPerformanceChartProps {
+  title: string;
+  data: Array<{
+    category: string;
+    revenue: number;
+    conversionRate: number;
+  }>;
+}
+
+export function CategoryPerformanceChart({
+  title,
+  data,
+}: CategoryPerformanceChartProps) {
+  const maxRevenue = Math.max(...data.map(d => d.revenue), 1);
+  const maxConversion = Math.max(...data.map(d => d.conversionRate), 1);
+
+  return (
+    <div className="card">
+      <h3 className="text-lg font-semibold text-slate-200 mb-5">{title}</h3>
+      <div className="space-y-4">
+        {data.map((item, idx) => (
+          <div key={`${item.category}-${idx}`}>
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-sm text-slate-300 font-medium">{item.category}</p>
+              <div className="text-right">
+                <p className="text-sm text-emerald-300 font-semibold">
+                  ${item.revenue.toFixed(2)}
+                </p>
+                <p className="text-xs text-cyan-300">
+                  {item.conversionRate.toFixed(2)}% conv
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <div className="h-2 w-full rounded bg-slate-700/40 overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-emerald-500 to-green-400"
+                  style={{ width: `${(item.revenue / maxRevenue) * 100}%` }}
+                />
+              </div>
+              <div className="h-2 w-full rounded bg-slate-700/40 overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-cyan-500 to-blue-400"
+                  style={{ width: `${(item.conversionRate / maxConversion) * 100}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 flex gap-4 text-xs text-slate-400">
+        <span className="inline-flex items-center gap-1">
+          <span className="w-2 h-2 rounded-full bg-emerald-400" /> Revenue
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <span className="w-2 h-2 rounded-full bg-cyan-400" /> Conversion
+        </span>
+      </div>
+    </div>
+  );
+}
+
+interface AOVTrendsChartProps {
+  data: {
+    meta: {
+      timezone: string;
+      rangeDays: number;
+      startDate: string;
+      endDate: string;
+    };
+    summary: {
+      overallAverageAOV: number;
+      peakAOV: number;
+      lowestAOV: number;
+      trend: { direction: "up" | "down"; percentageChange: number };
+      totalOrders: number;
+      totalRevenue: number;
+    };
+    peaks: {
+      bestDay: { date: string; aov: number; orders: number };
+      worstDay: { date: string; aov: number; orders: number };
+    };
+    timeSeries: Array<{
+      date: string;
+      orders: number;
+      revenue: number;
+      aov: number;
+      avg7d: number;
+      avg30d: number;
+    }>;
+  };
+  title: string;
+}
+
+export function AOVTrendsChart({ data, title }: AOVTrendsChartProps) {
+  if (!data || !Array.isArray(data.timeSeries) || data.timeSeries.length === 0) return null;
+
+  const { timeSeries, summary, peaks } = data;
+
+  // Normalize numeric values and guard against undefined which can produce NaN
+  const allValues = timeSeries.flatMap(d => [Number(d.aov) || 0, Number(d.avg7d) || 0, Number(d.avg30d) || 0]);
+  const maxAOV = Math.max(...allValues, 1);
+  const minAOV = Math.min(...allValues, 0);
+  const denom = (maxAOV - minAOV) || 1;
+
+  const points = timeSeries.map((d, i) => {
+    const aov = Number(d.aov) || 0;
+    const avg7d = Number(d.avg7d) || 0;
+    const avg30d = Number(d.avg30d) || 0;
+
+    return {
+      x: (i / Math.max(timeSeries.length - 1, 1)) * 100,
+      y: ((maxAOV - aov) / denom) * 100,
+      y7d: ((maxAOV - avg7d) / denom) * 100,
+      y30d: ((maxAOV - avg30d) / denom) * 100,
+      date: d.date,
+      aov,
+      avg7d,
+      avg30d,
+    };
+  });
+
+  const pathDaily = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
+  const path7d = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y7d}`).join(" ");
+  const path30d = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y30d}`).join(" ");
+
+  const trendColor = summary.trend.direction === "up" ? "text-green-400" : "text-red-400";
+  const trendIcon = summary.trend.direction === "up" ? "↑" : "↓";
+
+  return (
+    <div className="card">
+      <div className="flex items-start justify-between mb-6">
+        <h3 className="text-lg font-semibold text-slate-200">{title}</h3>
+        <div className={`text-2xl font-bold ${trendColor}`}>
+          {trendIcon} {Math.abs(summary.trend.percentageChange)}%
+        </div>
+      </div>
+
+      {/* Chart */}
+      <svg viewBox="0 0 100 60" className="w-full h-64 mb-4" preserveAspectRatio="none">
+        {[0, 25, 50, 75, 100].map((y, i) => (
+          <line key={`grid-${i}`} x1="0" y1={y} x2="100" y2={y} stroke="rgba(148, 163, 184, 0.1)" strokeWidth="0.5" />
+        ))}
+
+        {/* Daily AOV */}
+        <path d={pathDaily} fill="none" stroke="rgb(34, 211, 238)" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+        {/* 7-day moving average */}
+        <path d={path7d} fill="none" stroke="rgb(168, 85, 247)" strokeWidth="1.5" strokeDasharray="5,5" vectorEffect="non-scaling-stroke" />
+        {/* 30-day moving average */}
+        <path d={path30d} fill="none" stroke="rgb(59, 130, 246)" strokeWidth="1.5" strokeDasharray="10,5" vectorEffect="non-scaling-stroke" />
+
+        {/* Points */}
+        {points.map((p, i) => (
+          <circle key={`point-${i}`} cx={p.x} cy={p.y} r="0.8" fill="rgb(34, 211, 238)" vectorEffect="non-scaling-stroke" />
+        ))}
+      </svg>
+
+      {/* Legend */}
+      <div className="grid grid-cols-3 gap-4 mb-6 pb-6 border-b border-slate-700">
+        <div><div className="text-xs text-slate-400">Daily AOV</div><div className="text-sm font-semibold text-cyan-400">${summary.overallAverageAOV}</div></div>
+        <div><div className="text-xs text-slate-400">7-Day Avg</div><div className="text-sm font-semibold text-purple-400">${timeSeries[timeSeries.length - 1]?.avg7d || 0}</div></div>
+        <div><div className="text-xs text-slate-400">30-Day Avg</div><div className="text-sm font-semibold text-blue-400">${timeSeries[timeSeries.length - 1]?.avg30d || 0}</div></div>
+      </div>
+
+      {/* Insights */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <p className="text-xs text-slate-400 mb-2">Peak AOV</p>
+          <p className="text-2xl font-bold text-green-400">${peaks.bestDay.aov}</p>
+          <p className="text-xs text-slate-500 mt-1">{peaks.bestDay.date} ({peaks.bestDay.orders} orders)</p>
+        </div>
+        <div>
+          <p className="text-xs text-slate-400 mb-2">Lowest AOV</p>
+          <p className="text-2xl font-bold text-red-400">${peaks.worstDay.aov}</p>
+          <p className="text-xs text-slate-500 mt-1">{peaks.worstDay.date} ({peaks.worstDay.orders} orders)</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface RepeatPurchaseCohortsChartProps {
+  data: {
+    meta: {
+      timezone: string;
+      rangeDays: number;
+      startDate: string;
+      endDate: string;
+    };
+    summary: {
+      totalCustomers: number;
+      repeatCustomers: number;
+      repeatRate: number;
+      avgRepeatCount: number;
+      retention7d: number;
+      retention14d: number;
+      retention30d: number;
+    };
+    cohorts: Array<{
+      cohortWeek: string;
+      newCustomers: number;
+      repeatCustomers: number;
+      retentionRate: number;
+      avgOrdersPerCustomer: number;
+    }>;
+    timeline: Array<{
+      date: string;
+      repeatOrders: number;
+      totalOrders: number;
+      repeatRate: number;
+    }>;
+  };
+  title: string;
+}
+
+export function RepeatPurchaseCohortsChart({ data, title }: RepeatPurchaseCohortsChartProps) {
+  if (!data || data.cohorts.length === 0) return null;
+
+  const { summary, cohorts, timeline } = data;
+  const maxRetention = Math.max(...cohorts.map(c => c.retentionRate), 1);
+  const maxRepeatRate = Math.max(...timeline.map(t => t.repeatRate), 1);
+
+  // Timeline chart for repeat rate over time
+  const timelinePoints = timeline.map((t, i) => ({
+    x: (i / Math.max(timeline.length - 1, 1)) * 100,
+    y: ((maxRepeatRate - t.repeatRate) / (maxRepeatRate + 1)) * 100,
+    rate: t.repeatRate,
+    date: t.date,
+  }));
+
+  const timelinePath = timelinePoints.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
+
+  return (
+    <div className="card">
+      <div className="flex items-start justify-between mb-6">
+        <h3 className="text-lg font-semibold text-slate-200">{title}</h3>
+        <div className="text-right">
+          <p className="text-2xl font-bold text-purple-400">{summary.repeatRate}%</p>
+          <p className="text-xs text-slate-400">Repeat Rate</p>
+        </div>
+      </div>
+
+      {/* Retention windows */}
+      <div className="grid grid-cols-3 gap-3 mb-6 pb-6 border-b border-slate-700">
+        <div>
+          <p className="text-xs text-slate-400">7-Day Retention</p>
+          <p className="text-2xl font-bold text-cyan-400">{summary.retention7d.toFixed(1)}%</p>
+        </div>
+        <div>
+          <p className="text-xs text-slate-400">14-Day Retention</p>
+          <p className="text-2xl font-bold text-blue-400">{summary.retention14d.toFixed(1)}%</p>
+        </div>
+        <div>
+          <p className="text-xs text-slate-400">30-Day Retention</p>
+          <p className="text-2xl font-bold text-purple-400">{summary.retention30d.toFixed(1)}%</p>
+        </div>
+      </div>
+
+      {/* Repeat rate timeline */}
+      <div className="mb-6">
+        <p className="text-xs text-slate-400 mb-3">Repeat Orders % Over Time</p>
+        <svg viewBox="0 0 100 50" className="w-full h-40" preserveAspectRatio="none">
+          {[0, 25, 50, 75, 100].map((y, i) => (
+            <line key={`grid-${i}`} x1="0" y1={y} x2="100" y2={y} stroke="rgba(148, 163, 184, 0.1)" strokeWidth="0.5" />
+          ))}
+          <path d={timelinePath} fill="none" stroke="rgb(168, 85, 247)" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+          {timelinePoints.map((p, i) => (
+            <circle key={`tp-${i}`} cx={p.x} cy={p.y} r="0.6" fill="rgb(168, 85, 247)" vectorEffect="non-scaling-stroke" />
+          ))}
+        </svg>
+      </div>
+
+      {/* Cohort table */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="border-b border-slate-700">
+              <th className="text-left py-2 px-2 text-slate-400 font-semibold">Cohort</th>
+              <th className="text-right py-2 px-2 text-slate-400 font-semibold">New Cust.</th>
+              <th className="text-right py-2 px-2 text-slate-400 font-semibold">Repeat</th>
+              <th className="text-right py-2 px-2 text-slate-400 font-semibold">Retention</th>
+              <th className="text-right py-2 px-2 text-slate-400 font-semibold">Avg Orders</th>
+            </tr>
+          </thead>
+          <tbody>
+            {cohorts.map((cohort, idx) => (
+              <tr key={idx} className="border-b border-slate-700/50 hover:bg-slate-700/20">
+                <td className="py-2 px-2 text-slate-300">{cohort.cohortWeek}</td>
+                <td className="py-2 px-2 text-right text-slate-300">{cohort.newCustomers}</td>
+                <td className="py-2 px-2 text-right text-cyan-400 font-semibold">{cohort.repeatCustomers}</td>
+                <td className="py-2 px-2 text-right text-purple-400 font-semibold">{cohort.retentionRate.toFixed(1)}%</td>
+                <td className="py-2 px-2 text-right text-blue-400 font-semibold">{cohort.avgOrdersPerCustomer.toFixed(2)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Summary stats */}
+      <div className="mt-4 grid grid-cols-2 gap-4 pt-4 border-t border-slate-700">
+        <div>
+          <p className="text-xs text-slate-400">Total Customers</p>
+          <p className="text-xl font-bold text-slate-200">{summary.totalCustomers}</p>
+        </div>
+        <div>
+          <p className="text-xs text-slate-400">Repeat Customers</p>
+          <p className="text-xl font-bold text-purple-400">{summary.repeatCustomers}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface TopLostOpportunitiesChartProps {
+  data: {
+    meta: {
+      rangeDays: number;
+      startDate: string;
+      endDate: string;
+    };
+    summary: {
+      totalLostOpportunities: number;
+      totalEstimatedLostRevenue: number;
+      totalEstimatedLostOrders: number;
+      averageImprovementGap: number;
+    };
+    opportunities: Array<{
+      rank: number;
+      itemId: string;
+      name: string;
+      category: string;
+      price: number;
+      views: number;
+      clicks: number;
+      arViews: number;
+      totalEngagement: number;
+      orders: number;
+      revenue: number;
+      viewConversion: number;
+      categoryBenchmark: number;
+      estimatedLostOrders: number;
+      estimatedLostRevenue: number;
+      improvementGap: number;
+      suggestions: string[];
+    }>;
+  };
+  title: string;
+}
+
+export function TopLostOpportunitiesChart({
+  data,
+  title,
+}: TopLostOpportunitiesChartProps) {
+  if (!data || data.opportunities.length === 0) return null;
+
+  const { summary, opportunities } = data;
+
+  return (
+    <div className="card">
+      <div className="flex items-start justify-between mb-6">
+        <h3 className="text-lg font-semibold text-slate-200">{title}</h3>
+        <div className="text-right">
+          <p className="text-2xl font-bold text-orange-400">
+            ${summary.totalEstimatedLostRevenue.toFixed(0)}
+          </p>
+          <p className="text-xs text-slate-400">Est. Lost Revenue</p>
+        </div>
+      </div>
+
+      {/* Summary cards */}
+      <div className="grid grid-cols-3 gap-3 mb-6 pb-6 border-b border-slate-700">
+        <div>
+          <p className="text-xs text-slate-400">Lost Opportunities</p>
+          <p className="text-2xl font-bold text-orange-400">
+            {summary.totalLostOpportunities}
+          </p>
+        </div>
+        <div>
+          <p className="text-xs text-slate-400">Est. Lost Orders</p>
+          <p className="text-2xl font-bold text-red-400">
+            {summary.totalEstimatedLostOrders}
+          </p>
+        </div>
+        <div>
+          <p className="text-xs text-slate-400">Avg Improvement Gap</p>
+          <p className="text-2xl font-bold text-amber-400">
+            {summary.averageImprovementGap.toFixed(1)}%
+          </p>
+        </div>
+      </div>
+
+      {/* Opportunities table */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="border-b border-slate-700">
+              <th className="text-left py-2 px-2 text-slate-400 font-semibold">
+                #
+              </th>
+              <th className="text-left py-2 px-2 text-slate-400 font-semibold">
+                Item
+              </th>
+              <th className="text-right py-2 px-2 text-slate-400 font-semibold">
+                Views
+              </th>
+              <th className="text-right py-2 px-2 text-slate-400 font-semibold">
+                Orders
+              </th>
+              <th className="text-right py-2 px-2 text-slate-400 font-semibold">
+                Conv %
+              </th>
+              <th className="text-right py-2 px-2 text-slate-400 font-semibold">
+                Benchmark %
+              </th>
+              <th className="text-right py-2 px-2 text-slate-400 font-semibold">
+                Lost Rev
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {opportunities.slice(0, 10).map(opp => (
+              <tr key={opp.itemId} className="border-b border-slate-700/50 hover:bg-slate-700/20">
+                <td className="py-2 px-2 text-slate-300 font-semibold">
+                  {opp.rank}
+                </td>
+                <td className="py-2 px-2">
+                  <div className="text-slate-200 font-medium">{opp.name}</div>
+                  <div className="text-slate-500 text-xs">{opp.category}</div>
+                </td>
+                <td className="py-2 px-2 text-right text-slate-300">
+                  {opp.views}
+                </td>
+                <td className="py-2 px-2 text-right text-cyan-400 font-semibold">
+                  {opp.orders}
+                </td>
+                <td className="py-2 px-2 text-right text-blue-400 font-semibold">
+                  {opp.viewConversion.toFixed(2)}%
+                </td>
+                <td className="py-2 px-2 text-right text-green-400 font-semibold">
+                  {opp.categoryBenchmark.toFixed(2)}%
+                </td>
+                <td className="py-2 px-2 text-right text-orange-400 font-bold">
+                  ${opp.estimatedLostRevenue.toFixed(0)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Details for top 3 */}
+      <div className="mt-6 pt-4 border-t border-slate-700">
+        <p className="text-sm font-semibold text-slate-300 mb-3">
+          Quick Wins (Top 3)
+        </p>
+        <div className="space-y-3">
+          {opportunities.slice(0, 3).map((opp, idx) => (
+            <div key={idx} className="p-3 rounded-lg bg-slate-700/30 border border-slate-700">
+              <div className="flex items-start justify-between mb-2">
+                <div>
+                  <p className="font-semibold text-slate-200">{opp.name}</p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    {opp.views} views → {opp.orders} orders | ${opp.estimatedLostRevenue.toFixed(0)} loss
+                  </p>
+                </div>
+                <span className="text-orange-400 font-bold">
+                  Gap: {opp.improvementGap.toFixed(1)}%
+                </span>
+              </div>
+              <div className="space-y-1">
+                {opp.suggestions.map((sugg, sIdx) => (
+                  <p key={sIdx} className="text-xs text-slate-300">
+                    • {sugg}
+                  </p>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

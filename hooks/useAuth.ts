@@ -18,9 +18,18 @@ export function useAuth() {
         const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
         const storedToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
 
-        if (storedUser && storedToken) {
+        const tokenIsValid =
+          storedToken && storedToken !== "undefined" && storedToken !== "null";
+
+        if (storedUser && tokenIsValid) {
           setUser(JSON.parse(storedUser));
           setIsAuthenticated(true);
+        } else if (storedUser || storedToken) {
+          localStorage.removeItem(STORAGE_KEYS.USER);
+          localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+          localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+          setUser(null);
+          setIsAuthenticated(false);
         }
       } catch (err) {
         console.error("Failed to load user:", err);
@@ -48,6 +57,9 @@ export function useAuth() {
       // response is {success, message, data: {user, accessToken, refreshToken}}
       if (response?.data && response?.data.user && response?.data.accessToken) {
         const { user, accessToken, refreshToken } = response.data;
+        if (!accessToken || !refreshToken) {
+          throw new Error("Invalid auth response from server");
+        }
         localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
         localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
         localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
@@ -81,6 +93,9 @@ export function useAuth() {
       // response is {success, message, data: {user, accessToken, refreshToken}}
       if (response?.data && response?.data.user && response?.data.accessToken) {
         const { user, accessToken, refreshToken } = response.data;
+        if (!accessToken || !refreshToken) {
+          throw new Error("Invalid auth response from server");
+        }
         localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
         localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
         localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);

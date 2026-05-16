@@ -15,11 +15,11 @@ export default function CachedImage({ src, alt, ...rest }: Props) {
   const [srcToUse, setSrcToUse] = useState<string>(src);
 
   useEffect(() => {
-    let mounted = true;
+    let cancelled = false;
     let objectUrl: string | null = null;
 
     async function load() {
-      if (!src) return;
+      if (!src || cancelled) return;
       // If it's already a data/blob or same-origin, use directly
       if (
         src.startsWith("data:") ||
@@ -27,17 +27,19 @@ export default function CachedImage({ src, alt, ...rest }: Props) {
         /^https?:\/\//i.test(src) === false
       ) {
         console.info(`[CachedImage] DIRECT SOURCE ${src}`);
-        setSrcToUse(src);
+        if (!cancelled) setSrcToUse(src);
         return;
       }
 
       try {
+        if (cancelled) return;
         const cached = await getCachedResponse(src);
+        if (cancelled) return;
         if (cached) {
           const blob = await cached.blob();
           objectUrl = URL.createObjectURL(blob);
           console.info(`[CachedImage] FRONTEND CACHE -> ${src}`);
-          if (mounted) setSrcToUse(objectUrl);
+          if (!cancelled) setSrcToUse(objectUrl);
           return;
         }
 
@@ -48,10 +50,11 @@ export default function CachedImage({ src, alt, ...rest }: Props) {
           "http://localhost:5000/api"
         ).replace(/\/$/, "");
         const resp = await fetchViaProxy(apiBase, src);
+        if (cancelled) return;
         if (!resp.ok) {
           // fallback to direct URL
           console.warn(`[CachedImage] PROXY FAILED -> DIRECT SOURCE ${src}`);
-          if (mounted) setSrcToUse(src);
+          if (!cancelled) setSrcToUse(src);
           return;
         }
 
@@ -60,19 +63,22 @@ export default function CachedImage({ src, alt, ...rest }: Props) {
         const cloned = resp.clone();
         // Store original URL as key in Cache Storage
         await putCachedResponse(src, cloned);
+        if (cancelled) return;
         const blob = await resp.blob();
         objectUrl = URL.createObjectURL(blob);
-        if (mounted) setSrcToUse(objectUrl);
+        if (!cancelled) setSrcToUse(objectUrl);
       } catch (err) {
-        console.warn("CachedImage load error", err);
-        setSrcToUse(src);
+        if (!cancelled) {
+          console.warn("CachedImage load error", err);
+          setSrcToUse(src);
+        }
       }
     }
 
     load();
 
     return () => {
-      mounted = false;
+      cancelled = true;
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
   }, [src]);

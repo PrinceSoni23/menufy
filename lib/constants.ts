@@ -59,6 +59,28 @@ export const API_ENDPOINTS = {
     `/analytics/restaurant/${restaurantId}/devices`,
   ANALYTICS_TRENDS: (restaurantId: string) =>
     `/analytics/restaurant/${restaurantId}/trends`,
+  ANALYTICS_COMPREHENSIVE: (restaurantId: string) =>
+    `/analytics/restaurant/${restaurantId}/comprehensive`,
+  ANALYTICS_SALES_HEATMAP: (restaurantId: string) =>
+    `/analytics/restaurant/${restaurantId}/sales-heatmap`,
+  ANALYTICS_CATEGORY_PERFORMANCE: (restaurantId: string) =>
+    `/analytics/restaurant/${restaurantId}/category-performance`,
+  ANALYTICS_REPEAT_PURCHASE_COHORTS: (restaurantId: string, days?: number) =>
+    `/analytics/restaurant/${restaurantId}/repeat-purchase-cohorts?days=${days || 30}`,
+  ANALYTICS_LOST_OPPORTUNITIES: (restaurantId: string, days?: number) =>
+    `/analytics/restaurant/${restaurantId}/lost-opportunities?days=${days || 30}`,
+  ANALYTICS_ENGAGEMENT_FUNNEL: (restaurantId: string) =>
+    `/analytics/restaurant/${restaurantId}/engagement-funnel`,
+  ANALYTICS_ITEM_POPULARITY: (restaurantId: string) =>
+    `/analytics/restaurant/${restaurantId}/item-popularity`,
+  ANALYTICS_AR_USAGE: (restaurantId: string) =>
+    `/analytics/restaurant/${restaurantId}/ar-usage`,
+  ANALYTICS_CART_ABANDONMENT: (restaurantId: string) =>
+    `/analytics/restaurant/${restaurantId}/cart-abandonment`,
+  ANALYTICS_SESSION_DURATION: (restaurantId: string) =>
+    `/analytics/restaurant/${restaurantId}/session-duration`,
+  ANALYTICS_SELECTION_PATTERNS: (restaurantId: string) =>
+    `/analytics/restaurant/${restaurantId}/selection-patterns`,
   ANALYTICS_TRACK: "/analytics/track",
 };
 

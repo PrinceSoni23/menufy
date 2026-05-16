@@ -201,12 +201,110 @@ export interface Analytics {
   _id: string;
   restaurantId: string;
   menuItemId?: string;
-  eventType: "scan" | "view" | "ar_view" | "share";
+  eventType:
+    | "scan"
+    | "view"
+    | "ar_view"
+    | "share"
+    | "add_to_cart"
+    | "remove_from_cart"
+    | "cart_abandoned";
   deviceType: "iOS" | "Android" | "Web";
   timestamp: string;
   sessionId: string;
   userAgent: string;
   ipAddress: string;
+}
+
+// Engagement Metrics - Item Popularity
+export interface ItemPopularityData {
+  items: Array<{
+    menuItemId: string;
+    menuItemName: string;
+    addToCartCount: number;
+    viewCount: number;
+    conversionRate: number; // views -> add to cart %
+  }>;
+  summary: {
+    totalAddToCart: number;
+    averageViewsPerItem: number;
+  };
+}
+
+// Engagement Metrics - Engagement Funnel
+export interface EngagementFunnelData {
+  funnel: Array<{
+    stage: "scan" | "view" | "add_to_cart";
+    count: number;
+    percentage: number;
+  }>;
+  summary: {
+    totalScans: number;
+    scanToViewConversion: number; // %
+    viewToAddConversion: number; // %
+    endToEndConversion: number; // scan to add %
+  };
+}
+
+// Engagement Metrics - AR Usage
+export interface ARUsageData {
+  usageStats: {
+    totalSessions: number;
+    sessionsUsingAR: number;
+    percentageUsingAR: number;
+    avgARViewsPerSession: number;
+  };
+  breakdown: Array<{
+    label: string;
+    value: number;
+    percentage: number;
+  }>;
+}
+
+// Engagement Metrics - Cart Abandonment
+export interface CartAbandonmentData {
+  abandonmentRate: number; // percentage
+  sessionStats: {
+    totalSessions: number;
+    sessionsWithCarts: number;
+    abandonedCarts: number;
+  };
+  trendData: Array<{
+    date: string;
+    abandonmentRate: number;
+  }>;
+}
+
+// Engagement Metrics - Session Duration
+export interface SessionDurationData {
+  summary: {
+    totalSessions: number;
+    avgDurationMin: number;
+    avgEventsPerSession: number;
+  };
+  segmentation: {
+    shortSessions: { count: number; percentage: number };
+    mediumSessions: { count: number; percentage: number };
+    longSessions: { count: number; percentage: number };
+  };
+  engagement: {
+    sessionsWithAR: number;
+    sessionsAddingToCart: number;
+  };
+}
+
+// Engagement Metrics - Selection Patterns
+export interface SelectionPatternsData {
+  patterns: Array<{
+    items: string[]; // item names/IDs
+    frequency: number;
+    percentage: number;
+  }>;
+  summary: {
+    totalCombinations: number;
+    mostCommonCombo: string[];
+    avgItemsPerCart: number;
+  };
 }
 
 export interface DashboardStats {
