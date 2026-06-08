@@ -65,6 +65,8 @@ export const API_ENDPOINTS = {
     `/analytics/restaurant/${restaurantId}/sales-heatmap`,
   ANALYTICS_CATEGORY_PERFORMANCE: (restaurantId: string) =>
     `/analytics/restaurant/${restaurantId}/category-performance`,
+  ANALYTICS_DASHBOARD: (restaurantId: string) =>
+    `/analytics/restaurant/${restaurantId}/dashboard`,
   ANALYTICS_REPEAT_PURCHASE_COHORTS: (restaurantId: string, days?: number) =>
     `/analytics/restaurant/${restaurantId}/repeat-purchase-cohorts?days=${days || 30}`,
   ANALYTICS_LOST_OPPORTUNITIES: (restaurantId: string, days?: number) =>

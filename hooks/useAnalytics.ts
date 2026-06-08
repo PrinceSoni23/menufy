@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { apiClient } from "@/lib/api-client";
 import { API_ENDPOINTS } from "@/lib/constants";
 import {
@@ -9,6 +9,11 @@ import {
   SessionDurationData,
   SelectionPatternsData,
 } from "@/lib/types";
+
+export type AnalyticsRange = "24h" | "7d" | "30d" | "all";
+
+const buildRangeQuery = (range: AnalyticsRange) =>
+  `range=${encodeURIComponent(range)}`;
 
 interface AnalyticsSummary {
   totalQRScans: number;
@@ -197,6 +202,24 @@ interface CategoryPerformanceData {
   }>;
 }
 
+interface DashboardAnalyticsData {
+  analytics: AnalyticsData;
+  itemPopularity: ItemPopularityData;
+  engagementFunnel: EngagementFunnelData;
+  arUsage: ARUsageData;
+  cartAbandonment: CartAbandonmentData;
+  sessionDuration: SessionDurationData;
+  selectionPatterns: SelectionPatternsData;
+  salesHeatmap: SalesHeatmapData;
+  categoryPerformance: CategoryPerformanceData;
+  meta: {
+    range: AnalyticsRange;
+    startDate: string;
+    endDate: string;
+    timezone: string;
+  };
+}
+
 export function useAnalytics() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -210,15 +233,32 @@ export function useAnalytics() {
     useState<CategoryPerformanceData | null>(null);
   const [categoryLoading, setCategoryLoading] = useState(false);
   const [categoryError, setCategoryError] = useState<string | null>(null);
+  const [dashboardAnalytics, setDashboardAnalytics] =
+    useState<DashboardAnalyticsData | null>(null);
+  const [dashboardLoading, setDashboardLoading] = useState(false);
+  const [dashboardError, setDashboardError] = useState<string | null>(null);
+  const requestIds = useRef({
+    dashboard: 0,
+    comprehensive: 0,
+    heatmap: 0,
+    category: 0,
+    itemPopularity: 0,
+    engagementFunnel: 0,
+    arUsage: 0,
+    cartAbandonment: 0,
+    sessionDuration: 0,
+    selectionPatterns: 0,
+  });
 
   const fetchComprehensiveAnalytics = useCallback(
-    async (restaurantId: string) => {
+    async (restaurantId: string, range: AnalyticsRange = "30d") => {
+      const requestId = ++requestIds.current.comprehensive;
       setLoading(true);
       setError(null);
 
       try {
         const response = await apiClient.get<any>(
-          API_ENDPOINTS.ANALYTICS_COMPREHENSIVE(restaurantId),
+          `${API_ENDPOINTS.ANALYTICS_COMPREHENSIVE(restaurantId)}?${buildRangeQuery(range)}`,
         );
 
         const payload =
@@ -226,9 +266,14 @@ export function useAnalytics() {
           response?.data?.data ||
           response?.data ||
           null;
-        setData(payload);
+        if (requestId === requestIds.current.comprehensive) {
+          setData(payload);
+        }
         return payload;
       } catch (err) {
+        if (requestId !== requestIds.current.comprehensive) {
+          return null;
+        }
         const message =
           err instanceof Error ? err.message : "Failed to fetch analytics";
         setError(message);
@@ -236,7 +281,56 @@ export function useAnalytics() {
         setData(null);
         return null;
       } finally {
-        setLoading(false);
+        if (requestId === requestIds.current.comprehensive) {
+          setLoading(false);
+        }
+      }
+    },
+    [],
+  );
+
+  const fetchDashboardAnalytics = useCallback(
+    async (
+      restaurantId: string,
+      range: AnalyticsRange = "30d",
+      timezone: string = "UTC",
+    ) => {
+      const requestId = ++requestIds.current.dashboard;
+      setDashboardLoading(true);
+      setDashboardError(null);
+
+      try {
+        const url = `${API_ENDPOINTS.ANALYTICS_DASHBOARD(restaurantId)}?${buildRangeQuery(range)}&timezone=${encodeURIComponent(timezone)}`;
+        console.log(`[Dashboard] Fetching from URL: ${url}`);
+
+        const response = await apiClient.get<any>(url);
+        console.log(`[Dashboard] Full response:`, response);
+        console.log(`[Dashboard] response.data:`, response?.data);
+        console.log(`[Dashboard] response.data.data:`, response?.data?.data);
+
+        const payload = response?.data?.data || response?.data || null;
+        console.log(`[Dashboard] Final payload to set:`, payload);
+
+        if (requestId === requestIds.current.dashboard) {
+          setDashboardAnalytics(payload);
+        }
+        return payload;
+      } catch (err) {
+        if (requestId !== requestIds.current.dashboard) {
+          return null;
+        }
+        const message =
+          err instanceof Error
+            ? err.message
+            : "Failed to fetch dashboard analytics";
+        setDashboardError(message);
+        console.error("Dashboard analytics error:", err);
+        setDashboardAnalytics(null);
+        return null;
+      } finally {
+        if (requestId === requestIds.current.dashboard) {
+          setDashboardLoading(false);
+        }
       }
     },
     [],
@@ -245,21 +339,27 @@ export function useAnalytics() {
   const fetchSalesHeatmap = useCallback(
     async (
       restaurantId: string,
-      days: number = 30,
+      range: AnalyticsRange = "30d",
       timezone: string = "UTC",
     ) => {
+      const requestId = ++requestIds.current.heatmap;
       setHeatmapLoading(true);
       setHeatmapError(null);
 
       try {
         const response = await apiClient.get<any>(
-          `${API_ENDPOINTS.ANALYTICS_SALES_HEATMAP(restaurantId)}?days=${days}&timezone=${encodeURIComponent(timezone)}`,
+          `${API_ENDPOINTS.ANALYTICS_SALES_HEATMAP(restaurantId)}?${buildRangeQuery(range)}&timezone=${encodeURIComponent(timezone)}`,
         );
 
         const payload = response?.data?.data || response?.data || null;
-        setSalesHeatmap(payload);
+        if (requestId === requestIds.current.heatmap) {
+          setSalesHeatmap(payload);
+        }
         return payload;
       } catch (err) {
+        if (requestId !== requestIds.current.heatmap) {
+          return null;
+        }
         const message =
           err instanceof Error ? err.message : "Failed to fetch sales heatmap";
         setHeatmapError(message);
@@ -267,26 +367,34 @@ export function useAnalytics() {
         setSalesHeatmap(null);
         return null;
       } finally {
-        setHeatmapLoading(false);
+        if (requestId === requestIds.current.heatmap) {
+          setHeatmapLoading(false);
+        }
       }
     },
     [],
   );
 
   const fetchCategoryPerformance = useCallback(
-    async (restaurantId: string, days: number = 30) => {
+    async (restaurantId: string, range: AnalyticsRange = "30d") => {
+      const requestId = ++requestIds.current.category;
       setCategoryLoading(true);
       setCategoryError(null);
 
       try {
         const response = await apiClient.get<any>(
-          `${API_ENDPOINTS.ANALYTICS_CATEGORY_PERFORMANCE(restaurantId)}?days=${days}`,
+          `${API_ENDPOINTS.ANALYTICS_CATEGORY_PERFORMANCE(restaurantId)}?${buildRangeQuery(range)}`,
         );
 
         const payload = response?.data?.data || response?.data || null;
-        setCategoryPerformance(payload);
+        if (requestId === requestIds.current.category) {
+          setCategoryPerformance(payload);
+        }
         return payload;
       } catch (err) {
+        if (requestId !== requestIds.current.category) {
+          return null;
+        }
         const message =
           err instanceof Error
             ? err.message
@@ -296,7 +404,9 @@ export function useAnalytics() {
         setCategoryPerformance(null);
         return null;
       } finally {
-        setCategoryLoading(false);
+        if (requestId === requestIds.current.category) {
+          setCategoryLoading(false);
+        }
       }
     },
     [],
@@ -349,19 +459,25 @@ export function useAnalytics() {
   >(null);
 
   const fetchItemPopularity = useCallback(
-    async (restaurantId: string, days: number = 30) => {
+    async (restaurantId: string, range: AnalyticsRange = "30d") => {
+      const requestId = ++requestIds.current.itemPopularity;
       setItemPopularityLoading(true);
       setItemPopularityError(null);
 
       try {
         const response = await apiClient.get<any>(
-          `${API_ENDPOINTS.ANALYTICS_ITEM_POPULARITY(restaurantId)}?days=${days}`,
+          `${API_ENDPOINTS.ANALYTICS_ITEM_POPULARITY(restaurantId)}?${buildRangeQuery(range)}`,
         );
 
         const payload = response?.data || null;
-        setItemPopularity(payload);
+        if (requestId === requestIds.current.itemPopularity) {
+          setItemPopularity(payload);
+        }
         return payload;
       } catch (err) {
+        if (requestId !== requestIds.current.itemPopularity) {
+          return null;
+        }
         const message =
           err instanceof Error
             ? err.message
@@ -371,26 +487,34 @@ export function useAnalytics() {
         setItemPopularity(null);
         return null;
       } finally {
-        setItemPopularityLoading(false);
+        if (requestId === requestIds.current.itemPopularity) {
+          setItemPopularityLoading(false);
+        }
       }
     },
     [],
   );
 
   const fetchEngagementFunnel = useCallback(
-    async (restaurantId: string, days: number = 30) => {
+    async (restaurantId: string, range: AnalyticsRange = "30d") => {
+      const requestId = ++requestIds.current.engagementFunnel;
       setEngagementFunnelLoading(true);
       setEngagementFunnelError(null);
 
       try {
         const response = await apiClient.get<any>(
-          `${API_ENDPOINTS.ANALYTICS_ENGAGEMENT_FUNNEL(restaurantId)}?days=${days}`,
+          `${API_ENDPOINTS.ANALYTICS_ENGAGEMENT_FUNNEL(restaurantId)}?${buildRangeQuery(range)}`,
         );
 
         const payload = response?.data || null;
-        setEngagementFunnel(payload);
+        if (requestId === requestIds.current.engagementFunnel) {
+          setEngagementFunnel(payload);
+        }
         return payload;
       } catch (err) {
+        if (requestId !== requestIds.current.engagementFunnel) {
+          return null;
+        }
         const message =
           err instanceof Error
             ? err.message
@@ -400,26 +524,34 @@ export function useAnalytics() {
         setEngagementFunnel(null);
         return null;
       } finally {
-        setEngagementFunnelLoading(false);
+        if (requestId === requestIds.current.engagementFunnel) {
+          setEngagementFunnelLoading(false);
+        }
       }
     },
     [],
   );
 
   const fetchARUsage = useCallback(
-    async (restaurantId: string, days: number = 30) => {
+    async (restaurantId: string, range: AnalyticsRange = "30d") => {
+      const requestId = ++requestIds.current.arUsage;
       setARUsageLoading(true);
       setARUsageError(null);
 
       try {
         const response = await apiClient.get<any>(
-          `${API_ENDPOINTS.ANALYTICS_AR_USAGE(restaurantId)}?days=${days}`,
+          `${API_ENDPOINTS.ANALYTICS_AR_USAGE(restaurantId)}?${buildRangeQuery(range)}`,
         );
 
         const payload = response?.data || null;
-        setARUsage(payload);
+        if (requestId === requestIds.current.arUsage) {
+          setARUsage(payload);
+        }
         return payload;
       } catch (err) {
+        if (requestId !== requestIds.current.arUsage) {
+          return null;
+        }
         const message =
           err instanceof Error ? err.message : "Failed to fetch AR usage";
         setARUsageError(message);
@@ -427,26 +559,34 @@ export function useAnalytics() {
         setARUsage(null);
         return null;
       } finally {
-        setARUsageLoading(false);
+        if (requestId === requestIds.current.arUsage) {
+          setARUsageLoading(false);
+        }
       }
     },
     [],
   );
 
   const fetchCartAbandonment = useCallback(
-    async (restaurantId: string, days: number = 30) => {
+    async (restaurantId: string, range: AnalyticsRange = "30d") => {
+      const requestId = ++requestIds.current.cartAbandonment;
       setCartAbandonmentLoading(true);
       setCartAbandonmentError(null);
 
       try {
         const response = await apiClient.get<any>(
-          `${API_ENDPOINTS.ANALYTICS_CART_ABANDONMENT(restaurantId)}?days=${days}`,
+          `${API_ENDPOINTS.ANALYTICS_CART_ABANDONMENT(restaurantId)}?${buildRangeQuery(range)}`,
         );
 
         const payload = response?.data || null;
-        setCartAbandonment(payload);
+        if (requestId === requestIds.current.cartAbandonment) {
+          setCartAbandonment(payload);
+        }
         return payload;
       } catch (err) {
+        if (requestId !== requestIds.current.cartAbandonment) {
+          return null;
+        }
         const message =
           err instanceof Error
             ? err.message
@@ -456,26 +596,34 @@ export function useAnalytics() {
         setCartAbandonment(null);
         return null;
       } finally {
-        setCartAbandonmentLoading(false);
+        if (requestId === requestIds.current.cartAbandonment) {
+          setCartAbandonmentLoading(false);
+        }
       }
     },
     [],
   );
 
   const fetchSessionDuration = useCallback(
-    async (restaurantId: string, days: number = 30) => {
+    async (restaurantId: string, range: AnalyticsRange = "30d") => {
+      const requestId = ++requestIds.current.sessionDuration;
       setSessionDurationLoading(true);
       setSessionDurationError(null);
 
       try {
         const response = await apiClient.get<any>(
-          `${API_ENDPOINTS.ANALYTICS_SESSION_DURATION(restaurantId)}?days=${days}`,
+          `${API_ENDPOINTS.ANALYTICS_SESSION_DURATION(restaurantId)}?${buildRangeQuery(range)}`,
         );
 
         const payload = response?.data || null;
-        setSessionDuration(payload);
+        if (requestId === requestIds.current.sessionDuration) {
+          setSessionDuration(payload);
+        }
         return payload;
       } catch (err) {
+        if (requestId !== requestIds.current.sessionDuration) {
+          return null;
+        }
         const message =
           err instanceof Error
             ? err.message
@@ -485,26 +633,34 @@ export function useAnalytics() {
         setSessionDuration(null);
         return null;
       } finally {
-        setSessionDurationLoading(false);
+        if (requestId === requestIds.current.sessionDuration) {
+          setSessionDurationLoading(false);
+        }
       }
     },
     [],
   );
 
   const fetchSelectionPatterns = useCallback(
-    async (restaurantId: string, days: number = 30) => {
+    async (restaurantId: string, range: AnalyticsRange = "30d") => {
+      const requestId = ++requestIds.current.selectionPatterns;
       setSelectionPatternsLoading(true);
       setSelectionPatternsError(null);
 
       try {
         const response = await apiClient.get<any>(
-          `${API_ENDPOINTS.ANALYTICS_SELECTION_PATTERNS(restaurantId)}?days=${days}`,
+          `${API_ENDPOINTS.ANALYTICS_SELECTION_PATTERNS(restaurantId)}?${buildRangeQuery(range)}`,
         );
 
         const payload = response?.data || null;
-        setSelectionPatterns(payload);
+        if (requestId === requestIds.current.selectionPatterns) {
+          setSelectionPatterns(payload);
+        }
         return payload;
       } catch (err) {
+        if (requestId !== requestIds.current.selectionPatterns) {
+          return null;
+        }
         const message =
           err instanceof Error
             ? err.message
@@ -514,13 +670,20 @@ export function useAnalytics() {
         setSelectionPatterns(null);
         return null;
       } finally {
-        setSelectionPatternsLoading(false);
+        if (requestId === requestIds.current.selectionPatterns) {
+          setSelectionPatternsLoading(false);
+        }
       }
     },
     [],
   );
 
   return {
+    dashboardAnalytics,
+    dashboardLoading,
+    dashboardError,
+    fetchDashboardAnalytics,
+
     data,
     loading,
     error,

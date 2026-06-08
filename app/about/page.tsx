@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import {
   motion,
   useMotionTemplate,
@@ -13,7 +14,14 @@ import {
 } from "framer-motion";
 import { Header } from "@/components/common/Header";
 import { Footer } from "@/components/common/Footer";
-import { FloatingDishBackground } from "@/components/3d/FloatingDishBackground";
+
+const FloatingDishBackground = dynamic(
+  () =>
+    import("@/components/3d/FloatingDishBackground").then(
+      mod => mod.FloatingDishBackground,
+    ),
+  { ssr: false },
+);
 
 const heroHighlights = [
   {

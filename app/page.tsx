@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import {
   motion,
   useMotionTemplate,
@@ -12,8 +13,27 @@ import {
 } from "framer-motion";
 import { Header } from "@/components/common/Header";
 import { Footer } from "@/components/common/Footer";
-import { FloatingDishBackground } from "../components/3d/FloatingDishBackground";
-import { InteractivePizza } from "@/components/3d/InteractivePizza";
+
+const FloatingDishBackground = dynamic(
+  () =>
+    import("@/components/3d/FloatingDishBackground").then(
+      mod => mod.FloatingDishBackground,
+    ),
+  { ssr: false },
+);
+
+const InteractivePizza = dynamic(
+  () =>
+    import("@/components/3d/InteractivePizza").then(
+      mod => mod.InteractivePizza,
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-full min-h-110 rounded-[2rem] border border-white/70 bg-white/35 backdrop-blur-xl animate-pulse" />
+    ),
+  },
+);
 
 const features = [
   {

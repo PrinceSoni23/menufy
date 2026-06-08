@@ -58,17 +58,17 @@ export const ToastItem = ({
   };
 
   const colors = {
-    success: "bg-green-900/20 border-green-600/70 text-green-200",
-    error: "bg-red-900/20 border-red-600/70 text-red-200",
-    warning: "bg-yellow-900/20 border-yellow-600/70 text-yellow-200",
-    info: "bg-teal-900/20 border-teal-600/70 text-teal-200",
+    success: "bg-emerald-50 border-emerald-200 text-emerald-700",
+    error: "bg-rose-50 border-rose-200 text-rose-700",
+    warning: "bg-amber-50 border-amber-200 text-amber-700",
+    info: "bg-sky-50 border-sky-200 text-sky-700",
   };
 
   const iconColors = {
-    success: "text-green-400",
-    error: "text-red-400",
-    warning: "text-yellow-400",
-    info: "text-blue-400",
+    success: "text-emerald-500",
+    error: "text-rose-500",
+    warning: "text-amber-500",
+    info: "text-sky-500",
   };
 
   return (
@@ -113,4 +113,3 @@ export const ToastContainer = () => {
     </div>
   );
 };
-

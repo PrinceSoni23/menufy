@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useGLTF, OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { motion } from "framer-motion";
@@ -14,10 +14,31 @@ const INGREDIENTS = [
   { name: "San Marzano Tomato", icon: "🍞", color: "#DC2626" },
 ];
 
-function PizzaScene() {
+function PizzaScene({ onReady }: { onReady: () => void }) {
   const { scene: pizzaScene } = useGLTF("/pizza+3d+model.glb");
   const groupRef = useRef<THREE.Group>(null);
   const [isHovered, setIsHovered] = useState(false);
+
+  const normalizedScene = useMemo(() => {
+    const cloned = pizzaScene.clone(true);
+    const box = new THREE.Box3().setFromObject(cloned);
+    const size = new THREE.Vector3();
+    const center = new THREE.Vector3();
+
+    box.getSize(size);
+    box.getCenter(center);
+
+    cloned.position.sub(center);
+
+    const maxDim = Math.max(size.x, size.y, size.z) || 1;
+    cloned.scale.setScalar(2.6 / maxDim);
+
+    return cloned;
+  }, [pizzaScene]);
+
+  useEffect(() => {
+    onReady();
+  }, [onReady]);
 
   useFrame(() => {
     if (groupRef.current && !isHovered) {
@@ -30,11 +51,10 @@ function PizzaScene() {
       ref={groupRef}
       onPointerEnter={() => setIsHovered(true)}
       onPointerLeave={() => setIsHovered(false)}
-      scale={5.5}
-      position={[0, 0, 0]}
+      position={[0, -0.1, 0]}
       rotation={[0, Math.PI, 0]}
     >
-      <primitive object={pizzaScene} />
+      <primitive object={normalizedScene} />
     </group>
   );
 }
@@ -150,7 +170,6 @@ export function InteractivePizza() {
             }
           }
 
-          setIsLoading(false);
         }}
         className="w-full h-full absolute inset-0 z-10"
         gl={{
@@ -182,10 +201,12 @@ export function InteractivePizza() {
         <pointLight position={[-5, 5, 5]} intensity={1.2} color="#00F0FF" />
         <pointLight position={[0, -3, 8]} intensity={0.6} color="#FF4500" />
 
-        <PizzaScene />
+        <Suspense fallback={null}>
+          <PizzaScene onReady={() => setIsLoading(false)} />
+        </Suspense>
 
         <OrbitControls
-          enableZoom={false}
+          enableZoom={true}
           enablePan={false}
           autoRotate={true}
           autoRotateSpeed={3}
@@ -249,7 +270,7 @@ export function InteractivePizza() {
                   <p className="text-xs font-semibold text-[#555842] group-hover:text-orange-600 transition-colors duration-300">
                     {ingredient.name}
                   </p>
-                  <div className="h-0.5 bg-gradient-to-r from-orange-500/0 via-orange-500/40 to-orange-500/0 mt-1 w-full" />
+                  <div className="h-0.5 bg-linear-to-r from-orange-500/0 via-orange-500/40 to-orange-500/0 mt-1 w-full" />
                 </motion.div>
 
                 <motion.div

@@ -89,20 +89,20 @@ export const ConfirmDialog = () => {
   if (!state.isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="glass-panel rounded-2xl shadow-lg max-w-sm mx-4 overflow-hidden border border-slate-700">
-        <div className="flex items-center gap-3 p-6 border-b border-slate-700">
+    <div className="fixed inset-0 bg-slate-200/70 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="glass-panel rounded-2xl shadow-lg max-w-sm mx-4 overflow-hidden border border-slate-200">
+        <div className="flex items-center gap-3 p-6 border-b border-slate-200">
           {state.options.isDangerous && (
             <AlertTriangle className="w-5 h-5 text-red-600" />
           )}
-          <h2 className="text-lg font-bold text-slate-100 font-serif italic">
+          <h2 className="text-lg font-bold text-slate-900 font-serif italic">
             {state.options.title}
           </h2>
         </div>
 
-        <p className="px-6 py-4 text-slate-300">{state.options.message}</p>
+        <p className="px-6 py-4 text-slate-600">{state.options.message}</p>
 
-        <div className="flex gap-3 justify-end px-6 py-4 border-t border-slate-700">
+        <div className="flex gap-3 justify-end px-6 py-4 border-t border-slate-200">
           <button
             onClick={handleCancel}
             disabled={state.isLoading}
@@ -128,4 +128,3 @@ export const ConfirmDialog = () => {
     </div>
   );
 };
-

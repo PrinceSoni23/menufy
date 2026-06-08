@@ -24,6 +24,9 @@ const colorClasses = {
   pink: "text-pink-400 shadow-pink-500/20",
 };
 
+const baseCardClass =
+  "rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_20px_50px_rgba(148,163,184,0.18)]";
+
 export function MetricCard({
   title,
   value,
@@ -33,10 +36,12 @@ export function MetricCard({
   color = "cyan",
 }: MetricCardProps) {
   return (
-    <div className={`card hover:shadow-lg hover:shadow-${color}-500/20`}>
+    <div
+      className={`${baseCardClass} hover:shadow-lg hover:shadow-${color}-500/20`}
+    >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-slate-400 text-sm mb-2">{title}</p>
+          <p className="text-slate-500 text-sm mb-2">{title}</p>
           <p className={`text-4xl font-bold ${colorClasses[color]}`}>{value}</p>
           {subtitle && (
             <p className="text-xs text-slate-500 mt-2">{subtitle}</p>
@@ -86,18 +91,18 @@ export function SimpleBarChart({
   };
 
   return (
-    <div className="card">
-      <h3 className="text-lg font-semibold text-slate-200 mb-6">{title}</h3>
+    <div className={baseCardClass}>
+      <h3 className="text-lg font-semibold text-slate-900 mb-6">{title}</h3>
       <div className="space-y-4">
         {data.map((item, idx) => (
           <div key={idx}>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-slate-400">{item.label}</span>
-              <span className="text-sm font-semibold text-slate-200">
+              <span className="text-sm text-slate-500">{item.label}</span>
+              <span className="text-sm font-semibold text-slate-800">
                 {item.value}
               </span>
             </div>
-            <div className="w-full bg-slate-700/30 rounded h-2 overflow-hidden">
+            <div className="w-full bg-slate-200 rounded h-2 overflow-hidden">
               <div
                 className={`${colorMap[color]} h-full transition-all duration-300`}
                 style={{ width: `${(item.value / max) * 100}%` }}
@@ -134,8 +139,8 @@ export function SimpleLineChart({ data, title }: LineChartProps) {
     .join(" ");
 
   return (
-    <div className="card">
-      <h3 className="text-lg font-semibold text-slate-200 mb-6">{title}</h3>
+    <div className={baseCardClass}>
+      <h3 className="text-lg font-semibold text-slate-900 mb-6">{title}</h3>
       <svg
         viewBox="0 0 100 60"
         className="w-full h-64 mb-4"
@@ -149,7 +154,7 @@ export function SimpleLineChart({ data, title }: LineChartProps) {
             y1={y}
             x2="100"
             y2={y}
-            stroke="rgba(148, 163, 184, 0.1)"
+            stroke="rgba(148, 163, 184, 0.3)"
             strokeWidth="0.5"
           />
         ))}
@@ -194,9 +199,9 @@ export function SimpleLineChart({ data, title }: LineChartProps) {
       {/* Legend */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 text-xs">
         {data.map((d, i) => (
-          <div key={i} className="text-slate-400">
-            <div className="text-slate-300 font-medium">{d.label}</div>
-            <div className="text-cyan-400">{d.value}</div>
+          <div key={i} className="text-slate-500">
+            <div className="text-slate-700 font-medium">{d.label}</div>
+            <div className="text-cyan-600">{d.value}</div>
           </div>
         ))}
       </div>
@@ -249,8 +254,8 @@ export function DoughnutChart({ data, title }: DoughnutChartProps) {
   });
 
   return (
-    <div className="card">
-      <h3 className="text-lg font-semibold text-slate-200 mb-6">{title}</h3>
+    <div className={baseCardClass}>
+      <h3 className="text-lg font-semibold text-slate-900 mb-6">{title}</h3>
       <div className="flex flex-col md:flex-row items-center gap-8">
         <svg viewBox="0 0 100 100" className="w-40 h-40 shrink-0">
           {segments.map((seg, idx) => (
@@ -262,7 +267,7 @@ export function DoughnutChart({ data, title }: DoughnutChartProps) {
               className="hover:opacity-100 transition-opacity"
             />
           ))}
-          <circle cx="50" cy="50" r="25" fill="rgb(15, 23, 42)" />
+          <circle cx="50" cy="50" r="25" fill="rgb(255, 255, 255)" />
         </svg>
 
         <div className="flex-1 space-y-2">
@@ -273,10 +278,10 @@ export function DoughnutChart({ data, title }: DoughnutChartProps) {
                   className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: seg.color }}
                 />
-                <span className="text-sm text-slate-400">{seg.label}</span>
+                <span className="text-sm text-slate-600">{seg.label}</span>
               </div>
               <div className="text-right">
-                <div className="text-sm font-semibold text-slate-200">
+                <div className="text-sm font-semibold text-slate-800">
                   {seg.value}
                 </div>
                 <div className="text-xs text-slate-500">
@@ -318,14 +323,14 @@ export function ItemPopularityChart({ data, title }: ItemPopularityChartProps) {
   const maxCount = Math.max(...top10.map(i => i.addToCartCount), 1);
 
   return (
-    <div className="card">
-      <h3 className="text-lg font-semibold text-slate-200 mb-6">{title}</h3>
+    <div className={baseCardClass}>
+      <h3 className="text-lg font-semibold text-slate-900 mb-6">{title}</h3>
       <div className="space-y-3 mb-6">
         {top10.map((item, idx) => (
           <div key={idx}>
             <div className="flex justify-between items-center mb-2">
               <div>
-                <p className="text-sm font-medium text-slate-200">
+                <p className="text-sm font-medium text-slate-800">
                   {idx + 1}. {item.menuItemName}
                 </p>
                 <p className="text-xs text-slate-500">
@@ -333,11 +338,11 @@ export function ItemPopularityChart({ data, title }: ItemPopularityChartProps) {
                   conversion
                 </p>
               </div>
-              <span className="text-cyan-400 font-semibold">
+              <span className="text-cyan-600 font-semibold">
                 {item.addToCartCount}
               </span>
             </div>
-            <div className="w-full bg-slate-700/30 rounded h-2 overflow-hidden">
+            <div className="w-full bg-slate-200 rounded h-2 overflow-hidden">
               <div
                 className="bg-cyan-500 h-full transition-all duration-300"
                 style={{
@@ -348,17 +353,17 @@ export function ItemPopularityChart({ data, title }: ItemPopularityChartProps) {
           </div>
         ))}
       </div>
-      <div className="pt-4 border-t border-slate-700">
+      <div className="pt-4 border-t border-slate-200">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-xs text-slate-400">Total Add-to-Cart</p>
-            <p className="text-2xl font-bold text-cyan-400">
+            <p className="text-xs text-slate-500">Total Add-to-Cart</p>
+            <p className="text-2xl font-bold text-cyan-600">
               {data.summary.totalAddToCart}
             </p>
           </div>
           <div>
-            <p className="text-xs text-slate-400">Avg Views per Item</p>
-            <p className="text-2xl font-bold text-blue-400">
+            <p className="text-xs text-slate-500">Avg Views per Item</p>
+            <p className="text-2xl font-bold text-purple-600">
               {data.summary.averageViewsPerItem.toFixed(1)}
             </p>
           </div>
@@ -399,17 +404,17 @@ export function EngagementFunnelChart({
   };
 
   return (
-    <div className="card">
-      <h3 className="text-lg font-semibold text-slate-200 mb-6">{title}</h3>
+    <div className={baseCardClass}>
+      <h3 className="text-lg font-semibold text-slate-900 mb-6">{title}</h3>
       <div className="space-y-4 mb-6">
         {data.funnel.map((stage, idx) => (
           <div key={idx}>
             <div className="flex justify-between items-baseline mb-2">
-              <p className="text-sm font-medium text-slate-200">
+              <p className="text-sm font-medium text-slate-800">
                 {stageLabels[stage.stage] || stage.stage}
               </p>
               <div className="text-right">
-                <span className="text-lg font-bold text-slate-100">
+                <span className="text-lg font-bold text-slate-900">
                   {stage.count}
                 </span>
                 <span className="text-xs text-slate-500 ml-2">
@@ -417,7 +422,7 @@ export function EngagementFunnelChart({
                 </span>
               </div>
             </div>
-            <div className="w-full bg-slate-700/30 rounded h-3 overflow-hidden">
+            <div className="w-full bg-slate-200 rounded h-3 overflow-hidden">
               <div
                 className="bg-cyan-500 h-full transition-all duration-300"
                 style={{
@@ -428,24 +433,24 @@ export function EngagementFunnelChart({
           </div>
         ))}
       </div>
-      <div className="pt-4 border-t border-slate-700 space-y-3">
+      <div className="pt-4 border-t border-slate-200 space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <p className="text-xs text-slate-400">Scan→View</p>
-            <p className="text-xl font-bold text-cyan-400">
+            <p className="text-xs text-slate-500">Scan→View</p>
+            <p className="text-xl font-bold text-cyan-600">
               {data.summary.scanToViewConversion.toFixed(1)}%
             </p>
           </div>
           <div>
-            <p className="text-xs text-slate-400">View→Add Cart</p>
-            <p className="text-xl font-bold text-blue-400">
+            <p className="text-xs text-slate-500">View→Add Cart</p>
+            <p className="text-xl font-bold text-blue-600">
               {data.summary.viewToAddConversion.toFixed(1)}%
             </p>
           </div>
         </div>
         <div>
-          <p className="text-xs text-slate-400">End-to-End Conversion</p>
-          <p className="text-2xl font-bold text-purple-400">
+          <p className="text-xs text-slate-500">End-to-End Conversion</p>
+          <p className="text-2xl font-bold text-purple-600">
             {data.summary.endToEndConversion.toFixed(1)}%
           </p>
         </div>
@@ -514,8 +519,8 @@ export function ARUsageChart({ data, title }: ARUsageChartProps) {
   });
 
   return (
-    <div className="card">
-      <h3 className="text-lg font-semibold text-slate-200 mb-6">{title}</h3>
+    <div className={baseCardClass}>
+      <h3 className="text-lg font-semibold text-slate-900 mb-6">{title}</h3>
       <div className="flex flex-col md:flex-row items-center gap-8">
         <svg viewBox="0 0 100 100" className="w-40 h-40 shrink-0">
           {segments.map((seg, idx) => (
@@ -527,13 +532,13 @@ export function ARUsageChart({ data, title }: ARUsageChartProps) {
               className="hover:opacity-100 transition-opacity"
             />
           ))}
-          <circle cx="50" cy="50" r="25" fill="rgb(15, 23, 42)" />
+          <circle cx="50" cy="50" r="25" fill="rgb(255, 255, 255)" />
         </svg>
 
         <div className="flex-1">
-          <div className="mb-6 p-4 rounded-lg bg-slate-700/30">
-            <p className="text-xs text-slate-400">AR Adoption Rate</p>
-            <p className="text-3xl font-bold text-cyan-400">
+          <div className="mb-6 p-4 rounded-lg bg-slate-100">
+            <p className="text-xs text-slate-500">AR Adoption Rate</p>
+            <p className="text-3xl font-bold text-cyan-600">
               {stats.percentageUsingAR.toFixed(1)}%
             </p>
             <p className="text-xs text-slate-500 mt-2">
@@ -548,10 +553,10 @@ export function ARUsageChart({ data, title }: ARUsageChartProps) {
                     className="w-3 h-3 rounded-full"
                     style={{ backgroundColor: seg.color }}
                   />
-                  <span className="text-sm text-slate-400">{seg.label}</span>
+                  <span className="text-sm text-slate-600">{seg.label}</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-sm font-semibold text-slate-200">
+                  <span className="text-sm font-semibold text-slate-800">
                     {seg.value}
                   </span>
                   <span className="text-xs text-slate-500 ml-2">
@@ -561,9 +566,9 @@ export function ARUsageChart({ data, title }: ARUsageChartProps) {
               </div>
             ))}
           </div>
-          <div className="mt-4 pt-4 border-t border-slate-700">
-            <p className="text-xs text-slate-400">Avg AR Views per Session</p>
-            <p className="text-2xl font-bold text-blue-400">
+          <div className="mt-4 pt-4 border-t border-slate-200">
+            <p className="text-xs text-slate-500">Avg AR Views per Session</p>
+            <p className="text-2xl font-bold text-blue-600">
               {stats.avgARViewsPerSession.toFixed(2)}
             </p>
           </div>
@@ -599,20 +604,20 @@ export function CartAbandonmentChart({
   const completedRate = 100 - abandonmentRate;
 
   return (
-    <div className="card">
-      <h3 className="text-lg font-semibold text-slate-200 mb-6">{title}</h3>
+    <div className={baseCardClass}>
+      <h3 className="text-lg font-semibold text-slate-900 mb-6">{title}</h3>
 
-      <div className="mb-8 p-6 rounded-lg bg-slate-700/20 border border-slate-700">
+      <div className="mb-8 p-6 rounded-lg bg-slate-100 border border-slate-200">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-sm text-slate-400">Abandonment Rate</p>
-            <p className="text-4xl font-bold text-orange-400">
+            <p className="text-sm text-slate-500">Abandonment Rate</p>
+            <p className="text-4xl font-bold text-orange-500">
               {abandonmentRate.toFixed(1)}%
             </p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-slate-400">Completed Rate</p>
-            <p className="text-4xl font-bold text-green-400">
+            <p className="text-sm text-slate-500">Completed Rate</p>
+            <p className="text-4xl font-bold text-green-600">
               {completedRate.toFixed(1)}%
             </p>
           </div>
@@ -620,7 +625,7 @@ export function CartAbandonmentChart({
 
         {/* Progress bar */}
         <div className="flex items-center gap-2">
-          <div className="flex-1 bg-slate-700/30 rounded-full h-3 overflow-hidden">
+          <div className="flex-1 bg-slate-200 rounded-full h-3 overflow-hidden">
             <div
               className="bg-linear-to-r from-green-500 to-orange-500 h-full"
               style={{ width: `${completedRate}%` }}
@@ -630,22 +635,22 @@ export function CartAbandonmentChart({
       </div>
 
       {/* Stats grid */}
-      <div className="grid grid-cols-3 gap-4 mb-6 pb-6 border-b border-slate-700">
+      <div className="grid grid-cols-3 gap-4 mb-6 pb-6 border-b border-slate-200">
         <div>
-          <p className="text-xs text-slate-400">Total Sessions</p>
-          <p className="text-2xl font-bold text-slate-200">
+          <p className="text-xs text-slate-500">Total Sessions</p>
+          <p className="text-2xl font-bold text-slate-800">
             {sessionStats.totalSessions}
           </p>
         </div>
         <div>
-          <p className="text-xs text-slate-400">Carts Created</p>
-          <p className="text-2xl font-bold text-cyan-400">
+          <p className="text-xs text-slate-500">Carts Created</p>
+          <p className="text-2xl font-bold text-cyan-600">
             {sessionStats.sessionsWithCarts}
           </p>
         </div>
         <div>
-          <p className="text-xs text-slate-400">Abandoned</p>
-          <p className="text-2xl font-bold text-orange-400">
+          <p className="text-xs text-slate-500">Abandoned</p>
+          <p className="text-2xl font-bold text-orange-500">
             {sessionStats.abandonedCarts}
           </p>
         </div>
@@ -654,19 +659,19 @@ export function CartAbandonmentChart({
       {/* Trend */}
       {data.trendData && data.trendData.length > 0 && (
         <div>
-          <p className="text-sm font-semibold text-slate-300 mb-3">
+          <p className="text-sm font-semibold text-slate-700 mb-3">
             Trend (Last 7 days)
           </p>
           <div className="grid grid-cols-7 gap-2">
             {data.trendData.slice(-7).map((day, idx) => (
               <div key={idx} className="text-center">
-                <div className="bg-slate-700/30 rounded p-2 mb-1">
+                <div className="bg-slate-100 rounded p-2 mb-1">
                   <p className="text-xs text-slate-500">
                     {new Date(day.date).toLocaleDateString("en-US", {
                       weekday: "short",
                     })}
                   </p>
-                  <p className="text-sm font-bold text-orange-400">
+                  <p className="text-sm font-bold text-orange-500">
                     {day.abandonmentRate.toFixed(0)}%
                   </p>
                 </div>
@@ -729,13 +734,13 @@ export function SessionDurationChart({
   ];
 
   return (
-    <div className="card">
-      <h3 className="text-lg font-semibold text-slate-200 mb-6">{title}</h3>
+    <div className={baseCardClass}>
+      <h3 className="text-lg font-semibold text-slate-900 mb-6">{title}</h3>
 
       {/* Main metric */}
-      <div className="mb-8 p-6 rounded-lg bg-slate-700/20 border border-slate-700">
-        <p className="text-sm text-slate-400 mb-1">Average Session Duration</p>
-        <p className="text-4xl font-bold text-cyan-400">
+      <div className="mb-8 p-6 rounded-lg bg-slate-100 border border-slate-200">
+        <p className="text-sm text-slate-500 mb-1">Average Session Duration</p>
+        <p className="text-4xl font-bold text-cyan-600">
           {summary.avgDurationMin.toFixed(2)} min
         </p>
         <p className="text-xs text-slate-500 mt-2">
@@ -744,23 +749,23 @@ export function SessionDurationChart({
       </div>
 
       {/* Duration segments */}
-      <div className="mb-6 pb-6 border-b border-slate-700">
-        <p className="text-sm font-semibold text-slate-300 mb-4">
+      <div className="mb-6 pb-6 border-b border-slate-200">
+        <p className="text-sm font-semibold text-slate-700 mb-4">
           Session Duration Segments
         </p>
         <div className="space-y-3">
           {segmentData.map((segment, idx) => (
             <div key={idx}>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-slate-400">{segment.label}</span>
-                <span className="text-sm font-semibold text-slate-200">
+                <span className="text-sm text-slate-500">{segment.label}</span>
+                <span className="text-sm font-semibold text-slate-800">
                   {segment.count}{" "}
                   <span className="text-slate-500">
                     ({segment.percentage.toFixed(1)}%)
                   </span>
                 </span>
               </div>
-              <div className="w-full bg-slate-700/30 rounded h-2 overflow-hidden">
+              <div className="w-full bg-slate-200 rounded h-2 overflow-hidden">
                 <div
                   className="h-full transition-all duration-300"
                   style={{
@@ -777,14 +782,14 @@ export function SessionDurationChart({
       {/* Engagement metrics */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <p className="text-xs text-slate-400">Using AR Feature</p>
-          <p className="text-2xl font-bold text-blue-400">
+          <p className="text-xs text-slate-500">Using AR Feature</p>
+          <p className="text-2xl font-bold text-blue-600">
             {engagement.sessionsWithAR}
           </p>
         </div>
         <div>
-          <p className="text-xs text-slate-400">Adding to Cart</p>
-          <p className="text-2xl font-bold text-green-400">
+          <p className="text-xs text-slate-500">Adding to Cart</p>
+          <p className="text-2xl font-bold text-green-600">
             {engagement.sessionsAddingToCart}
           </p>
         </div>
@@ -818,20 +823,20 @@ export function SelectionPatternsChart({
   const top10 = data.patterns.slice(0, 10);
 
   return (
-    <div className="card">
-      <h3 className="text-lg font-semibold text-slate-200 mb-6">{title}</h3>
+    <div className={baseCardClass}>
+      <h3 className="text-lg font-semibold text-slate-900 mb-6">{title}</h3>
 
       {/* Summary stats */}
-      <div className="grid grid-cols-2 gap-4 mb-6 pb-6 border-b border-slate-700">
+      <div className="grid grid-cols-2 gap-4 mb-6 pb-6 border-b border-slate-200">
         <div>
-          <p className="text-xs text-slate-400">Unique Combinations</p>
-          <p className="text-2xl font-bold text-purple-400">
+          <p className="text-xs text-slate-500">Unique Combinations</p>
+          <p className="text-2xl font-bold text-purple-600">
             {data.summary.totalCombinations}
           </p>
         </div>
         <div>
-          <p className="text-xs text-slate-400">Avg Items per Cart</p>
-          <p className="text-2xl font-bold text-cyan-400">
+          <p className="text-xs text-slate-500">Avg Items per Cart</p>
+          <p className="text-2xl font-bold text-cyan-600">
             {data.summary.avgItemsPerCart.toFixed(2)}
           </p>
         </div>
@@ -839,23 +844,23 @@ export function SelectionPatternsChart({
 
       {/* Top combinations */}
       <div>
-        <p className="text-sm font-semibold text-slate-300 mb-4">
+        <p className="text-sm font-semibold text-slate-700 mb-4">
           Top Item Combinations
         </p>
         <div className="space-y-3">
           {top10.map((pattern, idx) => (
             <div
               key={idx}
-              className="p-3 rounded-lg bg-slate-700/30 border border-slate-700"
+              className="p-3 rounded-lg bg-slate-100 border border-slate-200"
             >
               <div className="flex items-start justify-between mb-2">
                 <div>
-                  <p className="font-medium text-slate-200">#{idx + 1}</p>
+                  <p className="font-medium text-slate-800">#{idx + 1}</p>
                   <div className="mt-1 space-y-1">
                     {pattern.items.map((item, itemIdx) => (
                       <div
                         key={itemIdx}
-                        className="inline-block mr-2 px-2 py-1 text-xs bg-cyan-500/20 text-cyan-300 rounded"
+                        className="inline-block mr-2 px-2 py-1 text-xs bg-cyan-100 text-cyan-700 rounded"
                       >
                         {item}
                       </div>
@@ -863,7 +868,7 @@ export function SelectionPatternsChart({
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-bold text-green-400">
+                  <p className="text-lg font-bold text-green-600">
                     {pattern.frequency}x
                   </p>
                   <p className="text-xs text-slate-500">
@@ -871,7 +876,7 @@ export function SelectionPatternsChart({
                   </p>
                 </div>
               </div>
-              <div className="w-full bg-slate-700/50 rounded h-1 overflow-hidden">
+              <div className="w-full bg-slate-200 rounded h-1 overflow-hidden">
                 <div
                   className="bg-green-500 h-full"
                   style={{ width: `${pattern.percentage}%` }}
@@ -920,39 +925,39 @@ interface SalesHeatmapProps {
 }
 
 function heatColor(ratio: number): string {
-  if (ratio <= 0) return "rgba(15, 23, 42, 0.55)";
-  if (ratio < 0.2) return "rgba(14, 116, 144, 0.35)";
-  if (ratio < 0.4) return "rgba(6, 182, 212, 0.45)";
-  if (ratio < 0.6) return "rgba(16, 185, 129, 0.5)";
-  if (ratio < 0.8) return "rgba(245, 158, 11, 0.55)";
-  return "rgba(239, 68, 68, 0.65)";
+  if (ratio <= 0) return "rgba(241, 245, 249, 0.9)";
+  if (ratio < 0.2) return "rgba(224, 242, 254, 0.9)";
+  if (ratio < 0.4) return "rgba(186, 230, 253, 0.9)";
+  if (ratio < 0.6) return "rgba(167, 243, 208, 0.9)";
+  if (ratio < 0.8) return "rgba(254, 215, 170, 0.9)";
+  return "rgba(254, 202, 202, 0.95)";
 }
 
 export function SalesHeatmapChart({ title, data }: SalesHeatmapProps) {
   const maxRevenue = Math.max(data.max.cellRevenue, 1);
 
   return (
-    <div className="card">
+    <div className={baseCardClass}>
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-5">
         <div>
-          <h3 className="text-lg font-semibold text-slate-200">{title}</h3>
-          <p className="text-xs text-slate-400 mt-1">
+          <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
+          <p className="text-xs text-slate-500 mt-1">
             Peak Day:{" "}
-            <span className="text-cyan-300">{data.peaks.day.day}</span> | Peak
+            <span className="text-cyan-600">{data.peaks.day.day}</span> | Peak
             Hour:{" "}
-            <span className="text-cyan-300">{data.peaks.hour.hourLabel}</span>
+            <span className="text-cyan-600">{data.peaks.hour.hourLabel}</span>
           </p>
         </div>
         <div className="grid grid-cols-2 gap-3 text-xs">
-          <div className="bg-slate-900/40 rounded-md px-3 py-2">
-            <p className="text-slate-400">Orders</p>
-            <p className="text-slate-100 font-semibold">
+          <div className="bg-slate-100 rounded-md px-3 py-2">
+            <p className="text-slate-500">Orders</p>
+            <p className="text-slate-800 font-semibold">
               {data.summary.totalOrders}
             </p>
           </div>
-          <div className="bg-slate-900/40 rounded-md px-3 py-2">
-            <p className="text-slate-400">Revenue</p>
-            <p className="text-slate-100 font-semibold">
+          <div className="bg-slate-100 rounded-md px-3 py-2">
+            <p className="text-slate-500">Revenue</p>
+            <p className="text-slate-800 font-semibold">
               ${data.summary.totalRevenue.toFixed(2)}
             </p>
           </div>
@@ -990,20 +995,20 @@ export function SalesHeatmapChart({ title, data }: SalesHeatmapProps) {
                   "130px repeat(24, minmax(24px, 1fr)) 120px",
               }}
             >
-              <div className="text-xs text-slate-300 py-2">{row.day}</div>
+              <div className="text-xs text-slate-600 py-2">{row.day}</div>
               {row.cells.map(cell => {
                 const ratio = cell.revenue / maxRevenue;
                 return (
                   <div
                     key={`${row.day}-${cell.hour}`}
                     title={`${row.day} ${String(cell.hour).padStart(2, "0")} :00 | Orders: ${cell.orders} | Revenue: $${cell.revenue.toFixed(2)}`}
-                    className="h-7 rounded-sm border border-slate-800/80"
+                    className="h-7 rounded-sm border border-slate-200"
                     style={{ background: heatColor(ratio) }}
                   />
                 );
               })}
-              <div className="text-[11px] text-right text-slate-400 py-2 pr-2">
-                <span className="text-slate-300 font-medium">
+              <div className="text-[11px] text-right text-slate-500 py-2 pr-2">
+                <span className="text-slate-700 font-medium">
                   {row.totalOrders}
                 </span>
                 <span className="mx-1">|</span>
@@ -1014,9 +1019,9 @@ export function SalesHeatmapChart({ title, data }: SalesHeatmapProps) {
         </div>
       </div>
 
-      <div className="mt-4 flex items-center gap-3 text-[11px] text-slate-400">
+      <div className="mt-4 flex items-center gap-3 text-[11px] text-slate-500">
         <span>Low</span>
-        <div className="h-2 w-36 rounded-full bg-linear-to-r from-slate-800 via-cyan-500 to-red-500" />
+        <div className="h-2 w-36 rounded-full bg-linear-to-r from-slate-200 via-cyan-400 to-rose-400" />
         <span>High</span>
         <span className="ml-auto">
           Coverage: {data.summary.dataCoveragePct}%
@@ -1043,33 +1048,33 @@ export function CategoryPerformanceChart({
   const maxConversion = Math.max(...data.map(d => d.conversionRate), 1);
 
   return (
-    <div className="card">
-      <h3 className="text-lg font-semibold text-slate-200 mb-5">{title}</h3>
+    <div className={baseCardClass}>
+      <h3 className="text-lg font-semibold text-slate-900 mb-5">{title}</h3>
       <div className="space-y-4">
         {data.map((item, idx) => (
           <div key={`${item.category}-${idx}`}>
             <div className="flex items-center justify-between mb-1">
-              <p className="text-sm text-slate-300 font-medium">
+              <p className="text-sm text-slate-700 font-medium">
                 {item.category}
               </p>
               <div className="text-right">
-                <p className="text-sm text-emerald-300 font-semibold">
+                <p className="text-sm text-emerald-600 font-semibold">
                   ${item.revenue.toFixed(2)}
                 </p>
-                <p className="text-xs text-cyan-300">
+                <p className="text-xs text-cyan-600">
                   {item.conversionRate.toFixed(2)}% conv
                 </p>
               </div>
             </div>
 
             <div className="space-y-1">
-              <div className="h-2 w-full rounded bg-slate-700/40 overflow-hidden">
+              <div className="h-2 w-full rounded bg-slate-200 overflow-hidden">
                 <div
                   className="h-full bg-linear-to-r from-emerald-500 to-green-400"
                   style={{ width: `${(item.revenue / maxRevenue) * 100}%` }}
                 />
               </div>
-              <div className="h-2 w-full rounded bg-slate-700/40 overflow-hidden">
+              <div className="h-2 w-full rounded bg-slate-200 overflow-hidden">
                 <div
                   className="h-full bg-linear-to-r from-cyan-500 to-blue-400"
                   style={{
@@ -1081,7 +1086,7 @@ export function CategoryPerformanceChart({
           </div>
         ))}
       </div>
-      <div className="mt-4 flex gap-4 text-xs text-slate-400">
+      <div className="mt-4 flex gap-4 text-xs text-slate-500">
         <span className="inline-flex items-center gap-1">
           <span className="w-2 h-2 rounded-full bg-emerald-400" /> Revenue
         </span>
