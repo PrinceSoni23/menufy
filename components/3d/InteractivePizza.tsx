@@ -169,7 +169,6 @@ export function InteractivePizza() {
               camera.updateProjectionMatrix();
             }
           }
-
         }}
         className="w-full h-full absolute inset-0 z-10"
         gl={{
@@ -206,13 +205,11 @@ export function InteractivePizza() {
         </Suspense>
 
         <OrbitControls
-          enableZoom={true}
+          enableZoom={false}
           enablePan={false}
           autoRotate={true}
           autoRotateSpeed={3}
           rotateSpeed={1.2}
-          minDistance={4}
-          maxDistance={12}
           dampingFactor={0.05}
           target={new THREE.Vector3(0, 0, 0)}
         />
@@ -329,4 +326,3 @@ export function InteractivePizza() {
     </div>
   );
 }
-
