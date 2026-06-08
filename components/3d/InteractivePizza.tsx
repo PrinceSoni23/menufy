@@ -31,7 +31,8 @@ function PizzaScene({ onReady }: { onReady: () => void }) {
     cloned.position.sub(center);
 
     const maxDim = Math.max(size.x, size.y, size.z) || 1;
-    cloned.scale.setScalar(2.6 / maxDim);
+    // Increase base scale by ~15% to make the pizza larger
+    cloned.scale.setScalar(27.83491359375 / maxDim);
 
     return cloned;
   }, [pizzaScene]);
@@ -154,7 +155,8 @@ export function InteractivePizza() {
 
       <Canvas
         onCreated={({ camera, gl }) => {
-          camera.position.set(0, 5, 5);
+          // Position camera slightly further back to frame the larger pizza
+          camera.position.set(0, 24.11, 24.11);
           camera.lookAt(0, 0, 0);
 
           // Force size calculation immediately
@@ -178,7 +180,7 @@ export function InteractivePizza() {
           depth: true,
         }}
       >
-        <PerspectiveCamera makeDefault position={[0, 5, 5]} fov={55} />
+        <PerspectiveCamera makeDefault position={[0, 24.11, 24.11]} fov={55} />
 
         <ambientLight intensity={1.2} />
 

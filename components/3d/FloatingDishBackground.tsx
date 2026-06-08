@@ -80,4 +80,3 @@ export function FloatingDishBackground() {
 }
 
 useGLTF.preload("/pizza+3d+model.glb");
-
