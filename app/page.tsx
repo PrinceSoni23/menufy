@@ -221,40 +221,41 @@ export default function Home() {
       />
 
       <div className="relative z-10">
-        <section className="pt-28 pb-24 px-4 sm:px-6 lg:px-12">
-          <div className="max-w-7xl mx-auto grid gap-14 lg:grid-cols-[1fr_1.08fr] items-center">
+        <section className="relative pt-24 pb-16 px-4 sm:px-6 lg:px-12 sm:pt-28 sm:pb-24">
+          <div className="relative z-10 max-w-7xl mx-auto grid gap-10 lg:gap-14 lg:grid-cols-[1fr_1.08fr] items-center">
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="space-y-7 max-w-2xl"
+              className="relative z-10 space-y-6 max-w-2xl sm:space-y-7"
             >
-              <p className="uppercase tracking-[0.34em] text-[0.72rem] font-semibold text-[#7c4b4b]">
+              <div className="pointer-events-none absolute -inset-x-4 -inset-y-4 -z-10 rounded-[2rem] border border-white/55 bg-white/28 backdrop-blur-md shadow-[0_18px_50px_rgba(124,47,47,0.08)] sm:hidden" />
+              <p className="uppercase tracking-[0.34em] text-[0.72rem] font-semibold text-[#7c2f2f] sm:text-[#7c4b4b]">
                 The MenuAR platform
               </p>
-              <h1 className="hero-title not-italic text-5xl sm:text-6xl lg:text-[5.2rem] tracking-[-0.06em] text-transparent bg-gradient-to-r from-[#1f2937] via-[#6d5b3d] to-[#a24e4e] bg-clip-text">
+              <h1 className="hero-title not-italic text-[2.5rem] leading-[1.02] sm:text-6xl lg:text-[5.2rem] tracking-[-0.06em] text-[#5d2d2d] sm:text-transparent sm:bg-gradient-to-r sm:from-[#1f2937] sm:via-[#6d5b3d] sm:to-[#a24e4e] sm:bg-clip-text">
                 Make ordering feel like an experience, not a guess.
               </h1>
-              <p className="text-lg sm:text-xl text-[#5f4a40] max-w-xl leading-8">
+              <p className="text-base sm:text-xl text-[#5a443a] sm:text-[#5f4a40] max-w-xl leading-7 sm:leading-8">
                 Convert menus into immersive 3D and AR previews that lift order
                 confidence, raise ticket sizes, and keep guests coming back.
               </p>
-              <div className="flex flex-wrap gap-4 pt-2">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
                 <Link href="/dashboard?mode=demo" className="btn-primary">
                   Start the live demo
                 </Link>
                 <Link
                   href="/dashboard?mode=demo#menu"
-                  className="px-6 py-3 rounded-full border border-[#a24e4e]/30 bg-white/45 backdrop-blur-md text-[#5d2d2d] font-semibold hover:bg-[#a24e4e] hover:text-[#fff1cf] transition shadow-[0_12px_30px_rgba(124,47,47,0.08)]"
+                  className="px-6 py-3 rounded-full border border-[#a24e4e]/30 bg-white/70 backdrop-blur-md text-[#5d2d2d] font-semibold hover:bg-[#a24e4e] hover:text-[#fff1cf] transition shadow-[0_12px_30px_rgba(124,47,47,0.08)] text-center"
                 >
                   Explore the demo
                 </Link>
               </div>
-              <div className="flex flex-wrap gap-4 text-sm text-[#6f5a4d] pt-2">
+              <div className="grid grid-cols-2 gap-3 text-xs sm:flex sm:flex-wrap sm:gap-4 sm:text-sm text-[#6f5a4d] pt-2">
                 {stats.map(stat => (
                   <div
                     key={stat.label}
-                    className="rounded-full bg-white/58 border border-white/75 px-4 py-2.5 backdrop-blur-md shadow-[0_10px_30px_rgba(124,47,47,0.08)]"
+                    className="rounded-2xl sm:rounded-full bg-white/72 border border-white/75 px-3 py-3 sm:px-4 sm:py-2.5 backdrop-blur-md shadow-[0_10px_30px_rgba(124,47,47,0.08)]"
                   >
                     <span className="font-semibold text-[#5d2d2d]">
                       {stat.number}
@@ -269,11 +270,11 @@ export default function Home() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.2, ease: "easeOut" }}
-              className="relative lg:pl-6"
+              className="relative lg:pl-6 mx-auto w-full max-w-[28rem] lg:max-w-none"
             >
-              <div className="absolute -inset-6 rounded-[3rem] bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.75),transparent_38%),radial-gradient(circle_at_80%_20%,rgba(162,78,78,0.16),transparent_30%),radial-gradient(circle_at_50%_90%,rgba(204,229,255,0.45),transparent_40%)] blur-2xl opacity-80" />
-              <div className="relative rounded-[2.5rem] border border-white/70 bg-white/35 backdrop-blur-xl p-4 sm:p-5 shadow-[0_40px_120px_rgba(124,47,47,0.16)]">
-                <div className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-[#fff9f0] aspect-[4/5] shadow-[0_30px_80px_rgba(124,47,47,0.22)]">
+              <div className="absolute -inset-4 sm:-inset-6 rounded-[3rem] bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.75),transparent_38%),radial-gradient(circle_at_80%_20%,rgba(162,78,78,0.16),transparent_30%),radial-gradient(circle_at_50%_90%,rgba(204,229,255,0.45),transparent_40%)] blur-2xl opacity-70 sm:opacity-80" />
+              <div className="relative rounded-[2rem] sm:rounded-[2.5rem] border border-white/70 bg-white/45 backdrop-blur-xl p-3 sm:p-5 shadow-[0_24px_70px_rgba(124,47,47,0.14)] sm:shadow-[0_40px_120px_rgba(124,47,47,0.16)]">
+                <div className="relative overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] border border-white/80 bg-[#fff9f0] aspect-[3/4] sm:aspect-[4/5] shadow-[0_20px_60px_rgba(124,47,47,0.18)] sm:shadow-[0_30px_80px_rgba(124,47,47,0.22)]">
                   <Image
                     src="/Screenshot 2026-04-20 122225.png"
                     alt="3D menu preview"
@@ -283,29 +284,31 @@ export default function Home() {
                     priority
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#140b0b]/40 via-transparent to-transparent" />
-                  <div className="absolute inset-x-0 top-0 flex items-center justify-between px-5 pt-5">
-                    <div className="rounded-full border border-white/50 bg-white/80 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-[#5d2d2d] backdrop-blur-md">
+                  <div className="absolute inset-x-0 top-0 flex items-center justify-between px-4 pt-4 sm:px-5 sm:pt-5">
+                    <div className="rounded-full border border-white/50 bg-white/80 px-2.5 py-1 text-[0.62rem] sm:text-[0.7rem] font-semibold uppercase tracking-[0.2em] sm:tracking-[0.26em] text-[#5d2d2d] backdrop-blur-md">
                       Signature menu
                     </div>
-                    <div className="rounded-full border border-white/50 bg-[#fff1cf]/85 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#5d2d2d] backdrop-blur-md">
+                    <div className="rounded-full border border-white/50 bg-[#fff1cf]/85 px-2.5 py-1 text-[0.62rem] sm:text-[0.7rem] font-semibold uppercase tracking-[0.2em] sm:tracking-[0.22em] text-[#5d2d2d] backdrop-blur-md">
                       AR ready
                     </div>
                   </div>
-                  <div className="absolute bottom-5 left-5 right-5 grid gap-3 sm:grid-cols-[1.3fr_0.7fr]">
-                    <div className="rounded-[1.4rem] border border-white/45 bg-black/20 p-4 backdrop-blur-xl text-[#fff8f0] shadow-[0_16px_50px_rgba(0,0,0,0.18)]">
+                  <div className="absolute bottom-4 left-4 right-4 grid gap-2 sm:bottom-5 sm:left-5 sm:right-5 sm:gap-3 sm:grid-cols-[1.3fr_0.7fr]">
+                    <div className="rounded-[1.1rem] sm:rounded-[1.4rem] border border-white/45 bg-black/22 p-3 sm:p-4 backdrop-blur-xl text-[#fff8f0] shadow-[0_16px_50px_rgba(0,0,0,0.18)]">
                       <p className="text-[0.7rem] uppercase tracking-[0.26em] text-[#f7d6b9]">
                         First impression
                       </p>
-                      <p className="mt-2 text-lg sm:text-xl font-semibold leading-tight">
+                      <p className="mt-2 text-[0.95rem] sm:text-xl font-semibold leading-tight">
                         Cinematic product storytelling with luxury-grade depth.
                       </p>
                     </div>
-                    <div className="rounded-[1.4rem] border border-white/45 bg-white/82 p-4 backdrop-blur-xl text-[#5d2d2d] shadow-[0_16px_50px_rgba(0,0,0,0.12)]">
+                    <div className="rounded-[1.1rem] sm:rounded-[1.4rem] border border-white/45 bg-white/88 p-3 sm:p-4 backdrop-blur-xl text-[#5d2d2d] shadow-[0_16px_50px_rgba(0,0,0,0.12)]">
                       <p className="text-[0.7rem] uppercase tracking-[0.26em] text-[#8c3b3b]">
                         Scan to order
                       </p>
-                      <p className="mt-2 text-2xl font-semibold">+31%</p>
-                      <p className="text-sm text-[#6f5a4d]">
+                      <p className="mt-2 text-xl sm:text-2xl font-semibold">
+                        +31%
+                      </p>
+                      <p className="text-xs sm:text-sm text-[#6f5a4d]">
                         Higher average order value
                       </p>
                     </div>
@@ -315,7 +318,7 @@ export default function Home() {
                 <motion.div
                   style={{ y: y2 }}
                   whileHover={{ y: -10, rotate: 0 }}
-                  className="absolute -bottom-8 right-2 sm:right-10 w-[42%] max-w-[240px] rotate-[8deg] overflow-hidden rounded-[1.75rem] border border-white/70 bg-white/90 p-2 shadow-[0_24px_70px_rgba(124,47,47,0.2)]"
+                  className="absolute -bottom-8 right-2 hidden sm:block sm:right-10 w-[42%] max-w-[240px] rotate-[8deg] overflow-hidden rounded-[1.75rem] border border-white/70 bg-white/90 p-2 shadow-[0_24px_70px_rgba(124,47,47,0.2)]"
                 >
                   <div className="relative aspect-[4/5] overflow-hidden rounded-[1.35rem]">
                     <Image
@@ -684,12 +687,41 @@ export default function Home() {
 
         <section className="px-4 sm:px-6 lg:px-12 pb-20">
           <div className="max-w-6xl mx-auto rounded-[36px] bg-white/70 border border-white/70 p-10 shadow-[0_30px_80px_rgba(124,47,47,0.18)]">
-            <div className="flex flex-wrap items-center justify-between gap-6">
+            <motion.div
+              initial={{ opacity: 0, y: 30, scale: 0.98 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="rounded-[36px] p-6 sm:p-8 lg:p-10"
+              style={{ perspective: "1000px" }}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+                <div>
+                  <p className="text-sm uppercase tracking-[0.24em] text-[#8c3b3b]">
+                    Interactive 3D menu
+                  </p>
+                  <h2 className="hero-title text-3xl sm:text-4xl md:text-5xl text-[#7c2f2f] mt-3">
+                    Rotate, zoom, and inspect every ingredient.
+                  </h2>
+                </div>
+                <Link
+                  href="/dashboard?mode=demo#menu"
+                  className="px-6 py-3 rounded-full border border-[#a24e4e] text-[#7c2f2f] font-semibold hover:bg-[#a24e4e] hover:text-[#fff1cf] transition"
+                >
+                  Try the full menu
+                </Link>
+              </div>
+              <div
+                className="relative w-full h-auto sm:h-96 md:h-[28rem] lg:h-[34rem]"
+                style={{ perspective: "1000px" }}
+              >
+                <InteractivePizza />
+              </div>
+            </motion.div>
+
+            <div className="mt-8 flex flex-col lg:flex-row items-center justify-between gap-6">
               <div>
-                <p className="text-sm uppercase tracking-[0.24em] text-[#8c3b3b]">
-                  Ready to launch?
-                </p>
-                <h2 className="hero-title text-3xl sm:text-4xl md:text-5xl text-[#7c2f2f] mt-4">
+                <h2 className="hero-title text-3xl sm:text-4xl md:text-5xl text-[#7c2f2f]">
                   Bring your menu to life.
                 </h2>
                 <p className="text-[#7c4b4b] mt-3">

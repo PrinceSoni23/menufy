@@ -31,7 +31,6 @@ function PizzaScene({ onReady }: { onReady: () => void }) {
     cloned.position.sub(center);
 
     const maxDim = Math.max(size.x, size.y, size.z) || 1;
-    // Increase base scale by ~15% to make the pizza larger
     cloned.scale.setScalar(27.83491359375 / maxDim);
 
     return cloned;
@@ -64,7 +63,6 @@ function CanvasResizeHandler() {
   const { gl, camera } = useThree();
 
   useEffect(() => {
-    // Force canvas to measure and set correct size on mount
     const handleResize = () => {
       const canvas = gl.domElement;
       const parent = canvas.parentElement;
@@ -82,10 +80,7 @@ function CanvasResizeHandler() {
       }
     };
 
-    // Call immediately on mount
     handleResize();
-
-    // Also add resize listener
     window.addEventListener("resize", handleResize);
 
     return () => {
@@ -104,10 +99,8 @@ export function InteractivePizza() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Trigger a small delay to ensure DOM is fully ready
     const timer = setTimeout(() => {
       if (containerRef.current) {
-        // Force a layout recalculation
         window.dispatchEvent(new Event("resize"));
       }
     }, 100);
@@ -130,7 +123,7 @@ export function InteractivePizza() {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full flex items-center justify-center overflow-hidden bg-transparent"
+      className="relative w-full h-full flex flex-col items-stretch justify-start overflow-visible sm:overflow-hidden bg-transparent"
     >
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm z-10">
@@ -143,7 +136,6 @@ export function InteractivePizza() {
         </div>
       )}
 
-      {/* Animated Background Glow */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
         initial={{ opacity: 0 }}
@@ -153,80 +145,83 @@ export function InteractivePizza() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-linear-to-r from-orange-500/20 via-red-500/20 to-yellow-500/20 rounded-full blur-3xl animate-pulse opacity-30" />
       </motion.div>
 
-      <Canvas
-        onCreated={({ camera, gl }) => {
-          // Position camera slightly further back to frame the larger pizza
-          camera.position.set(0, 24.11, 24.11);
-          camera.lookAt(0, 0, 0);
+      <div className="relative w-full h-76 sm:h-full">
+        <Canvas
+          onCreated={({ camera, gl }) => {
+            camera.position.set(0, 24.11, 24.11);
+            camera.lookAt(0, 0, 0);
 
-          // Force size calculation immediately
-          const canvas = gl.domElement;
-          const parent = canvas.parentElement;
-          if (parent) {
-            const width = parent.clientWidth;
-            const height = parent.clientHeight;
-            gl.setSize(width, height);
-            if (camera instanceof THREE.PerspectiveCamera) {
-              camera.aspect = width / height;
-              camera.updateProjectionMatrix();
+            const canvas = gl.domElement;
+            const parent = canvas.parentElement;
+            if (parent) {
+              const width = parent.clientWidth;
+              const height = parent.clientHeight;
+              gl.setSize(width, height);
+              if (camera instanceof THREE.PerspectiveCamera) {
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+              }
             }
-          }
-        }}
-        className="w-full h-full absolute inset-0 z-10"
-        gl={{
-          antialias: true,
-          alpha: true,
-          stencil: false,
-          depth: true,
-        }}
-      >
-        <PerspectiveCamera makeDefault position={[0, 24.11, 24.11]} fov={55} />
+          }}
+          className="absolute inset-0 z-10 h-full w-full"
+          gl={{
+            antialias: true,
+            alpha: true,
+            stencil: false,
+            depth: true,
+          }}
+        >
+          <PerspectiveCamera
+            makeDefault
+            position={[0, 24.11, 24.11]}
+            fov={55}
+          />
 
-        <ambientLight intensity={1.2} />
+          <ambientLight intensity={1.2} />
+          <directionalLight
+            position={[8, 6, 8]}
+            intensity={3}
+            color="#FFA500"
+          />
+          <directionalLight
+            position={[-8, 4, -8]}
+            intensity={1.8}
+            color="#00B4FF"
+          />
+          <directionalLight
+            position={[0, 8, -10]}
+            intensity={1.5}
+            color="#FF6B9D"
+          />
+          <pointLight position={[5, 5, 5]} intensity={1.6} color="#FFD700" />
+          <pointLight position={[-5, 5, 5]} intensity={1.2} color="#00F0FF" />
+          <pointLight position={[0, -3, 8]} intensity={0.6} color="#FF4500" />
 
-        <directionalLight position={[8, 6, 8]} intensity={3} color="#FFA500" />
+          <Suspense fallback={null}>
+            <PizzaScene onReady={() => setIsLoading(false)} />
+          </Suspense>
 
-        <directionalLight
-          position={[-8, 4, -8]}
-          intensity={1.8}
-          color="#00B4FF"
-        />
+          <OrbitControls
+            enableZoom={false}
+            enablePan={false}
+            autoRotate={true}
+            autoRotateSpeed={3}
+            rotateSpeed={1.2}
+            dampingFactor={0.05}
+            target={new THREE.Vector3(0, 0, 0)}
+          />
 
-        <directionalLight
-          position={[0, 8, -10]}
-          intensity={1.5}
-          color="#FF6B9D"
-        />
+          <CanvasResizeHandler />
+        </Canvas>
+      </div>
 
-        <pointLight position={[5, 5, 5]} intensity={1.6} color="#FFD700" />
-        <pointLight position={[-5, 5, 5]} intensity={1.2} color="#00F0FF" />
-        <pointLight position={[0, -3, 8]} intensity={0.6} color="#FF4500" />
-
-        <Suspense fallback={null}>
-          <PizzaScene onReady={() => setIsLoading(false)} />
-        </Suspense>
-
-        <OrbitControls
-          enableZoom={false}
-          enablePan={false}
-          autoRotate={true}
-          autoRotateSpeed={3}
-          rotateSpeed={1.2}
-          dampingFactor={0.05}
-          target={new THREE.Vector3(0, 0, 0)}
-        />
-
-        <CanvasResizeHandler />
-      </Canvas>
-
-      {/* Ingredients Panel - Bottom Right */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.8 }}
-        className="absolute bottom-8 right-8 z-20 max-w-xs"
+        className="hidden sm:block absolute bottom-8 right-8 z-20 max-w-xs"
       >
-        <div className="p-6">
+        <div className="p-6 rounded-[2rem] bg-white/72 backdrop-blur-xl border border-white/70 shadow-[0_24px_70px_rgba(124,47,47,0.14)]">
           <motion.h3
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -286,7 +281,6 @@ export function InteractivePizza() {
             ))}
           </div>
 
-          {/* Decorative line */}
           <motion.div
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
@@ -296,8 +290,43 @@ export function InteractivePizza() {
         </div>
       </motion.div>
 
-      {/* Floating Ingredient Tags - Left Side */}
-      <div className="absolute left-4 bottom-20 z-20 space-y-3 pointer-events-none">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6, duration: 0.8 }}
+        className="sm:hidden relative z-20 mt-4 px-1"
+      >
+        <div className="rounded-3xl border border-white/70 bg-white/72 backdrop-blur-md p-4 shadow-[0_18px_50px_rgba(124,47,47,0.12)]">
+          <motion.h3
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7 }}
+            className="text-xs font-bold text-[#1a1a1a] uppercase tracking-[0.24em]"
+          >
+            Fresh Ingredients
+          </motion.h3>
+
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            {INGREDIENTS.map((ingredient, index) => (
+              <motion.div
+                key={`mobile-${ingredient.name}`}
+                custom={index}
+                variants={ingredientVariants}
+                initial="hidden"
+                animate="visible"
+                className="flex items-center gap-3 rounded-2xl border border-white/70 bg-white/80 px-3 py-2"
+              >
+                <span className="text-lg">{ingredient.icon}</span>
+                <span className="text-[0.78rem] font-semibold text-[#555842] leading-tight">
+                  {ingredient.name}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
+      <div className="hidden sm:block absolute left-4 bottom-20 z-20 space-y-3 pointer-events-none">
         {["Handmade", "Organic", "100% Italian"].map((tag, index) => (
           <motion.div
             key={tag}
@@ -311,17 +340,10 @@ export function InteractivePizza() {
         ))}
       </div>
 
-      {/* Animated Shine Effect */}
       <motion.div
         className="absolute top-0 left-0 right-0 bottom-0 pointer-events-none z-5 opacity-0"
-        animate={{
-          opacity: [0, 0.3, 0],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          delay: 1,
-        }}
+        animate={{ opacity: [0, 0.3, 0] }}
+        transition={{ duration: 3, repeat: Infinity, delay: 1 }}
       >
         <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent transform -skew-x-12" />
       </motion.div>
