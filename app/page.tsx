@@ -687,15 +687,15 @@ export default function Home() {
 
         <section className="px-4 sm:px-6 lg:px-12 pb-20">
           <div className="max-w-6xl mx-auto rounded-[36px] bg-white/70 border border-white/70 p-10 shadow-[0_30px_80px_rgba(124,47,47,0.18)]">
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, y: 30, scale: 0.98 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="rounded-[36px] p-6 sm:p-8 lg:p-10"
               style={{ perspective: "1000px" }}
-            >
-              <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            > */}
+            {/* <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                 <div>
                   <p className="text-sm uppercase tracking-[0.24em] text-[#8c3b3b]">
                     Interactive 3D menu
@@ -716,8 +716,8 @@ export default function Home() {
                 style={{ perspective: "1000px" }}
               >
                 <InteractivePizza />
-              </div>
-            </motion.div>
+              </div> */}
+            {/* </motion.div> */}
 
             <div className="mt-8 flex flex-col lg:flex-row items-center justify-between gap-6">
               <div>
