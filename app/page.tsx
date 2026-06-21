@@ -184,10 +184,10 @@ const plans = [
 ];
 
 const stats = [
-  { number: "4,200+", label: "Restaurants trust MenuAR" },
-  { number: "1.8M", label: "Monthly scans served" },
+  { number: "100%", label: "Browser-Based" },
+  { number: "1", label: "QR Code to Access Everything" },
   { number: "2.4x", label: "Average conversion lift" },
-  { number: "$2.3M", label: "Revenue generated for customers" },
+  { number: "360°", label: "AR Food Preview" },
 ];
 
 export default function Home() {
@@ -248,7 +248,7 @@ export default function Home() {
                   href="/dashboard?mode=demo#menu"
                   className="px-6 py-3 rounded-full border border-[#a24e4e]/30 bg-white/70 backdrop-blur-md text-[#5d2d2d] font-semibold hover:bg-[#a24e4e] hover:text-[#fff1cf] transition shadow-[0_12px_30px_rgba(124,47,47,0.08)] text-center"
                 >
-                  Explore the demo
+                  Access Dashboard
                 </Link>
               </div>
               <div className="grid grid-cols-2 gap-3 text-xs sm:flex sm:flex-wrap sm:gap-4 sm:text-sm text-[#6f5a4d] pt-2">
@@ -275,13 +275,13 @@ export default function Home() {
               <div className="absolute -inset-4 sm:-inset-6 rounded-[3rem] bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.75),transparent_38%),radial-gradient(circle_at_80%_20%,rgba(162,78,78,0.16),transparent_30%),radial-gradient(circle_at_50%_90%,rgba(204,229,255,0.45),transparent_40%)] blur-2xl opacity-70 sm:opacity-80" />
               <div className="relative rounded-[2rem] sm:rounded-[2.5rem] border border-white/70 bg-white/45 backdrop-blur-xl p-3 sm:p-5 shadow-[0_24px_70px_rgba(124,47,47,0.14)] sm:shadow-[0_40px_120px_rgba(124,47,47,0.16)]">
                 <div className="relative overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] border border-white/80 bg-[#fff9f0] aspect-[3/4] sm:aspect-[4/5] shadow-[0_20px_60px_rgba(124,47,47,0.18)] sm:shadow-[0_30px_80px_rgba(124,47,47,0.22)]">
-                  <Image
-                    src="/Screenshot 2026-04-20 122225.png"
-                    alt="3D menu preview"
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 52vw"
-                    className="object-cover"
-                    priority
+                  <video
+                    src="/vids.mp4"
+                    className="h-full w-full object-cover"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#140b0b]/40 via-transparent to-transparent" />
                   <div className="absolute inset-x-0 top-0 flex items-center justify-between px-4 pt-4 sm:px-5 sm:pt-5">
@@ -322,7 +322,7 @@ export default function Home() {
                 >
                   <div className="relative aspect-[4/5] overflow-hidden rounded-[1.35rem]">
                     <Image
-                      src="/Interior Design_Interior Design Service_e-design_Custom Mood Board_Decorating.jpeg"
+                      src="/download (5).jpeg"
                       alt="Luxury dining interior mockup"
                       fill
                       sizes="(max-width: 1024px) 45vw, 18vw"
@@ -337,12 +337,12 @@ export default function Home() {
                   className="absolute -left-4 top-8 hidden sm:block w-[38%] max-w-[220px] rounded-[1.5rem] border border-white/75 bg-white/78 p-3 backdrop-blur-xl shadow-[0_18px_60px_rgba(124,47,47,0.16)]"
                 >
                   <p className="text-[0.7rem] uppercase tracking-[0.26em] text-[#8c3b3b]">
-                    Premium details
+                    Premium Experience
                   </p>
                   <div className="mt-3 rounded-[1.1rem] bg-[linear-gradient(135deg,rgba(255,241,207,0.95),rgba(231,211,211,0.82),rgba(204,229,255,0.8))] p-4 text-[#5d2d2d] shadow-inner">
                     <p className="text-sm font-semibold leading-snug">
-                      A deliberate, gallery-like layout that feels expensive at
-                      first glance.
+                      A premium, interactive menu that leaves a lasting first
+                      impression.
                     </p>
                   </div>
                 </motion.div>
