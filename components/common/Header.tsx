@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
@@ -16,8 +17,16 @@ export function Header() {
           {/* Left - haven logo */}
           <Link
             href="/"
-            className="text-xl sm:text-2xl tracking-wide bg-gradient-to-r from-[#8b2323] via-[#8b2323] to-[#e7d3d3] bg-clip-text text-transparent font-bold italic whitespace-nowrap hover:opacity-80 transition"
+            className="flex items-center gap-2 sm:gap-3 whitespace-nowrap hover:opacity-80 transition"
           >
+            <Image
+              src="/logo.png"
+              alt="Menufy logo"
+              width={40}
+              height={40}
+              className="h-7 w-7 sm:h-9 sm:w-9 lg:h-11 lg:w-11 object-contain shrink-0"
+              priority
+            />
             Menufy
           </Link>
 

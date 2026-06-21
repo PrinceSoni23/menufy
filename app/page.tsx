@@ -141,20 +141,8 @@ const testimonials = [
 
 const plans = [
   {
-    name: "Starter",
-    price: "$0",
-    duration: "Free forever",
-    description: "Perfect for testing and small venues",
-    features: [
-      "1 premium homepage template",
-      "100 monthly scans",
-      "Basic analytics",
-      "Public menu link",
-    ],
-  },
-  {
     name: "Growth",
-    price: "$29",
+    price: "$20",
     duration: "/month",
     description: "For scaling restaurants",
     features: [
@@ -177,7 +165,7 @@ const plans = [
       "Unlimited everything",
       "Dedicated account manager",
       "Custom integrations",
-      "API access",
+      "Custom Domain",
       "SLA guarantee",
     ],
   },
@@ -318,7 +306,7 @@ export default function Home() {
                 <motion.div
                   style={{ y: y2 }}
                   whileHover={{ y: -10, rotate: 0 }}
-                  className="absolute -bottom-8 right-2 hidden sm:block sm:right-10 w-[42%] max-w-[240px] rotate-[8deg] overflow-hidden rounded-[1.75rem] border border-white/70 bg-white/90 p-2 shadow-[0_24px_70px_rgba(124,47,47,0.2)]"
+                  className="absolute -bottom-4 right-2 w-[52%] max-w-[240px] rotate-[8deg] overflow-hidden rounded-[1.75rem] border border-white/70 bg-white/90 p-2 shadow-[0_24px_70px_rgba(124,47,47,0.2)] sm:-bottom-8 sm:right-10 sm:w-[42%]"
                 >
                   <div className="relative aspect-[4/5] overflow-hidden rounded-[1.35rem]">
                     <Image
@@ -610,7 +598,7 @@ export default function Home() {
               </p>
             </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 md:gap-6 items-stretch">
               {plans.map((plan, i) => (
                 <motion.div
                   key={plan.name}
@@ -621,8 +609,8 @@ export default function Home() {
                   whileHover={{ y: -12, scale: 1.03 }}
                   className={
                     plan.highlight
-                      ? "rounded-3xl bg-gradient-to-br from-[#a24e4e]/15 to-[#cce5ff]/15 border-2 border-[#a24e4e] p-8 sm:p-10 shadow-[0_25px_70px_rgba(124,47,47,0.2)]"
-                      : "rounded-3xl bg-white/70 border border-white/70 p-8 sm:p-10"
+                      ? "h-full rounded-3xl bg-gradient-to-br from-[#a24e4e]/15 to-[#cce5ff]/15 border-2 border-[#a24e4e] p-8 sm:p-10 shadow-[0_25px_70px_rgba(124,47,47,0.2)] flex flex-col"
+                      : "h-full rounded-3xl bg-white/70 border border-white/70 p-8 sm:p-10 flex flex-col"
                   }
                 >
                   {plan.highlight && (
@@ -644,7 +632,7 @@ export default function Home() {
                       {plan.description}
                     </p>
                   </div>
-                  <ul className="space-y-2 sm:space-y-3 mt-6 mb-6 pb-6 border-b border-[#7c2f2f]/10">
+                  <ul className="space-y-2 sm:space-y-3 mt-6 mb-6 pb-6 border-b border-[#7c2f2f]/10 flex-1">
                     {plan.features.map(feature => (
                       <li
                         key={feature}
