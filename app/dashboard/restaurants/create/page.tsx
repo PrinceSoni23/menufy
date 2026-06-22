@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { showToast } from "@/components/common/Toast";
+import { ArrowLeft, Building2, Plus, Sparkles } from "lucide-react";
 
 const CUISINES = [
   "Italian",
@@ -107,25 +108,39 @@ export default function CreateRestaurantPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="mb-6">
+    <div className="mx-auto max-w-2xl space-y-5">
+      <div>
         <Link
           href="/dashboard/restaurants"
-          className="text-orange-600 hover:text-orange-700"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-violet-700 transition hover:text-violet-900"
         >
-          ← Back to Restaurants
+          <ArrowLeft className="h-4 w-4" />
+          Back to Restaurants
         </Link>
       </div>
 
-      <div className="card bg-white/90 border-slate-200">
-        <h2 className="text-3xl hero-title font-bold text-slate-900 mb-6">
-          Create Restaurant
-        </h2>
+      <section className="rounded-3xl border border-slate-200/80 bg-white/85 p-5 shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur-xl sm:p-6">
+        <div className="mb-5 flex items-start gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-violet-100 via-white to-emerald-100 text-violet-600">
+            <Building2 className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-violet-600">
+              Restaurant Hub
+            </p>
+            <h2 className="mt-1 text-2xl font-black tracking-tighter text-slate-950 sm:text-3xl">
+              Create Restaurant
+            </h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Add a new location and keep the dashboard coverage tidy.
+            </p>
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 flex items-start gap-3">
-              <span className="text-lg">⚠️</span>
+            <div className="flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+              <Sparkles className="mt-0.5 h-4 w-4" />
               <span>{error}</span>
             </div>
           )}
@@ -213,11 +228,11 @@ export default function CreateRestaurantPage() {
             />
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex gap-3 pt-1">
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 via-indigo-600 to-sky-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(79,70,229,0.18)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? (
                 <>
@@ -230,13 +245,13 @@ export default function CreateRestaurantPage() {
             </button>
             <Link
               href="/dashboard/restaurants"
-              className="btn-secondary flex-1 text-center"
+              className="flex-1 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-center text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:bg-violet-50/60"
             >
               Cancel
             </Link>
           </div>
         </form>
-      </div>
+      </section>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { showToast } from "@/components/common/Toast";
 import { motion, AnimatePresence } from "framer-motion";
 import MenuManager from "@/components/dashboard/MenuManager";
 import QRCodeManager from "@/components/dashboard/QRCodeManager";
+import { LayoutGrid, MenuSquare, QrCode, Store, Sparkles } from "lucide-react";
 
 export default function MenuPage() {
   const searchParams = useSearchParams();
@@ -33,13 +34,15 @@ export default function MenuPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white/90 backdrop-blur border border-slate-200 rounded-xl p-12 text-center shadow-[0_20px_50px_rgba(148,163,184,0.16)]"
+        className="rounded-3xl border border-slate-200/80 bg-white/85 p-10 text-center shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur-xl"
       >
-        <div className="text-4xl mb-4">🏪</div>
-        <h3 className="text-xl font-bold text-slate-900 mb-2">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-violet-100 via-white to-emerald-100 text-violet-600">
+          <Store className="h-6 w-6" />
+        </div>
+        <h3 className="mb-2 text-xl font-black tracking-tighter text-slate-950">
           Select a Restaurant
         </h3>
-        <p className="text-slate-600">
+        <p className="mx-auto max-w-md text-sm text-slate-600">
           Please select a restaurant from the sidebar to manage its menu and QR
           code
         </p>
@@ -55,21 +58,24 @@ export default function MenuPage() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-linear-to-r from-white to-slate-50 border border-slate-200 rounded-xl p-8 shadow-[0_20px_50px_rgba(148,163,184,0.16)]"
+        className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white/85 p-5 shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur-xl sm:p-6"
       >
-        <div className="flex items-center gap-4 mb-4">
+        <div className="flex items-center gap-4">
           {restaurant?.imageUrl && (
             <img
               src={restaurant.imageUrl}
               alt={restaurant.name}
-              className="w-16 h-16 rounded-lg object-cover"
+              className="h-16 w-16 rounded-2xl object-cover ring-1 ring-slate-200"
             />
           )}
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-violet-600">
+              Menu Workspace
+            </p>
+            <h1 className="mt-1 text-2xl font-black tracking-tighter text-slate-950 sm:text-3xl">
               {restaurant?.name}
             </h1>
-            <p className="text-slate-600">
+            <p className="mt-1 text-sm text-slate-600">
               Manage your digital menu and QR code
             </p>
           </div>
@@ -80,23 +86,24 @@ export default function MenuPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex gap-2 bg-white/90 backdrop-blur border border-slate-200 rounded-xl p-2"
+        className="flex gap-2 rounded-3xl border border-slate-200/80 bg-white/85 p-2 shadow-sm backdrop-blur-xl"
       >
         {[
-          { id: "menu" as const, label: "📋 Menu Items", icon: "🍽️" },
-          { id: "qrcode" as const, label: "🎟️ QR Code", icon: "📱" },
+          { id: "menu" as const, label: "Menu Items", icon: MenuSquare },
+          { id: "qrcode" as const, label: "QR Code", icon: QrCode },
         ].map(tab => (
           <motion.button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className={`flex-1 px-6 py-3 rounded-lg font-bold transition-all ${
+            className={`flex flex-1 items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition-all ${
               activeTab === tab.id
-                ? "bg-linear-to-r from-orange-500 to-amber-400 text-amber-950 shadow-lg shadow-orange-500/20"
-                : "text-slate-600 hover:text-slate-900"
+                ? "bg-linear-to-r from-violet-600 via-indigo-600 to-sky-500 text-white shadow-[0_14px_28px_rgba(79,70,229,0.18)]"
+                : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"
             }`}
           >
+            <tab.icon className="h-4 w-4" />
             {tab.label}
           </motion.button>
         ))}

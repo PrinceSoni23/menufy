@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useMenu } from "@/hooks/useMenu";
 import { MenuItem } from "@/lib/types";
+import { ArrowLeft, Eye, ImageIcon, Layers3, RefreshCw, Sparkles, Smartphone } from "lucide-react";
 
 export default function MenuItemDetailPage() {
   const params = useParams();
@@ -46,7 +47,7 @@ export default function MenuItemDetailPage() {
 
   if (loading) {
     return (
-      <div className="text-center py-12">
+      <div className="py-12 text-center">
         <div className="animate-spin text-4xl mb-4">⚙️</div>
         <p className="text-slate-400">Loading menu item...</p>
       </div>
@@ -55,9 +56,12 @@ export default function MenuItemDetailPage() {
 
   if (!menuItem) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-400 mb-4">Menu item not found</p>
-        <Link href="/dashboard/menu" className="btn-primary">
+      <div className="py-12 text-center">
+        <p className="mb-4 text-rose-600">Menu item not found</p>
+        <Link
+          href="/dashboard/menu"
+          className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white"
+        >
           Back to Menu
         </Link>
       </div>
@@ -65,51 +69,60 @@ export default function MenuItemDetailPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
         <Link
           href="/dashboard/menu"
-          className="text-orange-200 hover:text-orange-100"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-violet-700 transition hover:text-violet-900"
         >
-          ← Back to Menu
+          <ArrowLeft className="h-4 w-4" />
+          Back to Menu
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* Left: Image & Conversion Status */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="space-y-4 lg:col-span-2">
           {/* Image */}
-          <div className="card">
-            <h3 className="text-lg font-bold text-slate-100 mb-4">2D Image</h3>
+          <div className="rounded-3xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur-xl">
+            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <ImageIcon className="h-4 w-4 text-violet-500" />
+              2D Image
+            </div>
             {menuItem.imageUrl2D ? (
               <img
                 src={menuItem.imageUrl2D}
                 alt={menuItem.name}
-                className="w-full max-h-96 object-cover rounded-lg"
+                className="w-full max-h-80 object-cover rounded-2xl"
               />
             ) : (
-              <div className="bg-slate-700 h-64 rounded-lg flex items-center justify-center">
-                <p className="text-slate-400">No image available</p>
+              <div className="flex h-56 items-center justify-center rounded-2xl bg-slate-50 text-slate-500">
+                <p>No image available</p>
               </div>
             )}
           </div>
 
           {/* 3D Model */}
-          <div className="card">
-            <h3 className="text-lg font-bold text-slate-100 mb-4">3D Model</h3>
+          <div className="rounded-3xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur-xl">
+            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <Layers3 className="h-4 w-4 text-violet-500" />
+              3D Model
+            </div>
             {menuItem.model3DUrl ? (
-              <div className="bg-slate-700 h-96 rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <p className="text-slate-300 mb-2">📦 3D Model Uploaded</p>
-                  <p className="text-slate-400 text-sm">
+              <div className="flex h-64 items-center justify-center rounded-2xl bg-linear-to-br from-violet-50 via-white to-sky-50 text-center">
+                <div>
+                  <p className="mb-2 text-sm font-semibold text-slate-800">
+                    3D model uploaded
+                  </p>
+                  <p className="text-xs text-slate-500">
                     {menuItem.model3DUrl}
                   </p>
                 </div>
               </div>
             ) : (
-              <div className="bg-slate-700 h-96 rounded-lg flex flex-col items-center justify-center">
-                <p className="text-slate-400">No 3D model uploaded yet</p>
-                <p className="text-slate-500 text-sm mt-2">
+              <div className="flex h-64 flex-col items-center justify-center rounded-2xl bg-slate-50 text-center">
+                <p className="text-slate-600">No 3D model uploaded yet</p>
+                <p className="mt-2 max-w-sm text-sm text-slate-500">
                   Upload a .glb, .gltf, or .obj file to display your dish in 3D
                 </p>
               </div>
@@ -118,18 +131,25 @@ export default function MenuItemDetailPage() {
         </div>
 
         {/* Right: Details & Status */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Item Details */}
-          <div className="card">
-            <h2 className="text-2xl hero-title font-bold text-slate-100 mb-4">
-              {menuItem.name}
-            </h2>
+          <div className="rounded-3xl border border-slate-200/80 bg-white/85 p-5 shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur-xl">
+            <div className="mb-4 flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.22em] text-violet-600">
+                  Menu Item
+                </p>
+                <h2 className="mt-2 text-2xl font-black tracking-tighter text-slate-950">
+                  {menuItem.name}
+                </h2>
+              </div>
+              <div className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                Ready
+              </div>
+            </div>
             {menuItem.description && (
-              <p className="text-slate-400 mb-4">{menuItem.description}</p>
+              <p className="mb-4 text-sm text-slate-600">{menuItem.description}</p>
             )}
-            <div className="space-y-2 text-slate-300 border-b border-slate-700 pb-4 mb-4">
-              <p>
-                <span className="font-semibold">Category:</span>{" "}
                 {menuItem.category || "N/A"}
               </p>
               <p>

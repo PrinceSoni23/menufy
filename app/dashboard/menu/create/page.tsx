@@ -9,6 +9,7 @@ import { showToast } from "@/components/common/Toast";
 import { apiClient } from "@/lib/api-client";
 import { API_ENDPOINTS } from "@/lib/constants";
 import { LoadingSkeleton } from "@/components/common/LoadingSkeleton";
+import { ArrowLeft, FilePlus2, Sparkles, UtensilsCrossed } from "lucide-react";
 
 const CATEGORIES = [
   "Appetizers",
@@ -242,19 +243,30 @@ export default function CreateMenuPage() {
 
   if (restaurantsLoading) {
     return (
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-6">
+      <div className="mx-auto max-w-2xl space-y-5">
+        <div>
           <Link
             href="/dashboard/menu"
-            className="text-orange-200 hover:text-orange-100"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-violet-700 transition hover:text-violet-900"
           >
-            ← Back to Menu
+            <ArrowLeft className="h-4 w-4" />
+            Back to Menu
           </Link>
         </div>
-        <div className="card">
-          <h2 className="text-3xl hero-title font-bold text-slate-100 mb-6">
-            Add Menu Item
-          </h2>
+        <div className="rounded-3xl border border-slate-200/80 bg-white/85 p-5 shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur-xl sm:p-6">
+          <div className="mb-5 flex items-start gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-violet-100 via-white to-emerald-100 text-violet-600">
+              <FilePlus2 className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-violet-600">
+                Menu Builder
+              </p>
+              <h2 className="mt-1 text-2xl font-black tracking-tighter text-slate-950 sm:text-3xl">
+                Add Menu Item
+              </h2>
+            </div>
+          </div>
           <LoadingSkeleton count={5} />
         </div>
       </div>
@@ -262,25 +274,39 @@ export default function CreateMenuPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="mb-6">
+    <div className="mx-auto max-w-2xl space-y-5">
+      <div>
         <Link
           href="/dashboard/menu"
-          className="text-orange-200 hover:text-orange-100"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-violet-700 transition hover:text-violet-900"
         >
-          ← Back to Menu
+          <ArrowLeft className="h-4 w-4" />
+          Back to Menu
         </Link>
       </div>
 
-      <div className="card">
-        <h2 className="text-3xl hero-title font-bold text-slate-100 mb-6">
-          Add Menu Item
-        </h2>
+      <section className="rounded-3xl border border-slate-200/80 bg-white/85 p-5 shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur-xl sm:p-6">
+        <div className="mb-5 flex items-start gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-violet-100 via-white to-emerald-100 text-violet-600">
+            <UtensilsCrossed className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-violet-600">
+              Menu Builder
+            </p>
+            <h2 className="mt-1 text-2xl font-black tracking-tighter text-slate-950 sm:text-3xl">
+              Add Menu Item
+            </h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Add a dish, attach visuals, and keep the workflow compact.
+            </p>
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 flex items-start gap-3">
-              <span className="text-lg">⚠️</span>
+            <div className="flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+              <Sparkles className="mt-0.5 h-4 w-4" />
               <span>{error}</span>
             </div>
           )}
@@ -432,19 +458,19 @@ export default function CreateMenuPage() {
             )}
           </div>
 
-          <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg text-blue-300 text-sm flex items-start gap-3">
-            <span className="text-lg">💡</span>
+          <div className="flex items-start gap-3 rounded-2xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-700">
+            <Sparkles className="mt-0.5 h-4 w-4" />
             <span>
               Upload your own 3D model (.glb, .gltf, or .obj) to showcase your
               dish in interactive 3D. You can also add a 2D image for previews.
             </span>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex gap-3 pt-1">
             <button
               type="submit"
               disabled={loading || uploading}
-              className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 via-indigo-600 to-sky-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(79,70,229,0.18)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {uploading ? (
                 <>
@@ -462,13 +488,13 @@ export default function CreateMenuPage() {
             </button>
             <Link
               href="/dashboard/menu"
-              className="btn-secondary flex-1 text-center"
+              className="flex-1 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-center text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:bg-violet-50/60"
             >
               Cancel
             </Link>
           </div>
         </form>
-      </div>
+      </section>
     </div>
   );
 }

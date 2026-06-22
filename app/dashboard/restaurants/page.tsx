@@ -7,6 +7,14 @@ import { useRestaurant } from "@/hooks/useRestaurant";
 import { showToast } from "@/components/common/Toast";
 import { confirmAction } from "@/components/common/ConfirmDialog";
 import { CardSkeleton } from "@/components/common/LoadingSkeleton";
+import {
+  ArrowRight,
+  Building2,
+  ChevronRight,
+  Plus,
+  Sparkles,
+  Store,
+} from "lucide-react";
 
 export default function RestaurantsPage() {
   const router = useRouter();
@@ -53,19 +61,56 @@ export default function RestaurantsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl hero-title font-bold text-slate-900">
-            Restaurants
-          </h2>
-          <p className="text-slate-600 mt-1">
-            Manage all your restaurant locations
+    <div className="space-y-5">
+      <section className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white/85 p-5 shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur-xl sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.24em] text-violet-600">
+              Restaurant Hub
+            </p>
+            <h2 className="mt-2 text-2xl font-black tracking-tighter text-slate-950 sm:text-3xl">
+              Restaurants
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm text-slate-600">
+              Manage your locations, review coverage, and keep every branch
+              aligned.
+            </p>
+          </div>
+          <Link
+            href="/dashboard/restaurants/create"
+            className="inline-flex items-center gap-2 rounded-full bg-linear-to-r from-violet-600 via-indigo-600 to-sky-500 px-4 py-2.5 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(79,70,229,0.18)] transition hover:-translate-y-0.5"
+          >
+            <Plus className="h-4 w-4" />
+            Add Restaurant
+          </Link>
+        </div>
+      </section>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="rounded-3xl border border-slate-200/80 bg-white/85 p-4 shadow-sm">
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500">
+            Locations
+          </p>
+          <p className="mt-2 text-2xl font-black tracking-tighter text-slate-950">
+            {restaurants.length}
           </p>
         </div>
-        <Link href="/dashboard/restaurants/create" className="btn-primary">
-          ➕ Add Restaurant
-        </Link>
+        <div className="rounded-3xl border border-slate-200/80 bg-white/85 p-4 shadow-sm">
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500">
+            Quick status
+          </p>
+          <p className="mt-2 text-2xl font-black tracking-tighter text-slate-950">
+            Live
+          </p>
+        </div>
+        <div className="rounded-3xl border border-slate-200/80 bg-white/85 p-4 shadow-sm">
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500">
+            Coverage
+          </p>
+          <p className="mt-2 text-2xl font-black tracking-tighter text-slate-950">
+            100%
+          </p>
+        </div>
       </div>
 
       {loading ? (
@@ -75,51 +120,68 @@ export default function RestaurantsPage() {
           ))}
         </div>
       ) : restaurants.length === 0 ? (
-        <div className="card bg-white/90 border-slate-200 text-center py-12">
-          <div className="text-4xl mb-4">🏪</div>
-          <p className="text-slate-600 mb-4">No restaurants yet</p>
+        <div className="rounded-3xl border border-dashed border-slate-300 bg-white/85 py-12 text-center shadow-sm">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-violet-100 via-white to-emerald-100 text-2xl">
+            <Store className="h-6 w-6 text-violet-600" />
+          </div>
+          <p className="mb-4 text-slate-600">No restaurants yet</p>
           <Link
             href="/dashboard/restaurants/create"
-            className="btn-primary inline-block"
+            className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 transition hover:bg-slate-800"
           >
+            <Plus className="h-4 w-4" />
             Create Your First Restaurant
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {restaurants.map(restaurant => (
             <div
               key={restaurant._id}
-              className="card bg-white/90 border-slate-200 group hover:border-orange-300/50 transition-all"
+              className="group rounded-3xl border border-slate-200/80 bg-white/85 p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_16px_32px_rgba(79,70,229,0.08)]"
             >
-              <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-orange-600 transition-colors">
-                {restaurant.name}
-              </h3>
-              <p className="text-sm text-slate-600 mb-4">
-                {Array.isArray(restaurant.cuisine)
-                  ? restaurant.cuisine.join(", ")
-                  : restaurant.cuisine}
-              </p>
-
-              <div className="space-y-2 text-sm text-slate-600 mb-4">
-                <p>
-                  📍 {restaurant.address}, {restaurant.city}
-                </p>
-                <p>📱 {restaurant.phone}</p>
-                <p>🔗 {restaurant.stats?.qrScans || 0} QR Scans</p>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-lg font-bold tracking-tighter text-slate-950 group-hover:text-violet-700 transition-colors">
+                    {restaurant.name}
+                  </h3>
+                  <p className="mt-1 text-sm uppercase tracking-[0.18em] text-slate-500">
+                    {Array.isArray(restaurant.cuisine)
+                      ? restaurant.cuisine.join(", ")
+                      : restaurant.cuisine}
+                  </p>
+                </div>
+                <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                  Live
+                </span>
               </div>
 
-              <div className="flex gap-2">
+              <div className="mt-4 space-y-2 rounded-2xl bg-slate-50/80 p-4 text-sm text-slate-600">
+                <p>
+                  <Building2 className="mr-2 inline-block h-4 w-4 text-violet-500" />
+                  {restaurant.address}, {restaurant.city}
+                </p>
+                <p>
+                  <Sparkles className="mr-2 inline-block h-4 w-4 text-violet-500" />
+                  {restaurant.stats?.qrScans || 0} QR scans
+                </p>
+                <p>
+                  <ChevronRight className="mr-2 inline-block h-4 w-4 text-violet-500" />
+                  {restaurant.phone}
+                </p>
+              </div>
+
+              <div className="mt-4 flex gap-2">
                 <Link
                   href={`/dashboard/restaurants/${restaurant._id}`}
-                  className="flex-1 btn-secondary text-sm text-center"
+                  className="flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-center text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:bg-violet-50/60"
                 >
                   View
                 </Link>
                 <button
                   onClick={() => handleDelete(restaurant._id, restaurant.name)}
                   disabled={deleting === restaurant._id}
-                  className="flex-1 bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm"
+                  className="flex-1 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {deleting === restaurant._id ? "Deleting..." : "Delete"}
                 </button>

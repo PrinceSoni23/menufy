@@ -6,6 +6,14 @@ import { apiClient } from "@/lib/api-client";
 import { API_BASE_URL, API_ENDPOINTS } from "@/lib/constants";
 import { showToast } from "@/components/common/Toast";
 import { MenuItem } from "@/lib/types";
+import {
+  Plus,
+  Search,
+  Sparkles,
+  UtensilsCrossed,
+  Edit3,
+  Trash2,
+} from "lucide-react";
 
 interface MenuManagerProps {
   restaurantId: string;
@@ -436,12 +444,17 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header with Add Button */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-black">Menu Items</h2>
-          <p className="text-black/70 text-sm mt-1">
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-violet-600">
+            Menu Management
+          </p>
+          <h2 className="mt-2 text-2xl font-black tracking-tighter text-slate-950">
+            Menu Items
+          </h2>
+          <p className="mt-1 text-sm text-slate-600">
             Manage your restaurant's menu
           </p>
         </div>
@@ -452,9 +465,15 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
             resetForm();
             setShowAddForm(!showAddForm);
           }}
-          className="px-6 py-3 bg-linear-to-r from-orange-500 to-amber-400 text-amber-950 font-bold rounded-lg transition-all"
+          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 via-indigo-600 to-sky-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(79,70,229,0.18)] transition-all"
         >
-          {showAddForm ? "Cancel" : "+ Add Item"}
+          {showAddForm ? (
+            "Cancel"
+          ) : (
+            <>
+              <Plus className="h-4 w-4" /> Add Item
+            </>
+          )}
         </motion.button>
       </div>
 
@@ -465,9 +484,10 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="bg-white border border-black/10 rounded-xl p-6"
+            className="rounded-3xl border border-slate-200/80 bg-white/85 p-5 shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur-xl sm:p-6"
           >
-            <h3 className="text-xl font-bold text-black mb-4">
+            <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-slate-950">
+              <UtensilsCrossed className="h-4 w-4 text-violet-600" />
               {editingId ? "Edit Menu Item" : "Add New Item"}
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -679,7 +699,7 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
                   whileTap={{ scale: 0.95 }}
                   type="submit"
                   disabled={uploading3D}
-                  className="flex-1 px-6 py-3 bg-linear-to-r from-orange-500 to-amber-400 text-amber-950 font-bold rounded-lg hover:shadow-lg transition-all"
+                  className="flex-1 rounded-2xl bg-linear-to-r from-violet-600 via-indigo-600 to-sky-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(79,70,229,0.18)] transition-all"
                 >
                   {uploading3D
                     ? `Uploading 3D... ${upload3DProgress}%`
@@ -692,7 +712,7 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
                   whileTap={{ scale: 0.95 }}
                   type="button"
                   onClick={resetForm}
-                  className="flex-1 px-6 py-3 bg-white border border-black/10 text-black font-bold rounded-lg transition-all"
+                  className="flex-1 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-all"
                 >
                   Cancel
                 </motion.button>
@@ -709,17 +729,17 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
           placeholder="Search items..."
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
-          className="flex-1 bg-white border border-black/10 rounded-lg px-4 py-2 text-black placeholder-black/40 focus:border-black/40 focus:outline-none"
+          className="flex-1 rounded-2xl border border-slate-200 bg-white/85 px-4 py-3 text-slate-950 placeholder:text-slate-400 focus:border-violet-300 focus:outline-none"
         />
         <div className="flex overflow-x-auto gap-2">
           {categories.map(cat => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-full font-semibold whitespace-nowrap transition-all ${
+              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition-all ${
                 selectedCategory === cat
-                  ? "bg-linear-to-r from-orange-500 to-amber-400 text-amber-950"
-                  : "bg-white text-black/70 hover:bg-black/2 border border-black/10"
+                  ? "bg-linear-to-r from-violet-600 via-indigo-600 to-sky-500 text-white"
+                  : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
               }`}
             >
               {CATEGORY_ICONS[cat.toLowerCase()] || "📋"}{" "}
@@ -735,9 +755,9 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-12 bg-white rounded-xl border border-black/10"
+            className="rounded-3xl border border-dashed border-slate-300 bg-white/85 py-12 text-center shadow-sm"
           >
-            <p className="text-black/70">
+            <p className="text-sm text-slate-600">
               No items found. Add your first menu item!
             </p>
           </motion.div>
@@ -752,21 +772,23 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
-                className="bg-white border border-black/10 rounded-xl p-4 hover:border-black/20 transition-all"
+                className="rounded-3xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_16px_36px_rgba(15,23,42,0.05)] transition-all hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_16px_32px_rgba(79,70,229,0.08)]"
               >
                 <div className="flex gap-4">
                   {item.imageUrl2D && (
                     <img
                       src={item.imageUrl2D}
                       alt={item.name}
-                      className="w-24 h-24 rounded-lg object-cover"
+                      className="h-24 w-24 rounded-2xl object-cover ring-1 ring-slate-200"
                     />
                   )}
                   <div className="flex-1">
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div className="flex-1">
-                        <h4 className="font-bold text-black">{item.name}</h4>
-                        <span className="inline-block px-2 py-1 rounded text-xs bg-black/3 text-black/70 mt-1">
+                        <h4 className="font-bold text-slate-950">
+                          {item.name}
+                        </h4>
+                        <span className="mt-1 inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600">
                           {CATEGORY_ICONS[
                             item.category?.toLowerCase() || "all"
                           ] || "📋"}{" "}

@@ -4,6 +4,15 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { apiClient } from "@/lib/api-client";
 import { showToast } from "@/components/common/Toast";
+import {
+  BarChart3,
+  Copy,
+  Download,
+  QrCode,
+  RefreshCw,
+  Sparkles,
+  Link2,
+} from "lucide-react";
 
 interface QRCodeManagerProps {
   restaurantId: string;
@@ -168,11 +177,16 @@ export default function QRCodeManager({
   console.log("QR Code state:", { qrCode, loading }); // Debug
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-black">QR Code Manager</h2>
-        <p className="text-black/70 text-sm mt-1">
+        <p className="text-xs font-bold uppercase tracking-[0.22em] text-violet-600">
+          QR Workspace
+        </p>
+        <h2 className="mt-2 text-2xl font-black tracking-tighter text-slate-950">
+          QR Code Manager
+        </h2>
+        <p className="mt-1 text-sm text-slate-600">
           Manage your restaurant's digital menu QR code
         </p>
       </div>
@@ -187,35 +201,38 @@ export default function QRCodeManager({
           {/* QR Code Card */}
           <motion.div
             whileHover={{ y: -4 }}
-            className="bg-white border border-black/10 rounded-xl p-8 flex flex-col items-center justify-center"
+            className="flex flex-col items-center justify-center rounded-3xl border border-slate-200/80 bg-white/85 p-5 shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur-xl"
           >
-            <div className="mb-4 text-sm font-semibold text-black">
+            <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-slate-800">
+              <QrCode className="h-4 w-4 text-violet-600" />
               Your Digital Menu QR Code
             </div>
             {qrCode.qrDataUrl && (
               <img
                 src={qrCode.qrDataUrl}
                 alt="Menu QR Code"
-                className="w-64 h-64 border-4 border-black/10 rounded-lg bg-white p-4"
+                className="h-60 w-60 rounded-2xl border border-slate-200 bg-white p-4"
               />
             )}
-            <div className="flex gap-3 mt-6 w-full">
+            <div className="mt-5 flex w-full gap-3">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={downloadQRCode}
-                className="flex-1 px-4 py-3 bg-linear-to-r from-black to-black/80 text-white font-bold rounded-lg transition-all"
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 via-indigo-600 to-sky-500 px-4 py-3 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(79,70,229,0.18)] transition-all"
               >
-                📥 Download
+                <Download className="h-4 w-4" />
+                Download
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={generateQRCode}
                 disabled={loading}
-                className="flex-1 px-4 py-3 bg-white border border-black/10 text-black font-bold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-all disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {loading ? "🔄 Regenerating..." : "🔄 Regenerate"}
+                <RefreshCw className="h-4 w-4" />
+                {loading ? "Regenerating..." : "Regenerate"}
               </motion.button>
             </div>
           </motion.div>
@@ -224,12 +241,15 @@ export default function QRCodeManager({
           <motion.div className="space-y-4">
             <motion.div
               whileHover={{ y: -4 }}
-              className="bg-white border border-black/10 rounded-xl p-6"
+              className="rounded-3xl border border-slate-200/80 bg-white/85 p-5 shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur-xl"
             >
-              <h3 className="text-lg font-bold text-black mb-4">Menu Link</h3>
+              <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-slate-950">
+                <Link2 className="h-4 w-4 text-violet-600" />
+                Menu Link
+              </h3>
               <div className="space-y-3">
                 <div>
-                  <p className="text-xs font-semibold text-black/70 mb-2">
+                  <p className="mb-2 text-xs font-semibold text-slate-500 uppercase tracking-[0.18em]">
                     Public Menu URL
                   </p>
                   <div className="flex gap-2">
@@ -237,15 +257,15 @@ export default function QRCodeManager({
                       type="text"
                       readOnly
                       value={`${window.location.origin}/menu/${qrCode.publicUrl}`}
-                      className="flex-1 bg-white border border-black/10 rounded-lg px-3 py-2 text-black text-sm"
+                      className="flex-1 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-950"
                     />
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={copyMenuLink}
-                      className="px-4 py-2 bg-black text-white font-semibold rounded-lg transition-all"
+                      className="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-4 py-2.5 text-white transition-all"
                     >
-                      {copying ? "✓" : "📋"}
+                      <Copy className="h-4 w-4" />
                     </motion.button>
                   </div>
                 </div>
@@ -256,33 +276,34 @@ export default function QRCodeManager({
             {analytics && (
               <motion.div
                 whileHover={{ y: -4 }}
-                className="bg-white border border-black/10 rounded-xl p-6"
+                className="rounded-3xl border border-slate-200/80 bg-white/85 p-5 shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur-xl"
               >
-                <h3 className="text-lg font-bold text-black mb-4">
-                  📊 Analytics
+                <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-slate-950">
+                  <BarChart3 className="h-4 w-4 text-violet-600" />
+                  Analytics
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white rounded-lg p-4 border border-black/10">
-                    <p className="text-black/70 text-sm">Total Scans</p>
-                    <p className="text-2xl font-bold text-black">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+                    <p className="text-sm text-slate-500">Total Scans</p>
+                    <p className="text-2xl font-black tracking-tighter text-slate-950">
                       {analytics.totalScans || 0}
                     </p>
                   </div>
-                  <div className="bg-white rounded-lg p-4 border border-black/10">
-                    <p className="text-black/70 text-sm">Scans Today</p>
-                    <p className="text-2xl font-bold text-black">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+                    <p className="text-sm text-slate-500">Scans Today</p>
+                    <p className="text-2xl font-black tracking-tighter text-slate-950">
                       {analytics.scansToday || 0}
                     </p>
                   </div>
-                  <div className="bg-white rounded-lg p-4 border border-black/10">
-                    <p className="text-black/70 text-sm">Unique Devices</p>
-                    <p className="text-2xl font-bold text-black">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+                    <p className="text-sm text-slate-500">Unique Devices</p>
+                    <p className="text-2xl font-black tracking-tighter text-slate-950">
                       {analytics.uniqueDevices || 0}
                     </p>
                   </div>
-                  <div className="bg-white rounded-lg p-4 border border-black/10">
-                    <p className="text-black/70 text-sm">Last Scanned</p>
-                    <p className="text-sm font-semibold text-black">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+                    <p className="text-sm text-slate-500">Last Scanned</p>
+                    <p className="text-sm font-semibold text-slate-900">
                       {analytics.lastScannedAt
                         ? new Date(analytics.lastScannedAt).toLocaleDateString()
                         : "Never"}
@@ -297,11 +318,15 @@ export default function QRCodeManager({
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white border border-black/10 rounded-xl p-12 text-center"
+          className="rounded-3xl border border-slate-200/80 bg-white/85 p-10 text-center shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur-xl"
         >
-          <div className="text-4xl mb-4">🎟️</div>
-          <h3 className="text-xl font-bold text-black mb-2">No QR Code Yet</h3>
-          <p className="text-black/70 mb-6">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-violet-100 via-white to-emerald-100 text-violet-600">
+            <QrCode className="h-6 w-6" />
+          </div>
+          <h3 className="mb-2 text-xl font-black tracking-tighter text-slate-950">
+            No QR Code Yet
+          </h3>
+          <p className="mb-6 text-sm text-slate-600">
             Generate a QR code to start sharing your digital menu
           </p>
           <motion.button
@@ -309,9 +334,10 @@ export default function QRCodeManager({
             whileTap={{ scale: 0.95 }}
             onClick={generateQRCode}
             disabled={loading}
-            className="px-8 py-3 bg-linear-to-r from-orange-500 to-amber-400 text-amber-950 font-bold rounded-lg hover:shadow-lg hover:shadow-orange-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 via-indigo-600 to-sky-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(79,70,229,0.18)] transition-all disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading ? "🔄 Generating..." : "Generate QR Code"}
+            <Sparkles className="h-4 w-4" />
+            {loading ? "Generating..." : "Generate QR Code"}
           </motion.button>
         </motion.div>
       )}
@@ -321,10 +347,10 @@ export default function QRCodeManager({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-white border border-black/10 rounded-xl p-6"
+        className="rounded-3xl border border-slate-200/80 bg-white/85 p-5 shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur-xl"
       >
-        <h3 className="text-lg font-bold text-black mb-4">How to Use</h3>
-        <ul className="space-y-2 text-black/70 text-sm">
+        <h3 className="mb-4 text-lg font-bold text-slate-950">How to Use</h3>
+        <ul className="space-y-2 text-sm text-slate-600">
           <li>
             ✓ Download the QR code and print it for your tables or display
           </li>

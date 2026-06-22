@@ -4,6 +4,14 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { showToast } from "@/components/common/Toast";
 import { confirmAction } from "@/components/common/ConfirmDialog";
+import {
+  Bell,
+  CreditCard,
+  LayoutGrid,
+  Lock,
+  Trash2,
+  UserRound,
+} from "lucide-react";
 
 export default function SettingsPage() {
   const { user } = useAuth();
@@ -161,36 +169,39 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl hero-title font-bold text-slate-900">
+    <div className="space-y-5">
+      <section className="rounded-3xl border border-slate-200/80 bg-white/85 p-5 shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur-xl sm:p-6">
+        <p className="text-xs font-bold uppercase tracking-[0.22em] text-violet-600">
+          Workspace Settings
+        </p>
+        <h2 className="mt-2 text-2xl font-black tracking-tighter text-slate-950 sm:text-3xl">
           Settings
         </h2>
-        <p className="text-slate-600 mt-1">
-          Manage your account and preferences
+        <p className="mt-2 text-sm text-slate-600">
+          Manage your account and preferences in one compact workspace.
         </p>
-      </div>
+      </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
         {/* Sidebar Navigation */}
         <div className="lg:col-span-1">
-          <div className="card bg-white/90 border-slate-200 p-0 overflow-hidden">
+          <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white/85 shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur-xl">
             {[
-              { id: "account", label: "Account", icon: "👤" },
-              { id: "security", label: "Security", icon: "🔒" },
-              { id: "notifications", label: "Notifications", icon: "🔔" },
-              { id: "billing", label: "Billing", icon: "💳" },
+              { id: "account", label: "Account", icon: UserRound },
+              { id: "security", label: "Security", icon: Lock },
+              { id: "notifications", label: "Notifications", icon: Bell },
+              { id: "billing", label: "Billing", icon: CreditCard },
             ].map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full px-6 py-3 text-left flex items-center space-x-3 transition-colors ${
+                className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-semibold transition-colors ${
                   activeTab === tab.id
-                    ? "bg-cyan-500/20 text-cyan-300 border-l-2 border-cyan-500"
+                    ? "bg-linear-to-r from-violet-600 via-indigo-600 to-sky-500 text-white"
                     : "text-slate-600 hover:bg-slate-50"
                 }`}
               >
-                <span className="text-lg">{tab.icon}</span>
+                <tab.icon className="h-4 w-4" />
                 <span>{tab.label}</span>
               </button>
             ))}
@@ -199,13 +210,16 @@ export default function SettingsPage() {
 
         {/* Content */}
         <div className="lg:col-span-3">
-          <div className="card bg-white/90 border-slate-200">
+          <div className="rounded-3xl border border-slate-200/80 bg-white/85 p-5 shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur-xl sm:p-6">
             {activeTab === "account" && (
               <form onSubmit={handleSaveAccount} className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-4">
+                  <h3 className="mb-2 text-lg font-bold text-slate-950">
                     Account Information
                   </h3>
+                  <p className="text-sm text-slate-600">
+                    Edit your display name and manage account access.
+                  </p>
                 </div>
 
                 <div>
@@ -235,23 +249,24 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="border-t border-slate-200 pt-6">
-                  <h4 className="font-semibold text-slate-900 mb-4">
+                  <h4 className="mb-4 text-sm font-bold uppercase tracking-[0.18em] text-slate-700">
                     Danger Zone
                   </h4>
                   <button
                     type="button"
                     onClick={handleDeleteAccount}
                     disabled={saving}
-                    className="px-4 py-2 border border-red-500/50 text-red-400 rounded-lg hover:bg-red-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    🗑️ Delete Account
+                    <Trash2 className="h-4 w-4" />
+                    Delete Account
                   </button>
                 </div>
 
                 <button
                   type="submit"
                   disabled={saving}
-                  className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 via-indigo-600 to-sky-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(79,70,229,0.18)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {saving ? (
                     <>
@@ -268,9 +283,12 @@ export default function SettingsPage() {
             {activeTab === "security" && (
               <form onSubmit={handlePasswordChange} className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-4">
+                  <h3 className="mb-2 text-lg font-bold text-slate-950">
                     Change Password
                   </h3>
+                  <p className="text-sm text-slate-600">
+                    Keep access credentials current and secure.
+                  </p>
                 </div>
 
                 <div>
@@ -315,7 +333,7 @@ export default function SettingsPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 via-indigo-600 to-sky-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(79,70,229,0.18)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {saving ? (
                     <>
@@ -332,9 +350,12 @@ export default function SettingsPage() {
             {activeTab === "notifications" && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-4">
+                  <h3 className="mb-2 text-lg font-bold text-slate-950">
                     Notification Preferences
                   </h3>
+                  <p className="text-sm text-slate-600">
+                    Choose which updates should reach your inbox.
+                  </p>
                 </div>
 
                 <div className="space-y-4">
@@ -362,7 +383,7 @@ export default function SettingsPage() {
                   ].map(pref => (
                     <label
                       key={pref.id}
-                      className="flex items-center space-x-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100"
+                      className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-3 cursor-pointer transition hover:border-violet-200 hover:bg-violet-50/50"
                     >
                       <input
                         type="checkbox"
@@ -384,7 +405,7 @@ export default function SettingsPage() {
                   type="button"
                   onClick={handleSaveNotifications}
                   disabled={saving}
-                  className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 via-indigo-600 to-sky-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(79,70,229,0.18)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {saving ? (
                     <>
@@ -401,15 +422,22 @@ export default function SettingsPage() {
             {activeTab === "billing" && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-4">
+                  <h3 className="mb-2 text-lg font-bold text-slate-950">
                     Billing & Plan
                   </h3>
+                  <p className="text-sm text-slate-600">
+                    Review your current plan and upgrade when needed.
+                  </p>
                 </div>
 
-                <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                  <p className="font-semibold text-slate-900">Current Plan</p>
-                  <p className="text-cyan-400 text-lg mt-2">Free Tier</p>
-                  <p className="text-slate-600 text-sm mt-2">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+                  <p className="text-sm font-bold text-slate-900">
+                    Current Plan
+                  </p>
+                  <p className="mt-2 text-lg font-black tracking-tighter text-violet-700">
+                    Free Tier
+                  </p>
+                  <p className="mt-2 text-sm text-slate-600">
                     Perfect for getting started
                   </p>
                 </div>
@@ -448,8 +476,10 @@ export default function SettingsPage() {
                       key={plan.name}
                       className={`border rounded-lg p-4 text-center transition-all bg-white ${plan.name === "Business" ? "border-cyan-500 bg-cyan-50" : "border-slate-200 hover:border-cyan-500/50"}`}
                     >
-                      <h4 className="font-bold text-slate-900">{plan.name}</h4>
-                      <p className="text-cyan-400 text-lg mt-2">{plan.price}</p>
+                      <h4 className="font-bold text-slate-950">{plan.name}</h4>
+                      <p className="mt-2 text-lg font-black tracking-tighter text-violet-700">
+                        {plan.price}
+                      </p>
                       <ul className="text-sm text-slate-600 mt-4 space-y-1">
                         {plan.features.map(feature => (
                           <li key={feature}>✓ {feature}</li>
@@ -458,7 +488,7 @@ export default function SettingsPage() {
                       <button
                         type="button"
                         disabled={plan.name === "Business"}
-                        className="btn-secondary w-full mt-4 text-sm disabled:opacity-50"
+                        className="mt-4 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-violet-200 hover:bg-violet-50/60 disabled:opacity-50"
                       >
                         {plan.name === "Business" ? "Current Plan" : "Upgrade"}
                       </button>

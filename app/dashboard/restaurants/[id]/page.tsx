@@ -5,6 +5,14 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { Restaurant } from "@/lib/types";
+import {
+  ArrowLeft,
+  Building2,
+  Edit3,
+  MenuSquare,
+  Phone,
+  Save,
+} from "lucide-react";
 
 export default function RestaurantDetailPage() {
   const router = useRouter();
@@ -74,7 +82,7 @@ export default function RestaurantDetailPage() {
 
   if (loading) {
     return (
-      <div className="text-center py-12">
+      <div className="py-12 text-center">
         <div className="animate-spin text-4xl mb-4">⚙️</div>
         <p className="text-slate-600">Loading restaurant...</p>
       </div>
@@ -83,9 +91,12 @@ export default function RestaurantDetailPage() {
 
   if (!currentRestaurant) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-400 mb-4">Restaurant not found</p>
-        <Link href="/dashboard/restaurants" className="btn-primary">
+      <div className="py-12 text-center">
+        <p className="mb-4 text-rose-600">Restaurant not found</p>
+        <Link
+          href="/dashboard/restaurants"
+          className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white"
+        >
           Back to Restaurants
         </Link>
       </div>
@@ -93,53 +104,80 @@ export default function RestaurantDetailPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Link
           href="/dashboard/restaurants"
-          className="text-orange-600 hover:text-orange-700"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-violet-700 transition hover:text-violet-900"
         >
-          ← Back to Restaurants
+          <ArrowLeft className="h-4 w-4" />
+          Back to Restaurants
         </Link>
         <button
           onClick={() => setEditing(!editing)}
-          className={editing ? "btn-secondary" : "btn-primary"}
+          className={
+            editing
+              ? "inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm"
+              : "inline-flex items-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 via-indigo-600 to-sky-500 px-4 py-2.5 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(79,70,229,0.18)]"
+          }
         >
-          {editing ? "Cancel" : "✏️ Edit"}
+          {editing ? (
+            <>
+              <Edit3 className="h-4 w-4" /> Cancel
+            </>
+          ) : (
+            <>
+              <Edit3 className="h-4 w-4" /> Edit
+            </>
+          )}
         </button>
       </div>
 
       <div className="grid grid-cols-1 gap-6">
         <div className="space-y-6">
-          <div className="card bg-white/90 border-slate-200">
+          <div className="rounded-3xl border border-slate-200/80 bg-white/85 p-5 shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur-xl sm:p-6">
             {error && (
-              <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 mb-4">
+              <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
                 {error}
               </div>
             )}
 
             {!editing ? (
               <div className="space-y-4">
-                <div>
-                  <h2 className="text-3xl hero-title font-bold text-slate-900">
-                    {currentRestaurant.name}
-                  </h2>
-                  <p className="text-slate-600 mt-1">
-                    {currentRestaurant.cuisine}
-                  </p>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.22em] text-violet-600">
+                      Restaurant Profile
+                    </p>
+                    <h2 className="mt-2 text-2xl font-black tracking-tighter text-slate-950 sm:text-3xl">
+                      {currentRestaurant.name}
+                    </h2>
+                    <p className="mt-1 text-sm text-slate-600">
+                      {currentRestaurant.cuisine}
+                    </p>
+                  </div>
+                  <div className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                    Active
+                  </div>
                 </div>
-                <div className="space-y-2 text-slate-700">
+                <div className="space-y-2 text-sm text-slate-700">
                   <p>
-                    <span className="font-semibold">📍 Location:</span>{" "}
+                    <span className="font-semibold text-slate-900">
+                      📍 Location:
+                    </span>{" "}
                     {currentRestaurant.location}
                   </p>
                   <p>
-                    <span className="font-semibold">📱 Phone:</span>{" "}
+                    <span className="font-semibold text-slate-900">
+                      📱 Phone:
+                    </span>{" "}
                     {currentRestaurant.phone}
                   </p>
                   {currentRestaurant.description && (
                     <p>
-                      <span className="font-semibold">📝 Description:</span>{" "}
+                      <span className="font-semibold text-slate-900">
+                        📝 Description:
+                      </span>{" "}
                       {currentRestaurant.description}
                     </p>
                   )}
