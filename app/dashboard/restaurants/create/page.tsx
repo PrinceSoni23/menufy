@@ -111,14 +111,14 @@ export default function CreateRestaurantPage() {
       <div className="mb-6">
         <Link
           href="/dashboard/restaurants"
-          className="text-orange-200 hover:text-orange-100"
+          className="text-orange-600 hover:text-orange-700"
         >
           ← Back to Restaurants
         </Link>
       </div>
 
-      <div className="card">
-        <h2 className="text-3xl hero-title font-bold text-slate-100 mb-6">
+      <div className="card bg-white/90 border-slate-200">
+        <h2 className="text-3xl hero-title font-bold text-slate-900 mb-6">
           Create Restaurant
         </h2>
 
@@ -240,4 +240,3 @@ export default function CreateRestaurantPage() {
     </div>
   );
 }
-

@@ -163,10 +163,10 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl hero-title font-bold text-slate-100">
+        <h2 className="text-3xl hero-title font-bold text-slate-900">
           Settings
         </h2>
-        <p className="text-slate-400 mt-1">
+        <p className="text-slate-600 mt-1">
           Manage your account and preferences
         </p>
       </div>
@@ -174,7 +174,7 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Sidebar Navigation */}
         <div className="lg:col-span-1">
-          <div className="card p-0 overflow-hidden">
+          <div className="card bg-white/90 border-slate-200 p-0 overflow-hidden">
             {[
               { id: "account", label: "Account", icon: "👤" },
               { id: "security", label: "Security", icon: "🔒" },
@@ -187,7 +187,7 @@ export default function SettingsPage() {
                 className={`w-full px-6 py-3 text-left flex items-center space-x-3 transition-colors ${
                   activeTab === tab.id
                     ? "bg-cyan-500/20 text-cyan-300 border-l-2 border-cyan-500"
-                    : "text-slate-400 hover:bg-slate-700/50"
+                    : "text-slate-600 hover:bg-slate-50"
                 }`}
               >
                 <span className="text-lg">{tab.icon}</span>
@@ -199,11 +199,11 @@ export default function SettingsPage() {
 
         {/* Content */}
         <div className="lg:col-span-3">
-          <div className="card">
+          <div className="card bg-white/90 border-slate-200">
             {activeTab === "account" && (
               <form onSubmit={handleSaveAccount} className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-100 mb-4">
+                  <h3 className="text-xl font-bold text-slate-900 mb-4">
                     Account Information
                   </h3>
                 </div>
@@ -234,8 +234,8 @@ export default function SettingsPage() {
                   </p>
                 </div>
 
-                <div className="border-t border-slate-700 pt-6">
-                  <h4 className="font-semibold text-slate-100 mb-4">
+                <div className="border-t border-slate-200 pt-6">
+                  <h4 className="font-semibold text-slate-900 mb-4">
                     Danger Zone
                   </h4>
                   <button
@@ -268,7 +268,7 @@ export default function SettingsPage() {
             {activeTab === "security" && (
               <form onSubmit={handlePasswordChange} className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-100 mb-4">
+                  <h3 className="text-xl font-bold text-slate-900 mb-4">
                     Change Password
                   </h3>
                 </div>
@@ -332,7 +332,7 @@ export default function SettingsPage() {
             {activeTab === "notifications" && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-100 mb-4">
+                  <h3 className="text-xl font-bold text-slate-900 mb-4">
                     Notification Preferences
                   </h3>
                 </div>
@@ -362,7 +362,7 @@ export default function SettingsPage() {
                   ].map(pref => (
                     <label
                       key={pref.id}
-                      className="flex items-center space-x-3 p-3 bg-slate-700/30 rounded-lg cursor-pointer hover:bg-slate-700/50"
+                      className="flex items-center space-x-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100"
                     >
                       <input
                         type="checkbox"
@@ -371,10 +371,10 @@ export default function SettingsPage() {
                         className="w-4 h-4 rounded border-slate-600 accent-cyan-500"
                       />
                       <div>
-                        <p className="font-semibold text-slate-100">
+                        <p className="font-semibold text-slate-900">
                           {pref.label}
                         </p>
-                        <p className="text-sm text-slate-400">{pref.desc}</p>
+                        <p className="text-sm text-slate-600">{pref.desc}</p>
                       </div>
                     </label>
                   ))}
@@ -401,15 +401,15 @@ export default function SettingsPage() {
             {activeTab === "billing" && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-100 mb-4">
+                  <h3 className="text-xl font-bold text-slate-900 mb-4">
                     Billing & Plan
                   </h3>
                 </div>
 
-                <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-700">
-                  <p className="font-semibold text-slate-100">Current Plan</p>
+                <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                  <p className="font-semibold text-slate-900">Current Plan</p>
                   <p className="text-cyan-400 text-lg mt-2">Free Tier</p>
-                  <p className="text-slate-400 text-sm mt-2">
+                  <p className="text-slate-600 text-sm mt-2">
                     Perfect for getting started
                   </p>
                 </div>
@@ -446,11 +446,11 @@ export default function SettingsPage() {
                   ].map(plan => (
                     <div
                       key={plan.name}
-                      className={`border rounded-lg p-4 text-center transition-all ${plan.name === "Business" ? "border-cyan-500 bg-cyan-500/5" : "border-slate-600 hover:border-cyan-500/50"}`}
+                      className={`border rounded-lg p-4 text-center transition-all bg-white ${plan.name === "Business" ? "border-cyan-500 bg-cyan-50" : "border-slate-200 hover:border-cyan-500/50"}`}
                     >
-                      <h4 className="font-bold text-slate-100">{plan.name}</h4>
+                      <h4 className="font-bold text-slate-900">{plan.name}</h4>
                       <p className="text-cyan-400 text-lg mt-2">{plan.price}</p>
-                      <ul className="text-sm text-slate-400 mt-4 space-y-1">
+                      <ul className="text-sm text-slate-600 mt-4 space-y-1">
                         {plan.features.map(feature => (
                           <li key={feature}>✓ {feature}</li>
                         ))}
@@ -473,4 +473,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-

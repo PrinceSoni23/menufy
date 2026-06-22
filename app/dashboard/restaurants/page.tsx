@@ -56,10 +56,10 @@ export default function RestaurantsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl hero-title font-bold text-slate-100">
+          <h2 className="text-3xl hero-title font-bold text-slate-900">
             Restaurants
           </h2>
-          <p className="text-slate-400 mt-1">
+          <p className="text-slate-600 mt-1">
             Manage all your restaurant locations
           </p>
         </div>
@@ -75,9 +75,9 @@ export default function RestaurantsPage() {
           ))}
         </div>
       ) : restaurants.length === 0 ? (
-        <div className="card text-center py-12">
+        <div className="card bg-white/90 border-slate-200 text-center py-12">
           <div className="text-4xl mb-4">🏪</div>
-          <p className="text-slate-400 mb-4">No restaurants yet</p>
+          <p className="text-slate-600 mb-4">No restaurants yet</p>
           <Link
             href="/dashboard/restaurants/create"
             className="btn-primary inline-block"
@@ -90,18 +90,18 @@ export default function RestaurantsPage() {
           {restaurants.map(restaurant => (
             <div
               key={restaurant._id}
-              className="card group hover:border-orange-300/50 transition-all"
+              className="card bg-white/90 border-slate-200 group hover:border-orange-300/50 transition-all"
             >
-              <h3 className="text-xl font-bold text-slate-100 mb-2 group-hover:text-orange-200 transition-colors">
+              <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-orange-600 transition-colors">
                 {restaurant.name}
               </h3>
-              <p className="text-sm text-slate-400 mb-4">
+              <p className="text-sm text-slate-600 mb-4">
                 {Array.isArray(restaurant.cuisine)
                   ? restaurant.cuisine.join(", ")
                   : restaurant.cuisine}
               </p>
 
-              <div className="space-y-2 text-sm text-slate-500 mb-4">
+              <div className="space-y-2 text-sm text-slate-600 mb-4">
                 <p>
                   📍 {restaurant.address}, {restaurant.city}
                 </p>
@@ -131,4 +131,3 @@ export default function RestaurantsPage() {
     </div>
   );
 }
-

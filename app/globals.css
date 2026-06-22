@@ -560,87 +560,62 @@ body::before {
 }
 
 .dashboard-shell.dashboard-light {
-  background: linear-gradient(135deg, #fff7ec 0%, #f6f8ff 50%, #e9fbff 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%);
   color: #0f172a;
   color-scheme: light;
 }
 
 .dashboard-shell.dashboard-light .glass-panel {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.88),
-    rgba(246, 248, 255, 0.82)
-  );
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  box-shadow:
-    0 18px 40px rgba(148, 163, 184, 0.18),
-    inset 0 1px 1px rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.dashboard-shell.dashboard-light [class*="backdrop-blur"] {
+  backdrop-filter: none !important;
+}
+
+.dashboard-shell.dashboard-light [class*="shadow-"] {
+  box-shadow: none !important;
 }
 
 .dashboard-shell.dashboard-light .card {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.92) 0%,
-    rgba(250, 250, 255, 0.9) 100%
-  );
-  border: 1.5px solid rgba(148, 163, 184, 0.25);
-  box-shadow:
-    0 22px 50px rgba(148, 163, 184, 0.18),
-    inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.98);
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  box-shadow: none;
   color: #0f172a;
 }
 
 .dashboard-shell.dashboard-light .card::before {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.7),
-    rgba(255, 255, 255, 0)
-  );
+  background: none;
+  opacity: 0;
 }
 
 .dashboard-shell.dashboard-light .card:hover {
-  border-color: rgba(148, 163, 184, 0.45);
-  box-shadow:
-    0 32px 70px rgba(148, 163, 184, 0.22),
-    inset 0 1px 2px rgba(255, 255, 255, 0.9);
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.98) 0%,
-    rgba(246, 248, 255, 0.95) 100%
-  );
+  border-color: rgba(0, 0, 0, 0.14);
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.98);
 }
 
 .dashboard-shell.dashboard-light .card-gradient {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 245, 235, 0.9) 0%,
-    rgba(236, 244, 255, 0.9) 100%
-  );
-  border: 1.5px solid rgba(148, 163, 184, 0.25);
-  box-shadow:
-    0 24px 55px rgba(148, 163, 184, 0.18),
-    inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.98);
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  box-shadow: none;
   color: #0f172a;
 }
 
 .dashboard-shell.dashboard-light .card-gradient:hover {
-  border-color: rgba(148, 163, 184, 0.45);
-  box-shadow:
-    0 36px 80px rgba(148, 163, 184, 0.22),
-    inset 0 1px 2px rgba(255, 255, 255, 0.9);
-  background: linear-gradient(
-    135deg,
-    rgba(255, 245, 235, 0.98) 0%,
-    rgba(236, 244, 255, 0.96) 100%
-  );
+  border-color: rgba(0, 0, 0, 0.14);
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.98);
 }
 
 .dashboard-shell.dashboard-light .form-input {
   color: #0f172a;
-  background: rgba(255, 255, 255, 0.85);
-  border: 1.5px solid rgba(148, 163, 184, 0.35);
-  box-shadow: inset 0 2px 4px rgba(148, 163, 184, 0.12);
+  background: rgba(255, 255, 255, 0.98);
+  border: 1.5px solid rgba(0, 0, 0, 0.1);
+  box-shadow: none;
 }
 
 .dashboard-shell.dashboard-light .form-input::placeholder {
@@ -649,25 +624,47 @@ body::before {
 
 .dashboard-shell.dashboard-light .form-input:focus {
   outline: none;
-  border-color: rgba(14, 165, 233, 0.6);
-  box-shadow:
-    0 0 0 3px rgba(14, 165, 233, 0.15),
-    inset 0 2px 4px rgba(148, 163, 184, 0.12);
-  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.99);
+}
+
+.dashboard-shell.dashboard-light .hero-title,
+.dashboard-shell.dashboard-light .heading-shadow,
+.dashboard-shell.dashboard-light h1,
+.dashboard-shell.dashboard-light h2,
+.dashboard-shell.dashboard-light h3 {
+  text-shadow: none !important;
+  color: #000000 !important;
+}
+
+.dashboard-shell.dashboard-light .gradient-text,
+.dashboard-shell.dashboard-light .gradient-text-bold {
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  color: #000000 !important;
 }
 
 .dashboard-shell.dashboard-light .text-slate-100,
 .dashboard-shell.dashboard-light .text-slate-200 {
-  color: #0f172a !important;
+  color: #000000 !important;
 }
 
 .dashboard-shell.dashboard-light .text-slate-300,
 .dashboard-shell.dashboard-light .text-slate-400 {
-  color: #64748b !important;
+  color: #1f1f1f !important;
 }
 
 .dashboard-shell.dashboard-light .text-slate-500 {
-  color: #94a3b8 !important;
+  color: #4b5563 !important;
+}
+
+.dashboard-shell.dashboard-light .text-slate-600,
+.dashboard-shell.dashboard-light .text-slate-700,
+.dashboard-shell.dashboard-light .text-slate-800,
+.dashboard-shell.dashboard-light .text-slate-900 {
+  color: #000000 !important;
 }
 
 .dashboard-shell.dashboard-light .text-orange-200,
@@ -676,41 +673,84 @@ body::before {
 }
 
 .dashboard-shell.dashboard-light .border-slate-700 {
-  border-color: rgba(148, 163, 184, 0.35) !important;
+  border-color: rgba(0, 0, 0, 0.14) !important;
 }
 
 .dashboard-shell.dashboard-light .border-slate-600 {
-  border-color: rgba(148, 163, 184, 0.45) !important;
+  border-color: rgba(0, 0, 0, 0.18) !important;
+}
+
+.dashboard-shell.dashboard-light .border-slate-500,
+.dashboard-shell.dashboard-light .border-slate-400,
+.dashboard-shell.dashboard-light .border-slate-300,
+.dashboard-shell.dashboard-light .border-slate-200,
+.dashboard-shell.dashboard-light .border-slate-100 {
+  border-color: rgba(0, 0, 0, 0.08) !important;
 }
 
 .dashboard-shell.dashboard-light .bg-slate-900,
 .dashboard-shell.dashboard-light .bg-slate-800,
 .dashboard-shell.dashboard-light .bg-slate-800\/50,
+.dashboard-shell.dashboard-light .bg-slate-800\/30,
 .dashboard-shell.dashboard-light .bg-slate-700,
-.dashboard-shell.dashboard-light .bg-slate-700\/50 {
-  background-color: rgba(255, 255, 255, 0.85) !important;
+.dashboard-shell.dashboard-light .bg-slate-700\/50,
+.dashboard-shell.dashboard-light .bg-slate-700\/40,
+.dashboard-shell.dashboard-light .bg-slate-700\/30,
+.dashboard-shell.dashboard-light .bg-slate-700\/80,
+.dashboard-shell.dashboard-light .bg-slate-500,
+.dashboard-shell.dashboard-light .bg-slate-500\/10,
+.dashboard-shell.dashboard-light .bg-slate-50,
+.dashboard-shell.dashboard-light [class*="bg-slate-6"],
+.dashboard-shell.dashboard-light [class*="bg-slate-7"],
+.dashboard-shell.dashboard-light [class*="bg-slate-8"],
+.dashboard-shell.dashboard-light [class*="bg-slate-9"] {
+  background-color: rgba(255, 255, 255, 0.94) !important;
 }
 
 .dashboard-shell.dashboard-light .from-slate-900,
 .dashboard-shell.dashboard-light .from-slate-800,
-.dashboard-shell.dashboard-light .from-slate-700 {
-  --tw-gradient-from: #fff7ec !important;
-  --tw-gradient-to: rgba(255, 247, 236, 0) !important;
+.dashboard-shell.dashboard-light .from-slate-700,
+.dashboard-shell.dashboard-light [class*="from-slate-6"],
+.dashboard-shell.dashboard-light [class*="from-slate-7"],
+.dashboard-shell.dashboard-light [class*="from-slate-8"],
+.dashboard-shell.dashboard-light [class*="from-slate-9"] {
+  --tw-gradient-from: #ffffff !important;
+  --tw-gradient-to: rgba(255, 255, 255, 0) !important;
   --tw-gradient-stops:
     var(--tw-gradient-from), var(--tw-gradient-to) !important;
 }
 
 .dashboard-shell.dashboard-light .via-slate-900,
 .dashboard-shell.dashboard-light .via-slate-800,
-.dashboard-shell.dashboard-light .via-slate-700 {
+.dashboard-shell.dashboard-light .via-slate-700,
+.dashboard-shell.dashboard-light [class*="via-slate-6"],
+.dashboard-shell.dashboard-light [class*="via-slate-7"],
+.dashboard-shell.dashboard-light [class*="via-slate-8"],
+.dashboard-shell.dashboard-light [class*="via-slate-9"] {
   --tw-gradient-stops:
-    var(--tw-gradient-from), #f6f8ff, var(--tw-gradient-to) !important;
+    var(--tw-gradient-from), #f3f4f6, var(--tw-gradient-to) !important;
 }
 
 .dashboard-shell.dashboard-light .to-slate-900,
 .dashboard-shell.dashboard-light .to-slate-800,
-.dashboard-shell.dashboard-light .to-slate-700 {
-  --tw-gradient-to: #e9fbff !important;
+.dashboard-shell.dashboard-light .to-slate-700,
+.dashboard-shell.dashboard-light [class*="to-slate-6"],
+.dashboard-shell.dashboard-light [class*="to-slate-7"],
+.dashboard-shell.dashboard-light [class*="to-slate-8"],
+.dashboard-shell.dashboard-light [class*="to-slate-9"] {
+  --tw-gradient-to: #f9fafb !important;
+}
+
+.dashboard-shell.dashboard-light .border-slate-700\/50,
+.dashboard-shell.dashboard-light .border-slate-700,
+.dashboard-shell.dashboard-light .border-slate-600,
+.dashboard-shell.dashboard-light .border-slate-500,
+.dashboard-shell.dashboard-light .border-slate-500\/30,
+.dashboard-shell.dashboard-light [class*="border-slate-6"],
+.dashboard-shell.dashboard-light [class*="border-slate-7"],
+.dashboard-shell.dashboard-light [class*="border-slate-8"],
+.dashboard-shell.dashboard-light [class*="border-slate-9"] {
+  border-color: rgba(0, 0, 0, 0.14) !important;
 }
 
 .dashboard-shell.dashboard-dark {

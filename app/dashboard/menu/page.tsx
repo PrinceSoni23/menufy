@@ -33,13 +33,13 @@ export default function MenuPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-12 text-center"
+        className="bg-white/90 backdrop-blur border border-slate-200 rounded-xl p-12 text-center shadow-[0_20px_50px_rgba(148,163,184,0.16)]"
       >
         <div className="text-4xl mb-4">🏪</div>
-        <h3 className="text-xl font-bold text-slate-100 mb-2">
+        <h3 className="text-xl font-bold text-slate-900 mb-2">
           Select a Restaurant
         </h3>
-        <p className="text-slate-400">
+        <p className="text-slate-600">
           Please select a restaurant from the sidebar to manage its menu and QR
           code
         </p>
@@ -55,7 +55,7 @@ export default function MenuPage() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 rounded-xl p-8"
+        className="bg-linear-to-r from-white to-slate-50 border border-slate-200 rounded-xl p-8 shadow-[0_20px_50px_rgba(148,163,184,0.16)]"
       >
         <div className="flex items-center gap-4 mb-4">
           {restaurant?.imageUrl && (
@@ -66,10 +66,10 @@ export default function MenuPage() {
             />
           )}
           <div>
-            <h1 className="text-3xl font-bold text-slate-100">
+            <h1 className="text-3xl font-bold text-slate-900">
               {restaurant?.name}
             </h1>
-            <p className="text-slate-400">
+            <p className="text-slate-600">
               Manage your digital menu and QR code
             </p>
           </div>
@@ -80,7 +80,7 @@ export default function MenuPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex gap-2 bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-2"
+        className="flex gap-2 bg-white/90 backdrop-blur border border-slate-200 rounded-xl p-2"
       >
         {[
           { id: "menu" as const, label: "📋 Menu Items", icon: "🍽️" },
@@ -93,8 +93,8 @@ export default function MenuPage() {
             whileTap={{ scale: 0.98 }}
             className={`flex-1 px-6 py-3 rounded-lg font-bold transition-all ${
               activeTab === tab.id
-                ? "bg-gradient-to-r from-orange-500 to-amber-400 text-amber-950 shadow-lg shadow-orange-500/30"
-                : "text-slate-300 hover:text-slate-100"
+                ? "bg-linear-to-r from-orange-500 to-amber-400 text-amber-950 shadow-lg shadow-orange-500/20"
+                : "text-slate-600 hover:text-slate-900"
             }`}
           >
             {tab.label}

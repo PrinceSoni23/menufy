@@ -19,6 +19,62 @@ const API_BASE =
   process.env.NEXT_PUBLIC_API_URL ||
   "http://localhost:5000/api";
 
+const DEFAULT_MENU_BACKGROUND = "/download%20(5).jpeg";
+const CATEGORY_BACKGROUNDS: Array<{ match: RegExp; src: string }> = [
+  { match: /\b(starter|appetizer|snack|salad)s?\b/i, src: "/starters.jpeg" },
+  { match: /\b(main|mains|main course|entree|entrees)\b/i, src: "/mains.jpeg" },
+  {
+    match: /\b(dessert|desserts|sweet|sweets|cake|pastry)\b/i,
+    src: "/desserts.jpeg",
+  },
+  {
+    match:
+      /\b(drink|drinks|beverage|beverages|juice|soda|coffee|tea|mocktail|cocktail|beer|wine|smoothie)\b/i,
+    src: "/drinks.jpeg",
+  },
+];
+
+const getMenuBackgroundImage = (category?: string | null) => {
+  const normalizedCategory = category?.trim() || "";
+  if (!normalizedCategory) return DEFAULT_MENU_BACKGROUND;
+
+  const matchedBackground = CATEGORY_BACKGROUNDS.find(({ match }) =>
+    match.test(normalizedCategory),
+  );
+
+  return matchedBackground?.src || DEFAULT_MENU_BACKGROUND;
+};
+
+const MenuBackdrop = ({ category }: { category?: string | null }) => {
+  const backgroundImage = getMenuBackgroundImage(category);
+
+  return (
+    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+      <AnimatePresence mode="wait">
+        <motion.img
+          key={backgroundImage}
+          src={backgroundImage}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover opacity-[0.50] scale-105 blur-[1px]"
+          initial={{ opacity: 0, scale: 1.08 }}
+          animate={{ opacity: 1, scale: 1.05 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+        />
+      </AnimatePresence>
+      <div className="absolute inset-0 bg-linear-to-br from-white/78 via-white/66 to-emerald-50/72" />
+      <div
+        className="absolute inset-0 opacity-[0.82]"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at top left, rgba(16,185,129,0.18) 0, transparent 34%), radial-gradient(circle at top right, rgba(251,191,36,0.12) 0, transparent 28%), radial-gradient(circle at bottom, rgba(244,114,182,0.08) 0, transparent 30%)",
+        }}
+      />
+    </div>
+  );
+};
+
 declare global {
   namespace JSX {
     interface IntrinsicElements {
@@ -35,7 +91,7 @@ const IntroCinematic = ({ onComplete }: { onComplete: () => void }) => {
 
   return (
     <motion.div
-      className="fixed inset-0 z-100 flex flex-col items-center justify-center bg-linear-to-br from-white via-emerald-50 to-slate-100 overflow-hidden"
+      className="fixed inset-0 z-100 flex flex-col items-center justify-center bg-transparent overflow-hidden"
       initial={{ opacity: 1 }}
       animate={{ opacity: 0, pointerEvents: "none" }}
       transition={{ duration: 0.8, delay: 0.55, ease: "easeInOut" }}
@@ -146,7 +202,8 @@ const LoadingCinematic = () => {
   const chips = ["Fresh picks", "Fast prep", "Gen-Z vibes"];
 
   return (
-    <div className="min-h-screen overflow-hidden bg-linear-to-br from-white via-slate-50 to-emerald-50/50 text-slate-900">
+    <div className="relative min-h-screen overflow-hidden bg-linear-to-br from-white via-slate-50 to-emerald-50/50 text-slate-900">
+      <MenuBackdrop category={null} />
       <div className="fixed inset-0 pointer-events-none">
         <div
           className="absolute inset-0 opacity-[0.22]"
@@ -324,7 +381,8 @@ const MenuSkeleton = () => {
     "relative overflow-hidden bg-slate-100 before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.7s_infinite] before:bg-linear-to-r before:from-transparent before:via-white/80 before:to-transparent";
 
   return (
-    <div className="min-h-screen overflow-hidden bg-linear-to-br from-white via-slate-50 to-emerald-50/40 text-slate-900">
+    <div className="relative min-h-screen overflow-hidden bg-linear-to-br from-white via-slate-50 to-emerald-50/40 text-slate-900">
+      <MenuBackdrop category={null} />
       <div className="fixed inset-0 pointer-events-none">
         <div
           className="absolute inset-0 opacity-[0.22]"
@@ -945,9 +1003,10 @@ export default function PublicMenuPage() {
         strategy="afterInteractive"
         crossOrigin="anonymous"
       />
+      <MenuBackdrop category={currentCategory} />
       {!introDone && <IntroCinematic onComplete={() => setIntroDone(true)} />}
 
-      <div className="min-h-screen bg-linear-to-br from-white via-amber-50/60 to-rose-50/40 text-slate-900 font-sans selection:bg-emerald-500 selection:text-white overflow-x-hidden pb-40">
+      <div className="relative z-10 min-h-screen bg-linear-to-br from-white/30 via-amber-50/20 to-rose-50/20 text-slate-900 font-sans selection:bg-emerald-500 selection:text-white overflow-x-hidden pb-40">
         <div className="fixed inset-0 pointer-events-none">
           <div
             className="absolute inset-0 opacity-[0.32]"
@@ -1063,7 +1122,7 @@ export default function PublicMenuPage() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="sticky top-0 z-40 bg-linear-to-r from-white/60 via-amber-50/55 to-rose-50/55 backdrop-blur-2xl border-b border-slate-200/55 py-3.5 px-4 shadow-[0_6px_18px_rgba(15,23,42,0.035)]"
+            className="sticky top-0 z-40 bg-transparent border-b border-transparent py-3.5 px-4 shadow-none backdrop-blur-0"
           >
             <div className="max-w-140 mx-auto lg:max-w-5xl space-y-2.5 relative">
               <div className="absolute inset-x-8 -top-3 h-8 bg-linear-to-r from-emerald-200/0 via-amber-200/18 to-rose-200/0 blur-2xl pointer-events-none" />
@@ -1119,7 +1178,7 @@ export default function PublicMenuPage() {
                 <p className="text-sm font-bold text-slate-700">
                   Popular categories
                 </p>
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-[0.22em]">
+                <p className="text-xs font-semibold text-slate-900 uppercase tracking-[0.22em]">
                   Swipe
                 </p>
               </div>
@@ -1189,7 +1248,7 @@ export default function PublicMenuPage() {
                 <p className="text-sm font-black text-slate-900">
                   Choose your craving
                 </p>
-                <p className="text-xs uppercase tracking-[0.22em] text-slate-400 mt-1">
+                <p className="text-xs uppercase tracking-[0.22em] text-slate-900 mt-1">
                   Handpicked from the menu
                 </p>
               </div>

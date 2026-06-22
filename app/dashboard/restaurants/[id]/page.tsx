@@ -14,7 +14,6 @@ export default function RestaurantDetailPage() {
     useRestaurant();
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState("");
-  const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     cuisine: "",
@@ -44,9 +43,6 @@ export default function RestaurantDetailPage() {
         phone: currentRestaurant.phone,
         description: currentRestaurant.description || "",
       });
-      if (currentRestaurant.qrCode?.url) {
-        setQrCodeUrl(currentRestaurant.qrCode.url);
-      }
     }
   }, [currentRestaurant]);
 
@@ -80,7 +76,7 @@ export default function RestaurantDetailPage() {
     return (
       <div className="text-center py-12">
         <div className="animate-spin text-4xl mb-4">⚙️</div>
-        <p className="text-slate-400">Loading restaurant...</p>
+        <p className="text-slate-600">Loading restaurant...</p>
       </div>
     );
   }
@@ -101,7 +97,7 @@ export default function RestaurantDetailPage() {
       <div className="flex items-center justify-between">
         <Link
           href="/dashboard/restaurants"
-          className="text-orange-200 hover:text-orange-100"
+          className="text-orange-600 hover:text-orange-700"
         >
           ← Back to Restaurants
         </Link>
@@ -113,10 +109,9 @@ export default function RestaurantDetailPage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: Details */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="card">
+      <div className="grid grid-cols-1 gap-6">
+        <div className="space-y-6">
+          <div className="card bg-white/90 border-slate-200">
             {error && (
               <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 mb-4">
                 {error}
@@ -126,14 +121,14 @@ export default function RestaurantDetailPage() {
             {!editing ? (
               <div className="space-y-4">
                 <div>
-                  <h2 className="text-3xl hero-title font-bold text-slate-100">
+                  <h2 className="text-3xl hero-title font-bold text-slate-900">
                     {currentRestaurant.name}
                   </h2>
-                  <p className="text-slate-400 mt-1">
+                  <p className="text-slate-600 mt-1">
                     {currentRestaurant.cuisine}
                   </p>
                 </div>
-                <div className="space-y-2 text-slate-300">
+                <div className="space-y-2 text-slate-700">
                   <p>
                     <span className="font-semibold">📍 Location:</span>{" "}
                     {currentRestaurant.location}
@@ -216,9 +211,9 @@ export default function RestaurantDetailPage() {
           </div>
 
           {/* Menu Items Section */}
-          <div className="card">
+          <div className="card bg-white/90 border-slate-200">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-slate-100">Menu Items</h3>
+              <h3 className="text-xl font-bold text-slate-900">Menu Items</h3>
               <Link
                 href={`/dashboard/menu?restaurant=${restaurantId}`}
                 className="btn-primary text-sm"
@@ -226,45 +221,9 @@ export default function RestaurantDetailPage() {
                 ➕ Add Item
               </Link>
             </div>
-            <p className="text-slate-400">
+            <p className="text-slate-600">
               Manage dishes for this restaurant in the Menu section.
             </p>
-          </div>
-        </div>
-
-        {/* Right Column: QR Code */}
-        <div className="card">
-          <h3 className="text-xl font-bold text-slate-100 mb-4">QR Code</h3>
-          {qrCodeUrl ? (
-            <div className="space-y-4">
-              <div className="bg-slate-700 p-4 rounded-lg flex items-center justify-center">
-                <img src={qrCodeUrl} alt="QR Code" className="w-full" />
-              </div>
-              <a
-                href={qrCodeUrl}
-                download={`${currentRestaurant.name}-qr.png`}
-                className="btn-secondary w-full text-center text-sm"
-              >
-                ⬇️ Download QR Code
-              </a>
-            </div>
-          ) : (
-            <p className="text-slate-400 text-center py-8">
-              No QR code generated yet
-            </p>
-          )}
-
-          <hr className="border-slate-700 my-4" />
-
-          <div className="space-y-3 text-sm">
-            <div className="text-slate-400">
-              <p className="font-semibold text-slate-200">Stats</p>
-              <p className="mt-2">
-                📱 QR Scans: {currentRestaurant.stats?.qrScans || 0}
-              </p>
-              <p>👁️ Menu Views: {currentRestaurant.stats?.menuViews || 0}</p>
-              <p>⭐ Reviews: {currentRestaurant.stats?.reviews || 0}</p>
-            </div>
           </div>
         </div>
       </div>
