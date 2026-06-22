@@ -1,15 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { showToast } from "@/components/common/Toast";
 import { motion, AnimatePresence } from "framer-motion";
 import MenuManager from "@/components/dashboard/MenuManager";
 import QRCodeManager from "@/components/dashboard/QRCodeManager";
-import { LayoutGrid, MenuSquare, QrCode, Store, Sparkles } from "lucide-react";
+import { MenuSquare, QrCode, Store } from "lucide-react";
 
 export default function MenuPage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const restaurantId = searchParams.get("restaurant");
   const { restaurants, fetchRestaurants } = useRestaurant();
@@ -29,7 +30,23 @@ export default function MenuPage() {
     load();
   }, [fetchRestaurants]);
 
+  useEffect(() => {
+    if (loading || restaurantId || restaurants.length === 0) {
+      return;
+    }
+
+    if (restaurants.length === 1) {
+      router.replace(`/dashboard/menu?restaurant=${restaurants[0]._id}`);
+    }
+  }, [loading, restaurantId, restaurants, router]);
+
+  const handleRestaurantSelect = (id: string) => {
+    router.replace(`/dashboard/menu?restaurant=${id}`);
+  };
+
   if (!restaurantId) {
+    const visibleRestaurants = restaurants.slice(0, 2);
+
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -40,12 +57,48 @@ export default function MenuPage() {
           <Store className="h-6 w-6" />
         </div>
         <h3 className="mb-2 text-xl font-black tracking-tighter text-slate-950">
-          Select a Restaurant
+          {loading ? "Loading restaurants" : "Choose a restaurant"}
         </h3>
         <p className="mx-auto max-w-md text-sm text-slate-600">
-          Please select a restaurant from the sidebar to manage its menu and QR
-          code
+          {loading
+            ? "Fetching your restaurant list..."
+            : restaurants.length === 0
+              ? "Add a restaurant to unlock menu management and QR code tools."
+              : restaurants.length === 1
+                ? "Opening your restaurant menu now..."
+                : "Select one restaurant to open its menu and QR code workspace."}
         </p>
+
+        {!loading && restaurants.length > 1 && (
+          <div className="mt-8 grid gap-3 sm:grid-cols-2">
+            {visibleRestaurants.map(restaurant => (
+              <motion.button
+                key={restaurant._id}
+                whileHover={{ y: -2, scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+                onClick={() => handleRestaurantSelect(restaurant._id)}
+                className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left shadow-sm transition hover:border-violet-300 hover:shadow-md"
+              >
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-600">
+                  Restaurant
+                </p>
+                <p className="mt-1 text-base font-semibold text-slate-950">
+                  {restaurant.name}
+                </p>
+                <p className="mt-1 text-sm text-slate-600">
+                  Open menu and QR tools
+                </p>
+              </motion.button>
+            ))}
+          </div>
+        )}
+
+        {!loading && restaurants.length > 2 && (
+          <p className="mt-4 text-xs text-slate-500">
+            Showing the first two restaurants. Use the sidebar if you need a
+            different location.
+          </p>
+        )}
       </motion.div>
     );
   }

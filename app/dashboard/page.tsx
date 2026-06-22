@@ -154,7 +154,7 @@ export default function DashboardPage() {
             <div className="relative h-44 w-full max-w-85 overflow-hidden rounded-3xl border border-white/80 bg-linear-to-br from-violet-50 via-white to-slate-100 shadow-[0_20px_50px_rgba(99,102,241,0.10)]">
               <div className="absolute inset-x-5 top-5 flex items-center justify-between">
                 <div className="flex items-center gap-2 rounded-full bg-white/85 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-violet-600 shadow-sm">
-                  <Sparkles className="h-3 w-3" />
+                  <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,0.14)]" />
                   Live workspace
                 </div>
                 <div className="h-2.5 w-2.5 rounded-full bg-violet-300" />

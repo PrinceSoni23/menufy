@@ -96,9 +96,10 @@ export default function RestaurantsPage() {
           </p>
         </div>
         <div className="rounded-3xl border border-slate-200/80 bg-white/85 p-4 shadow-sm">
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500">
-            Quick status
-          </p>
+          <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500">
+            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,0.14)]" />
+            <span>Quick status</span>
+          </div>
           <p className="mt-2 text-2xl font-black tracking-tighter text-slate-950">
             Live
           </p>
