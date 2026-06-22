@@ -1157,7 +1157,7 @@ export default function PublicMenuPage() {
                   onClick={() => setVegOnly(prev => !prev)}
                   className={`shrink-0 rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.17em] border transition-all ${vegOnly ? "bg-linear-to-r from-emerald-500 via-teal-500 to-lime-500 border-emerald-500 text-white shadow-sm" : "bg-white/60 border-slate-200/60 text-slate-500 hover:border-emerald-200 hover:text-emerald-700"}`}
                 >
-                  Veg only
+                  Classy dishes
                 </button>
                 <span className="shrink-0 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] bg-linear-to-r from-amber-50/90 to-yellow-50/90 border border-amber-100 text-amber-700 shadow-[0_6px_18px_rgba(251,191,36,0.10)]">
                   Sleek picks
