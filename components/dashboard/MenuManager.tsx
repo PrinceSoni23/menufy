@@ -93,10 +93,6 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
     isActive: true,
   });
 
-  useEffect(() => {
-    loadMenuItems();
-  }, [restaurantId]);
-
   const loadMenuItems = async () => {
     try {
       setLoading(true);
@@ -142,6 +138,10 @@ export default function MenuManager({ restaurantId }: MenuManagerProps) {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadMenuItems();
+  }, [restaurantId]);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

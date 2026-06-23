@@ -75,13 +75,10 @@ const MenuBackdrop = ({ category }: { category?: string | null }) => {
   );
 };
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      "model-viewer": any;
-    }
-  }
-}
+const createStableId = (prefix: "device" | "session") =>
+  typeof crypto !== "undefined" && crypto.randomUUID
+    ? crypto.randomUUID()
+    : `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
 // Subcomponents
 
@@ -488,34 +485,28 @@ export default function PublicMenuPage() {
   const sessionIdRef = useRef<string>("");
   // Note: scans will be sent on every public menu load/refresh
 
-  // Initialize device and session IDs synchronously (before useEffects)
-  if (typeof window !== "undefined") {
+  useEffect(() => {
     if (!deviceIdRef.current) {
       const storageKey = "ar-menu-device-id";
-      const existing =
-        typeof window !== "undefined" && localStorage
-          ? localStorage.getItem(storageKey)
-          : null;
+      const existing = localStorage.getItem(storageKey);
       if (existing && existing !== "undefined" && existing !== "null") {
         deviceIdRef.current = existing;
       } else {
-        const created =
-          typeof crypto !== "undefined" && crypto.randomUUID
-            ? crypto.randomUUID()
-            : `device-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-        if (typeof window !== "undefined" && localStorage) {
-          localStorage.setItem(storageKey, created);
-        }
+        const created = createStableId("device");
+        localStorage.setItem(storageKey, created);
         deviceIdRef.current = created;
       }
     }
+
     if (!sessionIdRef.current) {
-      sessionIdRef.current =
-        typeof crypto !== "undefined" && crypto.randomUUID
-          ? crypto.randomUUID()
-          : `session-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      sessionIdRef.current = createStableId("session");
     }
-  }
+
+    if (typeof window !== "undefined") {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+    }
+  }, []);
 
   const getOrCreateDeviceId = () => {
     if (typeof window === "undefined") return "server";
@@ -526,10 +517,7 @@ export default function PublicMenuPage() {
       return existing;
     }
 
-    const created =
-      typeof crypto !== "undefined" && crypto.randomUUID
-        ? crypto.randomUUID()
-        : `device-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const created = createStableId("device");
     localStorage.setItem(storageKey, created);
     return created;
   };
@@ -720,8 +708,12 @@ export default function PublicMenuPage() {
   }, [introDone]);
 
   useEffect(() => {
-    setModelLoadError(null);
-    setModelLoading(false);
+    const frame = requestAnimationFrame(() => {
+      setModelLoadError(null);
+      setModelLoading(false);
+    });
+
+    return () => cancelAnimationFrame(frame);
   }, [selectedDish?._id, selectedDish?.model3DUrl, activeTab]);
 
   useEffect(() => {
@@ -828,14 +820,19 @@ export default function PublicMenuPage() {
         }
         const items = menuData?.data?.menuItems || menuData?.data || [];
         const itemsArray = Array.isArray(items) ? items : [];
+        const typedItems = itemsArray as Array<{
+          _id?: string;
+          imageUrl2D?: string;
+          model3DUrl?: string | null;
+        }>;
         console.log("[Menu]", {
-          itemCount: itemsArray.length,
-          itemsWithModels: itemsArray.filter((i: any) => i.model3DUrl).length,
+          itemCount: typedItems.length,
+          itemsWithModels: typedItems.filter(item => item.model3DUrl).length,
         });
         // Debug: list first few media URLs to ensure server returned public URLs
         console.log(
           "[Menu] sample media URLs",
-          itemsArray.slice(0, 5).map((it: any) => ({
+          typedItems.slice(0, 5).map(it => ({
             id: it._id,
             image: it.imageUrl2D,
             model: it.model3DUrl,
@@ -858,7 +855,7 @@ export default function PublicMenuPage() {
   const categories = Array.from(
     new Set(menuItems.map(item => item.category || "Other")),
   ).sort();
-  let currentCategory = categories[selectedCategoryIndex] || "all";
+  const currentCategory = categories[selectedCategoryIndex] || "all";
 
   const handleTurnPage = (idx: number) => {
     if (idx === selectedCategoryIndex) return;
@@ -1432,7 +1429,7 @@ export default function PublicMenuPage() {
                                       );
                                       setModelLoading(false);
                                     },
-                                    onError: (e: any) => {
+                                    onError: (e: unknown) => {
                                       console.error(
                                         "[3D Model] Load failed:",
                                         e,
@@ -1442,7 +1439,7 @@ export default function PublicMenuPage() {
                                         "The model-viewer component failed to fetch the file. Check the Network tab for details.",
                                       );
                                     },
-                                  } as any)}
+                                  })}
                                 </div>
                               )
                             ) : (
@@ -1574,7 +1571,7 @@ export default function PublicMenuPage() {
                           </div>
                           <div className="rounded-2xl border border-slate-200 bg-slate-50 px-2.5 py-2">
                             <p className="text-[10px] uppercase tracking-wide text-slate-500 font-semibold">
-                              Chef's Special
+                              Chef&apos;s Special
                             </p>
                             <p className="text-[11.5px] font-semibold text-slate-800 mt-1">
                               Highly Recommended
@@ -1596,9 +1593,10 @@ export default function PublicMenuPage() {
                         onClick={() => {
                           const modelViewer = document.querySelector(
                             "model-viewer",
-                          ) as any;
-                          if (modelViewer && modelViewer.activateAR)
-                            modelViewer.activateAR();
+                          ) as
+                            | (HTMLElement & { activateAR?: () => void })
+                            | null;
+                          modelViewer?.activateAR?.();
                         }}
                         className="flex-1 bg-emerald-600 text-white py-2.5 rounded-2xl font-semibold tracking-wide text-[11px] hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 shadow-md"
                         whileHover={{

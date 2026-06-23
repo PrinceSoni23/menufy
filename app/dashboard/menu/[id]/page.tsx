@@ -5,7 +5,15 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useMenu } from "@/hooks/useMenu";
 import { MenuItem } from "@/lib/types";
-import { ArrowLeft, Eye, ImageIcon, Layers3, RefreshCw, Sparkles, Smartphone } from "lucide-react";
+import {
+  ArrowLeft,
+  Eye,
+  ImageIcon,
+  Layers3,
+  RefreshCw,
+  Sparkles,
+  Smartphone,
+} from "lucide-react";
 
 export default function MenuItemDetailPage() {
   const params = useParams();
@@ -148,24 +156,27 @@ export default function MenuItemDetailPage() {
               </div>
             </div>
             {menuItem.description && (
-              <p className="mb-4 text-sm text-slate-600">{menuItem.description}</p>
+              <p className="mb-4 text-sm text-slate-600">
+                {menuItem.description}
+              </p>
             )}
-                {menuItem.category || "N/A"}
+            <p className="mb-2 text-sm text-slate-500">
+              <span className="font-semibold text-slate-700">Category:</span>{" "}
+              {menuItem.category || "N/A"}
+            </p>
+            <p className="text-sm text-slate-500">
+              <span className="font-semibold text-slate-700">Price:</span> $
+              {(menuItem.price || 0).toFixed(2)}
+            </p>
+            {menuItem.calories && (
+              <p className="mt-2 text-sm text-slate-500">
+                <span className="font-semibold text-slate-700">Calories:</span>{" "}
+                {menuItem.calories}
               </p>
-              <p>
-                <span className="font-semibold">Price:</span> $
-                {(menuItem.price || 0).toFixed(2)}
-              </p>
-              {menuItem.calories && (
-                <p>
-                  <span className="font-semibold">Calories:</span>{" "}
-                  {menuItem.calories}
-                </p>
-              )}
-            </div>
+            )}
             <Link
               href={`/dashboard/menu`}
-              className="btn-secondary w-full text-center text-sm"
+              className="btn-secondary mt-4 w-full text-center text-sm"
             >
               Edit Item
             </Link>

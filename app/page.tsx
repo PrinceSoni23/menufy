@@ -562,7 +562,7 @@ export default function Home() {
                   }
                 >
                   <p className="text-base sm:text-lg text-[#7c4b4b] leading-relaxed mb-4 sm:mb-6 font-medium">
-                    "{testimonial.quote}"
+                    &ldquo;{testimonial.quote}&rdquo;
                   </p>
                   <div className="flex items-center gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-[#7c2f2f]/10">
                     <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-gradient-to-br from-[#7c2f2f] via-[#8b6f47] to-[#cce5ff] shrink-0 shadow-md" />

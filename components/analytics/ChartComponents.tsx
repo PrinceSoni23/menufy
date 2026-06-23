@@ -225,12 +225,19 @@ export function DoughnutChart({ data, title }: DoughnutChartProps) {
     "rgb(59, 130, 246)", // blue
   ];
 
-  let cumulativeValue = 0;
-  const segments = data.map((d, idx) => {
+  const segments = data.reduce<
+    Array<{
+      path: string;
+      color: string;
+      percentage: number;
+      label: string;
+      value: number;
+    }>
+  >((acc, d, idx) => {
+    const previousTotal = acc.reduce((sum, seg) => sum + seg.value, 0);
     const percentage = (d.value / total) * 100;
-    const startAngle = (cumulativeValue / total) * 360;
-    const endAngle = ((cumulativeValue + d.value) / total) * 360;
-    cumulativeValue += d.value;
+    const startAngle = (previousTotal / total) * 360;
+    const endAngle = ((previousTotal + d.value) / total) * 360;
 
     const startRad = (startAngle - 90) * (Math.PI / 180);
     const endRad = (endAngle - 90) * (Math.PI / 180);
@@ -244,14 +251,16 @@ export function DoughnutChart({ data, title }: DoughnutChartProps) {
 
     const path = `M 50 50 L ${x1} ${y1} A 40 40 0 ${largeArc} 1 ${x2} ${y2} Z`;
 
-    return {
+    acc.push({
       path,
       color: colors[idx % colors.length],
       percentage,
       label: d.label,
       value: d.value,
-    };
-  });
+    });
+
+    return acc;
+  }, []);
 
   return (
     <div className={baseCardClass}>

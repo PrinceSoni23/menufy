@@ -72,11 +72,6 @@ function CanvasResizeHandler() {
         const height = parent.clientHeight;
 
         gl.setSize(width, height);
-
-        if (camera instanceof THREE.PerspectiveCamera) {
-          camera.aspect = width / height;
-          camera.updateProjectionMatrix();
-        }
       }
     };
 

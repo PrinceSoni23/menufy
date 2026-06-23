@@ -12,19 +12,13 @@ interface Model3DViewerProps {
   autoRotate?: boolean;
 }
 
-function ModelContent({
-  modelUrl,
-  scale = 1,
-  autoRotate = true,
-}: Model3DViewerProps) {
+function ModelContent({ modelUrl, scale = 1 }: Model3DViewerProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const [loading, setLoading] = useState(true);
 
   const gltf = useGLTF(modelUrl);
 
   useEffect(() => {
     if (gltf.scene) {
-      setLoading(false);
       if (groupRef.current) {
         groupRef.current.scale.set(scale, scale, scale);
       }
@@ -53,11 +47,7 @@ export function Model3DViewer({
         <pointLight position={[10, 10, 10]} intensity={1} />
         <directionalLight position={[-5, 5, 5]} intensity={0.8} />
 
-        <ModelContent
-          modelUrl={modelUrl}
-          scale={scale}
-          autoRotate={autoRotate}
-        />
+        <ModelContent modelUrl={modelUrl} scale={scale} />
 
         <OrbitControls
           autoRotate={autoRotate}
@@ -71,4 +61,3 @@ export function Model3DViewer({
     </div>
   );
 }
-

@@ -23,14 +23,10 @@ export default function QRCodeManager({
   restaurantId,
   restaurantName,
 }: QRCodeManagerProps) {
-  const [qrCode, setQrCode] = useState<any>(null);
+  const [qrCode, setQrCode] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
-  const [analytics, setAnalytics] = useState<any>(null);
+  const [analytics, setAnalytics] = useState<unknown>(null);
   const [copying, setCopying] = useState(false);
-
-  useEffect(() => {
-    loadQRCode();
-  }, [restaurantId]);
 
   const loadQRCode = async () => {
     try {
@@ -76,6 +72,10 @@ export default function QRCodeManager({
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadQRCode();
+  }, [restaurantId]);
 
   const generateQRCode = async () => {
     try {

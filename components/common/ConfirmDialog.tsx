@@ -11,7 +11,7 @@ export interface ConfirmOptions {
   isDangerous?: boolean;
 }
 
-let confirmResolvers: Map<string, (confirmed: boolean) => void> = new Map();
+const confirmResolvers: Map<string, (confirmed: boolean) => void> = new Map();
 let dialogId = 0;
 
 export const confirmAction = (options: ConfirmOptions): Promise<boolean> => {
