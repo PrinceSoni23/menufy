@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import Image from "next/image";
 import { motion, animate, useMotionValue, useTransform } from "framer-motion";
+import { apiClient } from "@/lib/api-client";
 
 interface NeoAnalyticsDashboardProps {
   restaurants: Array<{ _id: string; name: string }>;
@@ -407,24 +408,65 @@ export default function NeoAnalyticsDashboard({
   const comboPairs = (selectionPatterns?.patterns || []).slice(0, 3);
   const topDishes = (itemPopularity?.items || []).slice(0, 8);
 
+  // Map of menuItemId -> imageUrl2D
+  const [menuItemImages, setMenuItemImages] = useState<Record<string, string>>(
+    {},
+  );
+
+  useEffect(() => {
+    const loadMenuImages = async () => {
+      if (!selectedRestaurantId) return;
+      try {
+        const res = await apiClient.get(
+          `/menu/restaurant/${selectedRestaurantId}`,
+        );
+        const payload = res.data as any;
+        let items = [] as any[];
+        if (payload?.menuItems && Array.isArray(payload.menuItems))
+          items = payload.menuItems;
+        else if (
+          payload?.data?.menuItems &&
+          Array.isArray(payload.data.menuItems)
+        )
+          items = payload.data.menuItems;
+        else if (Array.isArray(payload.data)) items = payload.data;
+        else if (Array.isArray(payload)) items = payload;
+
+        const map: Record<string, string> = {};
+        for (const it of items) {
+          if (it && it._id) {
+            // Prefer 2D image field names used by MenuItem
+            map[it._id] = it.imageUrl2D || it.imageUrl || "";
+          }
+        }
+        setMenuItemImages(map);
+      } catch (e) {
+        // ignore - keep fallback images
+        setMenuItemImages({});
+      }
+    };
+
+    loadMenuImages();
+  }, [selectedRestaurantId]);
+
   const storyTiles = [
     {
       title: "First Impressions",
       detail: "Guests scanning in the first 90 seconds",
       stat: `${Math.max(42, Math.round(conversionRate + 38))}%`,
-      image: "/WhatsApp Image 2026-05-09 at 9.20.38 PM.jpeg",
+      image: "/90sec.png",
     },
     {
       title: "Menu Momentum",
       detail: "Peak interest hits between 7-9 PM",
       stat: `${Math.max(18, Math.round((qrScans / 40) % 100))}%`,
-      image: "/WhatsApp Image 2026-05-09 at 9.20.39 PM.jpeg",
+      image: "/time.png",
     },
     {
       title: "Signature Spotlight",
       detail: "Most viewed dish is trending fast",
       stat: `${Math.max(12, Math.round(topDishOrders / 3))} orders`,
-      image: "/WhatsApp Image 2026-05-09 at 9.20.38 PM (1).jpeg",
+      image: "/topdish.jpeg",
     },
   ];
 
@@ -564,7 +606,7 @@ export default function NeoAnalyticsDashboard({
 
               <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <HeroMetric
-                  title="Total Revenue"
+                  title="Potential Revenue"
                   value={estimatedSales}
                   prefix="$"
                   subtitle="Last 30 days"
@@ -886,7 +928,11 @@ export default function NeoAnalyticsDashboard({
                 >
                   <div className="relative h-36 overflow-hidden rounded-2xl">
                     <Image
-                      src={dishImages[index % dishImages.length]}
+                      src={
+                        menuItemImages[dish.menuItemId] ||
+                        dish.imageUrl ||
+                        dishImages[index % dishImages.length]
+                      }
                       alt={dish.menuItemName}
                       width={340}
                       height={220}
