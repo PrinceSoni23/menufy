@@ -50,6 +50,13 @@ export const API_ENDPOINTS = {
   REVIEW_UNHELPFUL: (id: string) => `/reviews/${id}/unhelpful`,
   MY_REVIEWS: "/reviews/user/my-reviews",
 
+  // Orders
+  ORDER_GUEST_CHECKOUT: "/orders/guest-checkout",
+  ORDER_GUEST_STATUS: "/orders/guest-status",
+  ORDERS_BY_RESTAURANT: (restaurantId: string) =>
+    `/orders/restaurant/${restaurantId}`,
+  ORDER_STATUS_UPDATE: (orderId: string) => `/orders/${orderId}/status`,
+
   // Analytics
   ANALYTICS_RESTAURANT: (restaurantId: string) =>
     `/analytics/restaurant/${restaurantId}`,

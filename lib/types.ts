@@ -216,6 +216,41 @@ export interface Analytics {
   ipAddress: string;
 }
 
+export interface OrderLineItem {
+  menuItemId: string;
+  name: string;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+}
+
+export type OrderStatus =
+  | "pending"
+  | "confirmed"
+  | "preparing"
+  | "completed"
+  | "cancelled";
+
+export interface Order {
+  _id: string;
+  restaurantId: string;
+  sessionId: string;
+  orderNumber?: string;
+  customerName?: string;
+  customerPhone?: string;
+  customerRemark?: string;
+  totalPrice: number;
+  totalItems?: number;
+  currency?: string;
+  status: OrderStatus;
+  lineItems?: OrderLineItem[];
+  createdAt: string;
+  updatedAt: string;
+  confirmedAt?: string;
+  preparingAt?: string;
+  completedAt?: string;
+}
+
 // Engagement Metrics - Item Popularity
 export interface ItemPopularityData {
   items: Array<{

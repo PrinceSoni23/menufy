@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRestaurant } from "@/hooks/useRestaurant";
-import { showToast } from "@/components/common/Toast";
-import { confirmAction } from "@/components/common/ConfirmDialog";
 import { CardSkeleton } from "@/components/common/LoadingSkeleton";
 import {
   ArrowRight,
@@ -18,9 +16,8 @@ import {
 
 export default function RestaurantsPage() {
   const router = useRouter();
-  const { restaurants, fetchRestaurants, deleteRestaurant } = useRestaurant();
+  const { restaurants, fetchRestaurants } = useRestaurant();
   const [loading, setLoading] = useState(true);
-  const [deleting, setDeleting] = useState<string | null>(null);
 
   useEffect(() => {
     const loadRestaurants = async () => {
@@ -35,30 +32,6 @@ export default function RestaurantsPage() {
     };
     loadRestaurants();
   }, [fetchRestaurants]);
-
-  const handleDelete = async (id: string, name: string) => {
-    const confirmed = await confirmAction({
-      title: "Delete Restaurant?",
-      message: `Are you sure you want to delete "${name}" and all its associated menu items? This action cannot be undone.`,
-      confirmText: "Delete",
-      cancelText: "Cancel",
-      isDangerous: true,
-    });
-
-    if (!confirmed) return;
-
-    setDeleting(id);
-    try {
-      await deleteRestaurant(id);
-      showToast("Restaurant deleted successfully", "success");
-      await fetchRestaurants();
-    } catch (error) {
-      console.error("Failed to delete restaurant:", error);
-      showToast("Failed to delete restaurant", "error");
-    } finally {
-      setDeleting(null);
-    }
-  };
 
   return (
     <div className="space-y-5">
@@ -172,20 +145,13 @@ export default function RestaurantsPage() {
                 </p>
               </div>
 
-              <div className="mt-4 flex gap-2">
+              <div className="mt-4">
                 <Link
                   href={`/dashboard/restaurants/${restaurant._id}`}
-                  className="flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-center text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:bg-violet-50/60"
+                  className="block rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-center text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:bg-violet-50/60"
                 >
                   View
                 </Link>
-                <button
-                  onClick={() => handleDelete(restaurant._id, restaurant.name)}
-                  disabled={deleting === restaurant._id}
-                  className="flex-1 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {deleting === restaurant._id ? "Deleting..." : "Delete"}
-                </button>
               </div>
             </div>
           ))}

@@ -36,9 +36,10 @@ export default function MenuCarousel({ items, onSelect, addToCart }: Props) {
       <div className="-mx-4 flex items-stretch gap-3 overflow-x-auto px-4 pb-7 pt-8 hide-scrollbar snap-x snap-mandatory">
         {items.map((item, idx) => {
           const active = idx === visibleIndex;
+          const itemKey = item._id?.trim() || `${item.name || "item"}-${idx}`;
           return (
             <div
-              key={item._id}
+              key={itemKey}
               ref={el => {
                 itemRefs.current[idx] = el;
               }}

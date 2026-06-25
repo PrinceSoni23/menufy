@@ -5,9 +5,10 @@ import { useParams } from "next/navigation";
 import { showToast } from "@/components/common/Toast";
 import { motion, AnimatePresence } from "framer-motion";
 import MenuCarousel from "@/components/MenuCarousel";
-import { MenuItem } from "@/lib/types";
+import { MenuItem, Order, OrderStatus } from "@/lib/types";
 import Script from "next/script";
 import { API_BASE_URL } from "@/lib/constants";
+import { API_ENDPOINTS } from "@/lib/constants";
 import {
   getCachedResponse,
   putCachedResponse,
@@ -79,6 +80,26 @@ const createStableId = (prefix: "device" | "session") =>
   typeof crypto !== "undefined" && crypto.randomUUID
     ? crypto.randomUUID()
     : `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+const getOrderStatusMessage = (status: OrderStatus) => {
+  if (status === "confirmed") {
+    return "Your order was accepted by the restaurant.";
+  }
+
+  if (status === "preparing") {
+    return "The restaurant has started preparing your order.";
+  }
+
+  if (status === "completed") {
+    return "Your order has been completed.";
+  }
+
+  if (status === "cancelled") {
+    return "Your order was cancelled.";
+  }
+
+  return "Your order is waiting for confirmation.";
+};
 
 // Subcomponents
 
@@ -475,15 +496,83 @@ export default function PublicMenuPage() {
   const [selectedDish, setSelectedDish] = useState<MenuItem | null>(null);
   const [activeTab, setActiveTab] = useState<"details" | "3d">("details");
   const [cart, setCart] = useState<{ item: MenuItem; qty: number }[]>([]);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [placingOrder, setPlacingOrder] = useState(false);
+  const [guestOrder, setGuestOrder] = useState<Order | null>(null);
+  const [orderPopup, setOrderPopup] = useState<{
+    order: Order;
+    message: string;
+  } | null>(null);
+  const [trackedGuestOrderId, setTrackedGuestOrderId] = useState<string | null>(
+    null,
+  );
+  const [checkoutForm, setCheckoutForm] = useState({
+    customerName: "",
+    customerPhone: "",
+    customerRemark: "",
+  });
   const [vegOnly, setVegOnly] = useState(false);
   const [modelLoadError, setModelLoadError] = useState<string | null>(null);
   const [modelLoading, setModelLoading] = useState(false);
   const modelViewerRef = useRef<any>(null);
   const trackedArViewRef = useRef<string | null>(null);
   const trackedMenuViewRef = useRef<string | null>(null);
+  const trackedOrderStatusRef = useRef<OrderStatus | null>(null);
   const deviceIdRef = useRef<string>("");
   const sessionIdRef = useRef<string>("");
   // Note: scans will be sent on every public menu load/refresh
+
+  const orderTrackingStorageKey = restaurantId
+    ? `ar-menu-guest-order-${restaurantId}`
+    : null;
+
+  const persistGuestOrder = (order: Order | null) => {
+    if (typeof window === "undefined" || !orderTrackingStorageKey) return;
+
+    if (!order) {
+      localStorage.removeItem(orderTrackingStorageKey);
+      return;
+    }
+
+    localStorage.setItem(
+      orderTrackingStorageKey,
+      JSON.stringify({ orderId: order._id, status: order.status }),
+    );
+  };
+
+  const getOrderItemSummary = (order: Order) => {
+    const names = (order.lineItems || [])
+      .map(item => item.name)
+      .filter(Boolean);
+
+    if (names.length === 0) {
+      return order.orderNumber || `Order ${order._id.slice(-6).toUpperCase()}`;
+    }
+
+    if (names.length === 1) {
+      return names[0];
+    }
+
+    if (names.length === 2) {
+      return `${names[0]} and ${names[1]}`;
+    }
+
+    return `${names.slice(0, 2).join(", ")} and ${names.length - 2} more`;
+  };
+
+  const showGuestOrderUpdate = (order: Order, message: string) => {
+    setGuestOrder(order);
+    setOrderPopup({ order, message });
+    showToast(message, "success", 0);
+    persistGuestOrder(order);
+    setTrackedGuestOrderId(order._id);
+  };
+
+  const openAddMoreItems = () => {
+    setCheckoutOpen(false);
+    setSelectedDish(null);
+    showToast("Add another item whenever you're ready", "info", 2500);
+  };
 
   useEffect(() => {
     if (!deviceIdRef.current) {
@@ -708,6 +797,84 @@ export default function PublicMenuPage() {
   }, [introDone]);
 
   useEffect(() => {
+    if (
+      !restaurantId ||
+      typeof window === "undefined" ||
+      !orderTrackingStorageKey
+    ) {
+      return;
+    }
+
+    const rawTracking = localStorage.getItem(orderTrackingStorageKey);
+    if (!rawTracking) {
+      setGuestOrder(null);
+      trackedOrderStatusRef.current = null;
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(rawTracking) as {
+        orderId?: string;
+        status?: OrderStatus;
+      };
+      if (parsed.status) {
+        trackedOrderStatusRef.current = parsed.status;
+      }
+      if (parsed.orderId) {
+        setTrackedGuestOrderId(parsed.orderId);
+      }
+    } catch {
+      localStorage.removeItem(orderTrackingStorageKey);
+      setGuestOrder(null);
+      trackedOrderStatusRef.current = null;
+    }
+  }, [restaurantId, orderTrackingStorageKey]);
+
+  useEffect(() => {
+    if (!restaurantId || !trackedGuestOrderId) {
+      return;
+    }
+
+    const fetchGuestOrder = async () => {
+      try {
+        const orderQuery = `&orderId=${encodeURIComponent(trackedGuestOrderId)}`;
+        const response = await fetch(
+          `${API_BASE}${API_ENDPOINTS.ORDER_GUEST_STATUS}?restaurantId=${encodeURIComponent(restaurantId)}${orderQuery}`,
+        );
+        const payload = await response.json();
+        const order = payload?.data as Order | null;
+
+        if (!order) {
+          return;
+        }
+
+        const previousStatus = trackedOrderStatusRef.current;
+        trackedOrderStatusRef.current = order.status;
+        setGuestOrder(order);
+
+        if (previousStatus !== order.status) {
+          if (order.status === "confirmed") {
+            showGuestOrderUpdate(
+              order,
+              "Your order was accepted by the restaurant.",
+            );
+            return;
+          }
+        }
+      } catch (error) {
+        console.warn("Failed to load guest order status:", error);
+      }
+    };
+
+    void fetchGuestOrder();
+    const interval = window.setInterval(() => {
+      void fetchGuestOrder();
+    }, 5000);
+
+    return () => window.clearInterval(interval);
+  }, [restaurantId, trackedGuestOrderId]);
+
+  useEffect(() => {
     const frame = requestAnimationFrame(() => {
       setModelLoadError(null);
       setModelLoading(false);
@@ -822,23 +989,35 @@ export default function PublicMenuPage() {
         const itemsArray = Array.isArray(items) ? items : [];
         const typedItems = itemsArray as Array<{
           _id?: string;
+          id?: string;
+          name?: string;
+          category?: string;
+          price?: number;
           imageUrl2D?: string;
           model3DUrl?: string | null;
         }>;
+        const normalizedItems = typedItems.map((item, index) => ({
+          ...item,
+          _id:
+            item._id?.trim() ||
+            item.id?.trim() ||
+            `menu-item-${rId}-${index}-${(item.name || "item").replace(/\s+/g, "-").toLowerCase()}-${(item.category || "cat").replace(/\s+/g, "-").toLowerCase()}-${Math.round(Number(item.price || 0))}`,
+        }));
         console.log("[Menu]", {
-          itemCount: typedItems.length,
-          itemsWithModels: typedItems.filter(item => item.model3DUrl).length,
+          itemCount: normalizedItems.length,
+          itemsWithModels: normalizedItems.filter(item => item.model3DUrl)
+            .length,
         });
         // Debug: list first few media URLs to ensure server returned public URLs
         console.log(
           "[Menu] sample media URLs",
-          typedItems.slice(0, 5).map(it => ({
+          normalizedItems.slice(0, 5).map(it => ({
             id: it._id,
             image: it.imageUrl2D,
             model: it.model3DUrl,
           })),
         );
-        setMenuItems(itemsArray);
+        setMenuItems(normalizedItems as MenuItem[]);
       } catch (err) {
         const errorMsg =
           err.response?.data?.message || err.message || "Failed to load menu";
@@ -934,6 +1113,102 @@ export default function PublicMenuPage() {
     }
     showToast(`${item.name} added`, "success");
     setSelectedDish(null);
+    setCheckoutOpen(true);
+  };
+
+  const increaseCartQty = (itemId: string) => {
+    setCart(prev =>
+      prev.map(entry =>
+        entry.item._id === itemId ? { ...entry, qty: entry.qty + 1 } : entry,
+      ),
+    );
+  };
+
+  const decreaseCartQty = (itemId: string) => {
+    setCart(prev =>
+      prev
+        .map(entry =>
+          entry.item._id === itemId ? { ...entry, qty: entry.qty - 1 } : entry,
+        )
+        .filter(entry => entry.qty > 0),
+    );
+  };
+
+  const cartTotal = cart.reduce(
+    (acc, curr) => acc + curr.item.price * curr.qty,
+    0,
+  );
+  const cartItemCount = cart.reduce((acc, curr) => acc + curr.qty, 0);
+
+  const submitGuestOrder = async () => {
+    if (!restaurantId) {
+      showToast("Restaurant details are not available", "error");
+      return;
+    }
+
+    if (cart.length === 0) {
+      showToast("Your cart is empty", "error");
+      return;
+    }
+
+    if (checkoutForm.customerName.trim().length < 2) {
+      showToast("Please enter your name", "error");
+      return;
+    }
+
+    if (!/^[0-9+\-()\s]{8,20}$/.test(checkoutForm.customerPhone.trim())) {
+      showToast("Please enter a valid mobile number", "error");
+      return;
+    }
+
+    try {
+      setPlacingOrder(true);
+
+      const response = await fetch(`${API_BASE}/orders/guest-checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          restaurantId,
+          sessionId: sessionIdRef.current,
+          customerName: checkoutForm.customerName.trim(),
+          customerPhone: checkoutForm.customerPhone.trim(),
+          customerRemark: checkoutForm.customerRemark.trim(),
+          items: cart.map(entry => ({
+            menuItemId: entry.item._id,
+            quantity: entry.qty,
+          })),
+        }),
+      });
+
+      const payload = await response.json();
+      if (!response.ok || !payload?.success) {
+        throw new Error(payload?.message || "Failed to place order");
+      }
+
+      const placedOrder = payload.data as Order;
+
+      trackedOrderStatusRef.current = placedOrder.status;
+      setTrackedGuestOrderId(placedOrder._id);
+      showGuestOrderUpdate(
+        placedOrder,
+        "Your order has been placed successfully.",
+      );
+      showToast("Order placed successfully", "success");
+
+      setCart([]);
+      setCheckoutOpen(false);
+      setCheckoutForm({
+        customerName: "",
+        customerPhone: "",
+        customerRemark: "",
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to place order";
+      showToast(message, "error");
+    } finally {
+      setPlacingOrder(false);
+    }
   };
 
   const handleSelectDish = (item: MenuItem) => {
@@ -1288,6 +1563,7 @@ export default function PublicMenuPage() {
           <AnimatePresence>
             {selectedDish && (
               <motion.div
+                key="selected-dish-modal"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0, transition: { duration: 0.2 } }}
@@ -1630,8 +1906,159 @@ export default function PublicMenuPage() {
           </AnimatePresence>
 
           <AnimatePresence>
+            {checkoutOpen && cart.length > 0 && (
+              <motion.div
+                key="checkout-modal"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-55 flex items-end sm:items-center justify-center bg-slate-950/45 backdrop-blur-sm p-0 sm:p-4"
+              >
+                <div
+                  className="absolute inset-0"
+                  onClick={() => setCheckoutOpen(false)}
+                />
+                <motion.div
+                  initial={{ y: "100%", scale: 0.97 }}
+                  animate={{ y: 0, scale: 1 }}
+                  exit={{ y: "100%", scale: 0.97 }}
+                  transition={{ type: "spring", damping: 25, stiffness: 180 }}
+                  className="relative z-10 w-full max-w-xl max-h-[92vh] overflow-y-auto rounded-t-4xl sm:rounded-4xl border border-slate-200 bg-white p-4 sm:p-5"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-700">
+                        Checkout
+                      </p>
+                      <h3 className="text-xl font-black text-slate-900">
+                        Confirm your order
+                      </h3>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={openAddMoreItems}
+                        className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-700"
+                      >
+                        Add item
+                      </button>
+                      <button
+                        onClick={() => setCheckoutOpen(false)}
+                        className="rounded-full border border-slate-200 bg-white p-2 text-slate-600"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 space-y-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-3">
+                    {cart.map((entry, idx) => {
+                      const cartKey =
+                        entry.item._id?.trim() ||
+                        `${entry.item.name || "cart-item"}-${entry.item.price}-${idx}`;
+
+                      return (
+                        <div
+                          key={cartKey}
+                          className="flex items-center justify-between gap-3"
+                        >
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold text-slate-900">
+                              {entry.item.name}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              ₹{Number(entry.item.price).toFixed(0)} each
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => decreaseCartQty(entry.item._id)}
+                              className="h-8 w-8 rounded-full border border-slate-200 bg-white text-slate-700"
+                            >
+                              -
+                            </button>
+                            <span className="min-w-6 text-center text-sm font-semibold text-slate-900">
+                              {entry.qty}
+                            </span>
+                            <button
+                              onClick={() => increaseCartQty(entry.item._id)}
+                              className="h-8 w-8 rounded-full border border-slate-200 bg-white text-slate-700"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="mt-4 grid gap-3">
+                    <input
+                      value={checkoutForm.customerName}
+                      onChange={e =>
+                        setCheckoutForm(prev => ({
+                          ...prev,
+                          customerName: e.target.value,
+                        }))
+                      }
+                      placeholder="Your name"
+                      className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-300"
+                    />
+                    <input
+                      value={checkoutForm.customerPhone}
+                      onChange={e =>
+                        setCheckoutForm(prev => ({
+                          ...prev,
+                          customerPhone: e.target.value,
+                        }))
+                      }
+                      placeholder="Mobile number"
+                      className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-300"
+                    />
+                    <textarea
+                      value={checkoutForm.customerRemark}
+                      onChange={e =>
+                        setCheckoutForm(prev => ({
+                          ...prev,
+                          customerRemark: e.target.value,
+                        }))
+                      }
+                      rows={3}
+                      placeholder="Remark: table number, car number, color, etc"
+                      className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-300"
+                    />
+                  </div>
+
+                  <div className="mt-5 flex items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+                    <p className="text-sm font-semibold text-emerald-800">
+                      Total ({cartItemCount} items)
+                    </p>
+                    <p className="text-xl font-black text-emerald-900">
+                      ₹{cartTotal.toFixed(0)}
+                    </p>
+                  </div>
+
+                  <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                    <button
+                      onClick={openAddMoreItems}
+                      className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold uppercase tracking-[0.15em] text-emerald-700 transition hover:bg-emerald-100"
+                    >
+                      Add item
+                    </button>
+                    <button
+                      onClick={() => void submitGuestOrder()}
+                      disabled={placingOrder}
+                      className="rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-bold uppercase tracking-[0.15em] text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-65"
+                    >
+                      {placingOrder ? "Placing order..." : "Place order"}
+                    </button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+
             {cart.length > 0 && !selectedDish && (
               <motion.div
+                key="cart-summary-bar"
                 initial={{ y: 100, opacity: 0, scale: 0.9 }}
                 animate={{ y: 0, opacity: 1, scale: 1 }}
                 exit={{ y: 100, opacity: 0, scale: 0.9 }}
@@ -1652,16 +2079,11 @@ export default function PublicMenuPage() {
                       repeatDelay: 2,
                     }}
                   >
-                    ₹
-                    {cart
-                      .reduce(
-                        (acc, curr) => acc + curr.item.price * curr.qty,
-                        0,
-                      )
-                      .toFixed(0)}
+                    ₹{cartTotal.toFixed(0)}
                   </motion.p>
                 </motion.div>
                 <motion.button
+                  onClick={() => setCheckoutOpen(true)}
                   className="bg-white text-emerald-700 hover:bg-emerald-50 px-6 py-3 rounded-full font-bold uppercase tracking-wider text-sm transition-colors shadow-lg"
                   whileHover={{
                     scale: 1.08,
@@ -1669,8 +2091,58 @@ export default function PublicMenuPage() {
                   }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  View ({cart.reduce((acc, curr) => acc + curr.qty, 0)})
+                  Checkout ({cartItemCount})
                 </motion.button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {orderPopup && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-60 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm"
+              >
+                <motion.div
+                  initial={{ scale: 0.96, y: 16 }}
+                  animate={{ scale: 1, y: 0 }}
+                  exit={{ scale: 0.96, y: 16 }}
+                  className="w-full max-w-md rounded-3xl border border-white/70 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.25)]"
+                >
+                  <p className="text-[11px] font-black uppercase tracking-[0.24em] text-emerald-700">
+                    Order Update
+                  </p>
+                  <h4 className="mt-2 text-2xl font-black tracking-tighter text-slate-950">
+                    {orderPopup.message}
+                  </h4>
+                  <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
+                      Your order
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-slate-900">
+                      {getOrderItemSummary(orderPopup.order)}
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500 capitalize">
+                      Status: {orderPopup.order.status}
+                    </p>
+                  </div>
+                  <div className="mt-5 flex gap-2">
+                    <button
+                      onClick={openAddMoreItems}
+                      className="flex-1 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold uppercase tracking-[0.15em] text-emerald-700"
+                    >
+                      Add item
+                    </button>
+                    <button
+                      onClick={() => setOrderPopup(null)}
+                      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold uppercase tracking-[0.15em] text-slate-700"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>

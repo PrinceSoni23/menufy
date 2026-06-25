@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import {
   Bell,
+  ClipboardList,
   ChartNoAxesCombined,
   LayoutDashboard,
   LogOut,
@@ -23,6 +24,7 @@ const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Restaurants", href: "/dashboard/restaurants", icon: Store },
   { name: "Menu Items", href: "/dashboard/menu", icon: UtensilsCrossed },
+  { name: "Orders", href: "/dashboard/orders", icon: ClipboardList },
   {
     name: "Analytics",
     href: "/dashboard/analytics",
@@ -59,13 +61,17 @@ export default function DashboardLayout({
     }
   }, [isAuthenticated, loading, isMounted, router, user?.email]);
 
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
+
   if (!isMounted) {
     return null;
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#fff7ec] via-[#f6f8ff] to-[#e9fbff] flex items-center justify-center text-slate-900">
+      <div className="min-h-screen bg-linear-to-br from-[#fff7ec] via-[#f6f8ff] to-[#e9fbff] flex items-center justify-center text-slate-900">
         <div className="text-center reveal reveal-visible">
           <div className="animate-spin text-5xl mb-4">⚙️</div>
           <p className="text-slate-600">Loading...</p>
@@ -76,7 +82,7 @@ export default function DashboardLayout({
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#fff7ec] via-[#f6f8ff] to-[#e9fbff] flex items-center justify-center text-slate-900">
+      <div className="min-h-screen bg-linear-to-br from-[#fff7ec] via-[#f6f8ff] to-[#e9fbff] flex items-center justify-center text-slate-900">
         <div className="text-center">
           <p className="text-slate-600">Redirecting to login...</p>
         </div>
@@ -99,7 +105,7 @@ export default function DashboardLayout({
       <aside
         className={`${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed inset-y-0 left-0 z-40 w-[290px] border-r border-slate-200/80 bg-white/92 backdrop-blur-xl shadow-[12px_0_40px_rgba(15,23,42,0.06)] transition-transform duration-300 lg:translate-x-0 lg:static text-slate-900`}
+        } fixed inset-y-0 left-0 z-40 flex h-screen w-[min(24rem,85vw)] flex-col overflow-hidden border-r border-slate-200/80 bg-white/92 text-slate-900 shadow-[12px_0_40px_rgba(15,23,42,0.06)] backdrop-blur-xl transition-transform duration-300 lg:sticky lg:top-0 lg:translate-x-0 lg:shrink-0 lg:w-80`}
       >
         <div className="relative overflow-hidden border-b border-slate-200/70 p-6">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.10),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.10),transparent_26%)]" />
@@ -116,13 +122,9 @@ export default function DashboardLayout({
               </p>
             </div>
           </div>
-          <div className="relative mt-5 inline-flex items-center gap-2 rounded-full border border-emerald-200/80 bg-emerald-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-700 shadow-sm">
-            <CircleDot className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />
-            Production workspace
-          </div>
         </div>
 
-        <nav className="space-y-2 p-4">
+        <nav className="flex-1 space-y-2 overflow-y-auto p-4">
           {navigation.map(item => (
             <motion.div key={item.href} whileHover={{ x: 4 }}>
               <Link
@@ -131,7 +133,7 @@ export default function DashboardLayout({
                 onClick={() => setSidebarOpen(false)}
                 className={`group flex items-center gap-3 rounded-2xl border px-4 py-3.5 transition-all ${
                   pathname === item.href
-                    ? "border-violet-200 bg-gradient-to-r from-violet-50 via-white to-indigo-50 text-slate-950 shadow-[0_16px_32px_rgba(99,102,241,0.08)]"
+                    ? "border-violet-200 bg-linear-to-r from-violet-50 via-white to-indigo-50 text-slate-950 shadow-[0_16px_32px_rgba(99,102,241,0.08)]"
                     : "border-transparent text-slate-500 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-950"
                 }`}
               >
@@ -150,21 +152,7 @@ export default function DashboardLayout({
           ))}
         </nav>
 
-        <div className="absolute bottom-0 left-0 right-0 border-t border-slate-200/70 p-4">
-          <div className="mb-4 rounded-3xl border border-slate-200/70 bg-slate-50/80 p-4">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">
-              Logged in as
-            </p>
-            <p className="mt-1 font-semibold text-slate-950">
-              {user?.firstName && user?.lastName
-                ? `${user.firstName} ${user.lastName}`
-                : user?.email}
-            </p>
-            <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-600">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
-              Verified access
-            </div>
-          </div>
+        <div className="border-t border-slate-200/70 p-4">
           <button
             onClick={handleLogout}
             className="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
@@ -180,7 +168,7 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="min-w-0 flex flex-1 flex-col overflow-hidden">
         <header className="relative flex items-center justify-between overflow-hidden border-b border-slate-200/70 bg-white/85 px-4 py-4 text-slate-900 backdrop-blur-xl sm:px-6 lg:px-8">
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.9),rgba(245,246,251,0.7))]" />
           <button

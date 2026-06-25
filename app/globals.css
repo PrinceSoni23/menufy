@@ -1042,6 +1042,30 @@ h3 {
     color 0.3s ease;
 }
 
+/* ============ LIGHT THEME AUTH PAGES ============ */
+.auth-shell-light {
+  background: linear-gradient(to br, #f8fafc, #ffffff, #eff6ff);
+}
+
+.auth-shell-light video {
+  object-fit: cover;
+}
+
+/* Responsive: Hide video on smaller screens and stack forms */
+@media (max-width: 1024px) {
+  .auth-shell-light {
+    flex-direction: column;
+  }
+
+  .hidden.lg\:flex {
+    display: none !important;
+  }
+
+  .w-1\/2.lg\:w-1\/2 {
+    width: 100% !important;
+  }
+}
+
 html {
   scroll-behavior: smooth;
 }

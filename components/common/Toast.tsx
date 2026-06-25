@@ -81,7 +81,9 @@ export const ToastItem = ({
         onClick={() => onClose(id)}
         className="ml-2 hover:opacity-70 transition-opacity"
       >
-        <X className="w-4 h-4" />
+        <span className="text-xs font-bold uppercase tracking-[0.18em]">
+          OK
+        </span>
       </button>
     </div>
   );
