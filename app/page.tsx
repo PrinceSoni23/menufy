@@ -173,8 +173,8 @@ const plans = [
 ];
 
 const stats = [
-  { number: "100%", label: "Browser-Based" },
-  { number: "1", label: "QR Code to Access Everything" },
+  { number: "100%", label: "Browser-Based " },
+  { number: "1", label: "QR, Total access" },
   { number: "2.4x", label: "Average conversion lift" },
   { number: "360°", label: "AR Food Preview" },
 ];

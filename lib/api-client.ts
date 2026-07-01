@@ -60,7 +60,15 @@ class ApiClient {
             this.refreshTokenPromise = this.refreshAccessToken().catch(() => {
               this.clearAuth();
               if (typeof window !== "undefined") {
-                window.location.href = "/login";
+                try {
+                  const currentPath = window.location.pathname || "";
+                  // Only navigate to /login if we're not already there to avoid reload loops
+                  if (!currentPath.startsWith("/login")) {
+                    window.location.href = "/login";
+                  }
+                } catch (e) {
+                  // fallback: do nothing
+                }
               }
             });
           }
