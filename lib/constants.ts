@@ -8,6 +8,7 @@ export const API_ENDPOINTS = {
   AUTH_REGISTER: "/auth/register",
   AUTH_LOGIN: "/auth/login",
   AUTH_LOGOUT: "/auth/logout",
+  AUTH_CSRF: "/auth/csrf",
   AUTH_REFRESH: "/auth/refresh",
   AUTH_ME: "/auth/me",
 
@@ -91,15 +92,23 @@ export const API_ENDPOINTS = {
   ANALYTICS_SELECTION_PATTERNS: (restaurantId: string) =>
     `/analytics/restaurant/${restaurantId}/selection-patterns`,
   ANALYTICS_TRACK: "/analytics/track",
+
+  // Subscriptions
+  SUBSCRIPTION_PLANS: "/subscriptions/plans",
+  SUBSCRIPTION_STATUS: "/subscriptions/status",
+  SUBSCRIPTION_CREATE_ORDER: "/subscriptions/create-order",
+  SUBSCRIPTION_VERIFY_PAYMENT: "/subscriptions/verify-payment",
+  SUBSCRIPTION_CANCEL: "/subscriptions/cancel",
+  SUBSCRIPTION_TOGGLE_AUTORENEW: "/subscriptions/toggle-autorenew",
+  SUBSCRIPTION_INVOICES: "/subscriptions/invoices",
 };
 
 // Local Storage Keys
 export const STORAGE_KEYS = {
-  ACCESS_TOKEN: "ar-menu-access-token",
-  REFRESH_TOKEN: "ar-menu-refresh-token",
   USER: "ar-menu-user",
   CURRENT_RESTAURANT: "ar-menu-current-restaurant",
   THEME: "ar-menu-theme",
+  CSRF_TOKEN: "ar-menu-csrf-token",
 };
 
 // Features

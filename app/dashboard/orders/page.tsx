@@ -379,6 +379,10 @@ export default function OrdersPage() {
                       Remark: {order.customerRemark || "Not provided"}
                     </p>
                     <p className="mt-1 text-xs text-slate-500">
+                      Cooking request:{" "}
+                      {order.customerCookingRequest || "Not provided"}
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500">
                       {new Date(order.createdAt).toLocaleString()}
                     </p>
                   </div>
@@ -455,6 +459,10 @@ export default function OrdersPage() {
               </p>
               <p className="mt-1 text-sm text-slate-700">
                 Remark: {newOrderPopup.customerRemark || "Not provided"}
+              </p>
+              <p className="mt-1 text-sm text-slate-700">
+                Cooking request:{" "}
+                {newOrderPopup.customerCookingRequest || "Not provided"}
               </p>
               <p className="mt-1 text-sm font-semibold text-slate-900">
                 INR {Number(newOrderPopup.totalPrice || 0).toFixed(0)}

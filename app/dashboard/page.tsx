@@ -6,6 +6,7 @@ import { apiClient } from "@/lib/api-client";
 import { API_ENDPOINTS } from "@/lib/constants";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { DashboardSummary } from "@/lib/types";
+import { useSubscription } from "@/hooks/useSubscription";
 import {
   ArrowRight,
   BarChart3,
@@ -59,6 +60,11 @@ const metricCards = [
 
 export default function DashboardPage() {
   const { restaurants, fetchRestaurants } = useRestaurant();
+  const {
+    status: subscriptionStatus,
+    fetchStatus,
+    isLoading: subLoading,
+  } = useSubscription();
   const [loading, setLoading] = useState(true);
   const [hasSummary, setHasSummary] = useState(false);
   const [stats, setStats] = useState<DashboardSummary>({
@@ -70,6 +76,19 @@ export default function DashboardPage() {
   });
 
   useEffect(() => {
+    fetchStatus();
+  }, [fetchStatus]);
+
+  useEffect(() => {
+    // Wait until subscription status is known before attempting data load
+    if (subscriptionStatus === null) return;
+
+    // If not active, stop loading — layout gate will show the expired screen
+    if (subscriptionStatus.subscriptionStatus !== "active") {
+      setLoading(false);
+      return;
+    }
+
     const loadData = async () => {
       try {
         const restaurantLoad = fetchRestaurants();
@@ -91,7 +110,8 @@ export default function DashboardPage() {
     };
 
     loadData();
-  }, [fetchRestaurants]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subscriptionStatus]);
 
   useEffect(() => {
     if (hasSummary) return;
@@ -115,6 +135,8 @@ export default function DashboardPage() {
     });
   }, [restaurants, hasSummary]);
 
+  // Subscription gate is handled at layout level (dashboard/layout.tsx)
+  // This page only shows when subscription is active
   const restaurantArray = Array.isArray(restaurants) ? restaurants : [];
 
   if (loading) {

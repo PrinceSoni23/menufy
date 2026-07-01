@@ -6,9 +6,12 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 
-export function Header() {
+export function Header({ skipAuth }: { skipAuth?: boolean }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, logout } =
+    skipAuth === true
+      ? { isAuthenticated: false, user: null, logout: async () => {} }
+      : useAuth();
 
   return (
     <header className="relative z-50 w-full bg-transparent border-b border-[#8b2323]/20 backdrop-blur-md">
@@ -27,22 +30,38 @@ export function Header() {
               className="h-7 w-7 sm:h-9 sm:w-9 lg:h-11 lg:w-11 object-contain shrink-0"
               priority
             />
-            Menufy
+            Menuffy
           </Link>
 
           {/* Center - Navigation Items (Hidden on mobile) */}
           <nav className="hidden lg:flex items-center gap-8 text-sm text-[#8b2323] flex-1 justify-center">
-            <button className="font-semibold text-[#8b2323] hover:text-[#8b2323] transition duration-300">
+            <Link
+              href="/"
+              className="font-semibold text-[#8b2323] hover:text-[#8b2323] transition duration-300"
+            >
               Home
-            </button>
+            </Link>
 
-            <button className="font-semibold text-[#8b2323] hover:text-[#8b2323] transition duration-300">
+            <Link
+              href="/about"
+              className="font-semibold text-[#8b2323] hover:text-[#8b2323] transition duration-300"
+            >
               About
-            </button>
+            </Link>
 
-            <button className="font-semibold text-[#8b2323] hover:text-[#8b2323] transition duration-300">
-              Policies
-            </button>
+            <Link
+              href="/pay-setup-cost"
+              className="font-semibold text-[#8b2323] hover:text-[#8b2323] transition duration-300"
+            >
+              Pricing
+            </Link>
+
+            <Link
+              href="/book-demo"
+              className="font-semibold text-[#8b2323] hover:text-[#8b2323] transition duration-300"
+            >
+              Book a Demo
+            </Link>
 
             <button className="font-semibold text-[#8b2323] hover:text-[#8b2323] transition duration-300">
               Dashboard
@@ -56,6 +75,12 @@ export function Header() {
                 <span className="text-sm text-[#8b2323] hidden sm:inline">
                   {user?.firstName}
                 </span>
+                <Link
+                  href="/subscription"
+                  className="text-sm text-[#8b2323] font-medium hover:opacity-70 transition whitespace-nowrap hidden sm:inline"
+                >
+                  Subscription
+                </Link>
                 <Link
                   href="/dashboard"
                   className="px-6 lg:px-8 py-2.5 lg:py-3 bg-gradient-to-r from-[#8b2323] to-[#8b2323] hover:from-[#8b2323] hover:to-[#8b2323] text-[#fff1cf] font-semibold rounded-full transition-all duration-300 text-sm whitespace-nowrap shadow-lg shadow-[#8b2323]/40"
@@ -72,7 +97,7 @@ export function Header() {
             ) : (
               <>
                 <Link
-                  href="/register"
+                  href="/login"
                   className="px-6 lg:px-8 py-2.5 lg:py-3 bg-gradient-to-r from-[#8b2323] to-[#8b2323] hover:from-[#8b2323] hover:to-[#8b2323] text-[#fff1cf] font-semibold rounded-full transition-all duration-300 text-sm whitespace-nowrap shadow-lg shadow-[#8b2323]/40"
                 >
                   Login / Register
@@ -142,6 +167,14 @@ export function Header() {
                 >
                   Dashboard
                 </button>
+
+                <Link
+                  href="/book-demo"
+                  className="block w-full px-6 py-2.5 bg-gradient-to-r from-[#8b2323] to-[#8b2323] hover:from-[#8b2323] hover:to-[#8b2323] text-[#fff1cf] font-semibold rounded-full transition-all text-center text-sm"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Book a Demo
+                </Link>
 
                 <Link
                   href="/register"

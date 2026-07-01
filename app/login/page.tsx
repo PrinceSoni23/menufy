@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { validateEmail } from "@/lib/validation";
 import { getErrorMessage } from "@/lib/error-handling";
+import { apiClient } from "@/lib/api-client";
+import { API_ENDPOINTS } from "@/lib/constants";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -49,7 +51,34 @@ export default function LoginPage() {
     try {
       const response = await login({ email, password });
       if (response?.success) {
-        router.push("/dashboard");
+        try {
+          const hasActiveAccess =
+            response?.data?.user?.subscriptionStatus === "active" ||
+            response?.data?.user?.plan === "pro" ||
+            response?.data?.user?.plan === "enterprise";
+
+          if (hasActiveAccess) {
+            router.replace("/dashboard");
+          } else {
+            try {
+              const subscriptionResponse = await apiClient.get<{
+                subscriptionStatus?: string;
+              }>(API_ENDPOINTS.SUBSCRIPTION_STATUS);
+              const serverSubscriptionStatus =
+                subscriptionResponse?.data?.subscriptionStatus;
+
+              router.replace(
+                serverSubscriptionStatus === "active"
+                  ? "/dashboard"
+                  : "/book-demo",
+              );
+            } catch {
+              router.replace("/dashboard");
+            }
+          }
+        } catch {
+          router.replace("/dashboard");
+        }
       } else {
         setError(response?.error || "Login failed. Please try again.");
       }
@@ -126,7 +155,7 @@ export default function LoginPage() {
                 Sign In
               </h1>
               <p className="text-center text-slate-600 mb-8">
-                Access your MenuAR account
+                Access your menuffy account
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-4">

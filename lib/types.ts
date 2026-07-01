@@ -15,9 +15,76 @@ export interface User {
   lastName: string;
   businessName?: string;
   avatar?: string;
-  role: "owner" | "customer";
+  role: "owner" | "customer" | "admin";
   plan: "free" | "pro" | "enterprise";
+  subscriptionStatus?: "active" | "expired" | "cancelled" | "pending";
+  subscriptionPlan?: string | null;
+  subscriptionEndDate?: string | null;
+  paymentGateway?: string | null;
   emailVerified: boolean;
+  createdAt: string;
+}
+
+// Subscription & Payment
+export type PlanId =
+  | "monthly_inr"
+  | "monthly_usd"
+  | "yearly_inr"
+  | "yearly_usd";
+export type GatewayId = "razorpay" | "paypal" | "payu";
+export type SubscriptionStatus = "active" | "expired" | "cancelled" | "pending";
+
+export interface Plan {
+  id: PlanId;
+  name: string;
+  duration: "monthly" | "yearly";
+  currency: "INR" | "USD";
+  amount: number; // human-readable
+  displayName: string;
+  description: string;
+}
+
+export interface GatewayInfo {
+  id: GatewayId;
+  name: string;
+  currencies: string[];
+  supportsRecurring: boolean;
+}
+
+export interface SubscriptionStatusData {
+  subscriptionStatus: SubscriptionStatus;
+  subscriptionPlan: PlanId | null;
+  subscriptionStartDate: string | null;
+  subscriptionEndDate: string | null;
+  paymentGateway: GatewayId | null;
+  plan: string;
+  autoRenew: boolean;
+  isRecurring: boolean;
+  renewalDate: string | null;
+}
+
+export interface CreateOrderResponse {
+  orderId: string;
+  amount: number;
+  currency: "INR" | "USD";
+  gateway: GatewayId;
+  planId: PlanId;
+  keyId?: string;
+  approvalUrl?: string;
+  clientSecret?: string;
+  idempotencyKey: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface Invoice {
+  _id: string;
+  gateway: GatewayId;
+  planId: PlanId;
+  amountDisplay: number;
+  currency: "INR" | "USD";
+  status: string;
+  invoiceNumber: string;
+  isRecurring: boolean;
   createdAt: string;
 }
 
@@ -37,8 +104,7 @@ export interface RegisterRequest {
 export interface AuthResponse {
   success: boolean;
   user: User;
-  accessToken: string;
-  refreshToken: string;
+  csrfToken?: string;
 }
 
 // Restaurant
@@ -239,6 +305,7 @@ export interface Order {
   customerName?: string;
   customerPhone?: string;
   customerRemark?: string;
+  customerCookingRequest?: string;
   totalPrice: number;
   totalItems?: number;
   currency?: string;

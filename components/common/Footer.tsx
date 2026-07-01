@@ -19,7 +19,7 @@ export function Footer() {
                 MR
               </span>
               <span className="text-xl font-bold bg-gradient-to-r from-[#8b2323] via-[#8b2323] to-[#e7d3d3] bg-clip-text text-transparent">
-                MenuAR
+                menuffy
               </span>
             </div>
             <p className="text-[#8b2323] text-sm leading-relaxed">
@@ -125,7 +125,7 @@ export function Footer() {
         <div className="border-t border-[#8b2323]/20 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-[#8b2323] text-sm">
-              © 2026 MenuAR. All rights reserved.
+              © 2026 menuffy. All rights reserved.
             </p>
             <div className="flex gap-4 mt-4 md:mt-0">
               <Link

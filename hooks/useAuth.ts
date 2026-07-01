@@ -2,8 +2,10 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, STORAGE_KEYS, SUCCESS_MESSAGES } from "@/lib/constants";
-import { User, LoginRequest, RegisterRequest, AuthResponse } from "@/lib/types";
+import { API_ENDPOINTS, STORAGE_KEYS } from "@/lib/constants";
+import { User, LoginRequest, RegisterRequest } from "@/lib/types";
+
+let authRequestPromise: Promise<void> | null = null;
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -11,32 +13,50 @@ export function useAuth() {
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Load user from localStorage on mount
+  // Load user from backend session on mount
   useEffect(() => {
     const loadUser = async () => {
       try {
         const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
-        const storedToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
 
-        const tokenIsValid =
-          storedToken && storedToken !== "undefined" && storedToken !== "null";
-
-        if (storedUser && tokenIsValid) {
+        if (storedUser) {
           setUser(JSON.parse(storedUser));
-          setIsAuthenticated(true);
-        } else if (storedUser || storedToken) {
+        }
+
+        if (!authRequestPromise) {
+          authRequestPromise = (async () => {
+            const response = await apiClient.get<{ user: User }>(
+              API_ENDPOINTS.AUTH_ME,
+            );
+
+            if (response?.data?.user) {
+              localStorage.setItem(
+                STORAGE_KEYS.USER,
+                JSON.stringify(response.data.user),
+              );
+              setUser(response.data.user);
+              setIsAuthenticated(true);
+            } else {
+              localStorage.removeItem(STORAGE_KEYS.USER);
+              localStorage.removeItem(STORAGE_KEYS.CSRF_TOKEN);
+              setUser(null);
+              setIsAuthenticated(false);
+            }
+          })().finally(() => {
+            authRequestPromise = null;
+          });
+        }
+
+        await authRequestPromise;
+      } catch (err) {
+        console.error("Failed to load user:", err);
+        const status = (err as any)?.response?.status;
+        if (status === 401) {
           localStorage.removeItem(STORAGE_KEYS.USER);
-          localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
-          localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+          localStorage.removeItem(STORAGE_KEYS.CSRF_TOKEN);
           setUser(null);
           setIsAuthenticated(false);
         }
-      } catch (err) {
-        console.error("Failed to load user:", err);
-        // Clear corrupted auth data
-        localStorage.removeItem(STORAGE_KEYS.USER);
-        localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
-        localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
       } finally {
         setLoading(false);
       }
@@ -54,15 +74,10 @@ export function useAuth() {
         data,
       );
 
-      // response is {success, message, data: {user, accessToken, refreshToken}}
-      if (response?.data && response?.data.user && response?.data.accessToken) {
-        const { user, accessToken, refreshToken } = response.data;
-        if (!accessToken || !refreshToken) {
-          throw new Error("Invalid auth response from server");
-        }
+      if (response?.data && response?.data.user) {
+        const { user, csrfToken } = response.data;
         localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
-        localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
-        localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
+        apiClient.setCsrfToken(csrfToken);
         setUser(user);
         setIsAuthenticated(true);
         return { success: true, data: response.data };
@@ -90,15 +105,10 @@ export function useAuth() {
         data,
       );
 
-      // response is {success, message, data: {user, accessToken, refreshToken}}
-      if (response?.data && response?.data.user && response?.data.accessToken) {
-        const { user, accessToken, refreshToken } = response.data;
-        if (!accessToken || !refreshToken) {
-          throw new Error("Invalid auth response from server");
-        }
+      if (response?.data && response?.data.user) {
+        const { user, csrfToken } = response.data;
         localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
-        localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
-        localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
+        apiClient.setCsrfToken(csrfToken);
         setUser(user);
         setIsAuthenticated(true);
         return { success: true, data: response.data };
@@ -124,8 +134,7 @@ export function useAuth() {
       console.error("Logout error:", err);
     } finally {
       localStorage.removeItem(STORAGE_KEYS.USER);
-      localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
-      localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+      localStorage.removeItem(STORAGE_KEYS.CSRF_TOKEN);
       localStorage.removeItem(STORAGE_KEYS.CURRENT_RESTAURANT);
       setUser(null);
       setIsAuthenticated(false);

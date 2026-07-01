@@ -8,7 +8,7 @@ import { Footer } from "@/components/common/Footer";
 export default function Home() {
   return (
     <main className="min-h-screen bg-slate-900">
-      <Header />
+      <Header skipAuth />
       <div className="pt-16">
         <Hero />
         <Features />
@@ -19,4 +19,3 @@ export default function Home() {
     </main>
   );
 }
-

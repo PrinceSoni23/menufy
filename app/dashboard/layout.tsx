@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 import {
   Bell,
   ClipboardList,
@@ -18,6 +19,7 @@ import {
   Sparkles,
   CircleDot,
   ShieldCheck,
+  Crown,
 } from "lucide-react";
 
 const navigation = [
@@ -31,6 +33,7 @@ const navigation = [
     icon: ChartNoAxesCombined,
   },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
+  { name: "Subscription", href: "/subscription", icon: Crown },
 ];
 
 export default function DashboardLayout({
@@ -41,12 +44,38 @@ export default function DashboardLayout({
   const router = useRouter();
   const pathname = usePathname();
   const { user, loading, isAuthenticated, logout } = useAuth();
+  const {
+    status: subStatus,
+    fetchStatus,
+    isLoading: subLoading,
+  } = useSubscription();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [subscriptionChecked, setSubscriptionChecked] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Fetch subscription status once authenticated
+  useEffect(() => {
+    let cancelled = false;
+
+    if (isAuthenticated) {
+      setSubscriptionChecked(false);
+      fetchStatus().finally(() => {
+        if (!cancelled) {
+          setSubscriptionChecked(true);
+        }
+      });
+    } else {
+      setSubscriptionChecked(false);
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, fetchStatus]);
 
   useEffect(() => {
     if (isMounted && !loading) {
@@ -65,11 +94,41 @@ export default function DashboardLayout({
     setSidebarOpen(false);
   }, [pathname]);
 
+  const hasActiveSubscription =
+    subStatus?.subscriptionStatus === "active" ||
+    user?.subscriptionStatus === "active" ||
+    user?.plan === "pro" ||
+    user?.plan === "enterprise";
+
+  useEffect(() => {
+    if (
+      !isMounted ||
+      loading ||
+      !isAuthenticated ||
+      !subscriptionChecked ||
+      subLoading
+    ) {
+      return;
+    }
+
+    if (!hasActiveSubscription) {
+      router.replace("/book-demo");
+    }
+  }, [
+    isMounted,
+    loading,
+    isAuthenticated,
+    subscriptionChecked,
+    subLoading,
+    hasActiveSubscription,
+    router,
+  ]);
+
   if (!isMounted) {
     return null;
   }
 
-  if (loading) {
+  if (loading || !subscriptionChecked) {
     return (
       <div className="min-h-screen bg-linear-to-br from-[#fff7ec] via-[#f6f8ff] to-[#e9fbff] flex items-center justify-center text-slate-900">
         <div className="text-center reveal reveal-visible">
@@ -89,6 +148,13 @@ export default function DashboardLayout({
       </div>
     );
   }
+
+  // ── Subscription Gate ────────────────────────────────────────────────────
+  // Fail closed: if status is missing or non-active, redirect to the demo page.
+  if (!subLoading && !hasActiveSubscription) {
+    return null;
+  }
+  // ─────────────────────────────────────────────────────────────────────────
 
   const handleLogout = async () => {
     await logout();
@@ -115,7 +181,7 @@ export default function DashboardLayout({
             </div>
             <div>
               <h2 className="text-2xl font-black tracking-[-0.04em] text-slate-950">
-                MenuAR
+                menuffy
               </h2>
               <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
                 Control Center

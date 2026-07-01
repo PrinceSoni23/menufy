@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MenuAR - Digital Restaurant Menus",
+  title: "menuffy - Digital Restaurant Menus",
   description: "Enhance your restaurant menu with interactive 3D models and AR",
 };
 

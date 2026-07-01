@@ -510,6 +510,7 @@ export default function PublicMenuPage() {
     customerName: "",
     customerPhone: "",
     customerRemark: "",
+    customerCookingRequest: "",
   });
   const [vegOnly, setVegOnly] = useState(false);
   const [modelLoadError, setModelLoadError] = useState<string | null>(null);
@@ -1173,6 +1174,7 @@ export default function PublicMenuPage() {
           customerName: checkoutForm.customerName.trim(),
           customerPhone: checkoutForm.customerPhone.trim(),
           customerRemark: checkoutForm.customerRemark.trim(),
+          customerCookingRequest: checkoutForm.customerCookingRequest.trim(),
           items: cart.map(entry => ({
             menuItemId: entry.item._id,
             quantity: entry.qty,
@@ -1201,6 +1203,7 @@ export default function PublicMenuPage() {
         customerName: "",
         customerPhone: "",
         customerRemark: "",
+        customerCookingRequest: "",
       });
     } catch (error) {
       const message =
@@ -1937,9 +1940,10 @@ export default function PublicMenuPage() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={openAddMoreItems}
-                        className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-700"
+                        disabled={placingOrder}
+                        className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                        Add item
+                        {placingOrder ? "Placing..." : "Add item"}
                       </button>
                       <button
                         onClick={() => setCheckoutOpen(false)}
@@ -2026,6 +2030,18 @@ export default function PublicMenuPage() {
                       placeholder="Remark: table number, car number, color, etc"
                       className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-300"
                     />
+                    <textarea
+                      value={checkoutForm.customerCookingRequest}
+                      onChange={e =>
+                        setCheckoutForm(prev => ({
+                          ...prev,
+                          customerCookingRequest: e.target.value,
+                        }))
+                      }
+                      rows={3}
+                      placeholder="Cooking request: extra spicy, less oil, allergen free, no onion, etc"
+                      className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-300"
+                    />
                   </div>
 
                   <div className="mt-5 flex items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3">
@@ -2040,9 +2056,10 @@ export default function PublicMenuPage() {
                   <div className="mt-4 grid gap-2 sm:grid-cols-2">
                     <button
                       onClick={openAddMoreItems}
-                      className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold uppercase tracking-[0.15em] text-emerald-700 transition hover:bg-emerald-100"
+                      disabled={placingOrder}
+                      className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold uppercase tracking-[0.15em] text-emerald-700 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      Add item
+                      {placingOrder ? "Placing..." : "Add item"}
                     </button>
                     <button
                       onClick={() => void submitGuestOrder()}
@@ -2128,13 +2145,7 @@ export default function PublicMenuPage() {
                       Status: {orderPopup.order.status}
                     </p>
                   </div>
-                  <div className="mt-5 flex gap-2">
-                    <button
-                      onClick={openAddMoreItems}
-                      className="flex-1 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold uppercase tracking-[0.15em] text-emerald-700"
-                    >
-                      Add item
-                    </button>
+                  <div className="mt-5 flex justify-end">
                     <button
                       onClick={() => setOrderPopup(null)}
                       className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold uppercase tracking-[0.15em] text-slate-700"

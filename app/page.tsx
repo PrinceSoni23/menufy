@@ -64,7 +64,7 @@ const personas = [
     role: "For New Brands",
     headline: "Launch Like You've Been Here 10 Years",
     subtext:
-      "Your first impression gets ONE shot. Make it unforgettable. MenuAR puts you on par with century-old establishments before you open your doors.",
+      "Your first impression gets ONE shot. Make it unforgettable. menuffy puts you on par with century-old establishments before you open your doors.",
     benefit: "Year-one credibility in week one",
   },
   {
@@ -120,7 +120,7 @@ const proofMetrics = [
 const testimonials = [
   {
     quote:
-      "After 8 years in business, MenuAR made us look premium in a way we never could before. Customers ask about our menu design more than our food.",
+      "After 8 years in business, menuffy made us look premium in a way we never could before. Customers ask about our menu design more than our food.",
     author: "Ari Kapoor",
     role: "Founder, Ember Dining House",
     highlight: true,
@@ -142,7 +142,8 @@ const testimonials = [
 const plans = [
   {
     name: "Growth",
-    price: "$20",
+    price: "$29.99",
+    discountedPrice: "$19.99",
     duration: "/month",
     description: "For scaling restaurants",
     features: [
@@ -201,7 +202,7 @@ export default function Home() {
       }}
     >
       <FloatingDishBackground />
-      <Header />
+      <Header skipAuth />
 
       <motion.div
         className="absolute inset-0 pointer-events-none"
@@ -209,7 +210,7 @@ export default function Home() {
       />
 
       <div className="relative z-10">
-        <section className="relative pt-24 pb-16 px-4 sm:px-6 lg:px-12 sm:pt-28 sm:pb-24">
+        <section className="relative pt-16 pb-12 px-4 sm:px-6 lg:px-12 sm:pt-20 sm:pb-20">
           <div className="relative z-10 max-w-7xl mx-auto grid gap-10 lg:gap-14 lg:grid-cols-[1fr_1.08fr] items-center">
             <motion.div
               initial={{ opacity: 0, y: 40 }}
@@ -219,7 +220,7 @@ export default function Home() {
             >
               <div className="pointer-events-none absolute -inset-x-4 -inset-y-4 -z-10 rounded-[2rem] border border-white/55 bg-white/28 backdrop-blur-md shadow-[0_18px_50px_rgba(124,47,47,0.08)] sm:hidden" />
               <p className="uppercase tracking-[0.34em] text-[0.72rem] font-semibold text-[#7c2f2f] sm:text-[#7c4b4b]">
-                The MenuAR platform
+                The menuffy platform
               </p>
               <h1 className="hero-title not-italic text-[2.5rem] leading-[1.02] sm:text-6xl lg:text-[5.2rem] tracking-[-0.06em] text-[#5d2d2d] sm:text-transparent sm:bg-gradient-to-r sm:from-[#1f2937] sm:via-[#6d5b3d] sm:to-[#a24e4e] sm:bg-clip-text">
                 Make ordering feel like an experience, not a guess.
@@ -228,16 +229,16 @@ export default function Home() {
                 Convert menus into immersive 3D and AR previews that lift order
                 confidence, raise ticket sizes, and keep guests coming back.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
-                <Link href="/dashboard?mode=demo" className="btn-primary">
-                  Start the live demo
+              <div className="flex flex-col rounded-full sm:flex-row gap-3 sm:gap-4 pt-2">
+                <Link href="/book-demo" className="btn-primary">
+                  Book a Demo
                 </Link>
-                <Link
-                  href="/dashboard?mode=demo#menu"
+                {/* <Link
+                  href="/book-demo"
                   className="px-6 py-3 rounded-full border border-[#a24e4e]/30 bg-white/70 backdrop-blur-md text-[#5d2d2d] font-semibold hover:bg-[#a24e4e] hover:text-[#fff1cf] transition shadow-[0_12px_30px_rgba(124,47,47,0.08)] text-center"
                 >
-                  Access Dashboard
-                </Link>
+                  Access your dashboard
+                </Link> */}
               </div>
               <div className="grid grid-cols-2 gap-3 text-xs sm:flex sm:flex-wrap sm:gap-4 sm:text-sm text-[#6f5a4d] pt-2">
                 {stats.map(stat => (
@@ -359,10 +360,10 @@ export default function Home() {
                   </h2>
                 </div>
                 <Link
-                  href="/dashboard?mode=demo#menu"
+                  href="/menu/kitchen"
                   className="px-6 py-3 rounded-full border border-[#a24e4e] text-[#7c2f2f] font-semibold hover:bg-[#a24e4e] hover:text-[#fff1cf] transition"
                 >
-                  Try the full menu
+                  Try the full demo menu
                 </Link>
               </div>
               <div
@@ -416,7 +417,7 @@ export default function Home() {
                 Built for every restaurant stage.
               </h2>
               <p className="text-[#7c4b4b] mt-4 max-w-3xl">
-                From brand-new concepts to multi-location groups, MenuAR brings
+                From brand-new concepts to multi-location groups, menuffy brings
                 consistency, speed, and premium polish.
               </p>
             </motion.div>
@@ -503,11 +504,11 @@ export default function Home() {
                   Proof of impact
                 </p>
                 <h2 className="hero-title text-3xl sm:text-4xl md:text-5xl mt-4">
-                  Restaurants grow faster with MenuAR.
+                  Restaurants grow faster with menuffy.
                 </h2>
               </div>
               <Link
-                href="/dashboard?mode=demo#analytics"
+                href="/book-demo"
                 className="px-6 py-3 rounded-full bg-[#fff1cf] text-[#7c2f2f] font-semibold hover:bg-white transition"
               >
                 View the dashboard
@@ -622,9 +623,14 @@ export default function Home() {
                     <p className="text-xs uppercase tracking-[0.24em] text-[#8c3b3b]">
                       {plan.name}
                     </p>
-                    <h3 className="text-3xl sm:text-4xl font-semibold text-[#7c2f2f] mt-2">
-                      {plan.price}
-                    </h3>
+                    <div className="mt-2 flex items-baseline gap-3">
+                      <h3 className="text-3xl sm:text-4xl font-semibold text-[#7c2f2f]">
+                        {plan.discountedPrice || plan.price}
+                      </h3>
+                      <span className="text-lg sm:text-xl text-[#7c4b4b] line-through">
+                        {plan.price}
+                      </span>
+                    </div>
                     <p className="text-xs sm:text-sm text-[#7c4b4b] mt-1 font-semibold">
                       {plan.duration}
                     </p>
@@ -718,14 +724,14 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-4">
-                <Link href="/dashboard?mode=demo" className="btn-primary">
-                  Start the demo
+                <Link href="/book-demo" className="btn-primary">
+                  Ask the demo
                 </Link>
                 <Link
-                  href="/dashboard?mode=demo#menu"
+                  href="/menu/kitchen"
                   className="px-6 py-3 rounded-full border border-[#a24e4e] text-[#7c2f2f] font-semibold hover:bg-[#a24e4e] hover:text-[#fff1cf] transition"
                 >
-                  Explore the demo
+                  Explore demo Menu{" "}
                 </Link>
               </div>
             </div>

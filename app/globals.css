@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
   /* Strict Color Palette - 5 Colors Only */
@@ -1060,10 +1061,99 @@ h3 {
   .hidden.lg\:flex {
     display: none !important;
   }
+}
 
-  .w-1\/2.lg\:w-1\/2 {
-    width: 100% !important;
-  }
+/* ============ LEGAL PAGES STYLES ============ */
+
+/* Grid Pattern Background */
+.bg-grid-pattern {
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Prose Styling for Legal Content */
+.prose {
+  --tw-prose-body: currentColor;
+  --tw-prose-headings: currentColor;
+  --tw-prose-lead: currentColor;
+  --tw-prose-links: #2563eb;
+  --tw-prose-bold: currentColor;
+  --tw-prose-counters: #6b7280;
+  --tw-prose-bullets: #d1d5db;
+  --tw-prose-hr: #e5e7eb;
+  --tw-prose-quotes: #6b7280;
+  --tw-prose-quote-borders: #e5e7eb;
+  --tw-prose-captions: #6b7280;
+  --tw-prose-code: #d946ef;
+  --tw-prose-pre-code: currentColor;
+  --tw-prose-pre-bg: rgb(17 24 39);
+  --tw-prose-pre-border: currentColor;
+  --tw-prose-th-borders: #d1d5db;
+  --tw-prose-td-borders: #e5e7eb;
+  --tw-prose-invert-body: rgb(209 213 219);
+  --tw-prose-invert-headings: rgb(255 255 255);
+  --tw-prose-invert-lead: rgb(156 163 175);
+  --tw-prose-invert-links: rgb(96 165 250);
+  --tw-prose-invert-bold: rgb(255 255 255);
+  --tw-prose-invert-counters: rgb(75 85 99);
+  --tw-prose-invert-bullets: rgb(75 85 99);
+  --tw-prose-invert-hr: rgb(55 65 81);
+  --tw-prose-invert-quotes: rgb(107 114 128);
+  --tw-prose-invert-quote-borders: rgb(55 65 81);
+  --tw-prose-invert-captions: rgb(107 114 128);
+  --tw-prose-invert-code: rgb(248 113 113);
+  --tw-prose-invert-pre-code: rgb(209 213 219);
+  --tw-prose-invert-pre-bg: rgba(0, 0, 0, 0.5);
+  --tw-prose-invert-pre-border: currentColor;
+  --tw-prose-invert-th-borders: rgb(75 85 99);
+  --tw-prose-invert-td-borders: rgb(55 65 81);
+}
+
+.prose p {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  line-height: 1.75;
+}
+
+.prose ul,
+.prose ol {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  padding-left: 1.625em;
+}
+
+.prose li {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose strong {
+  color: currentColor;
+  font-weight: 600;
+}
+
+.prose a {
+  color: #2563eb;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.prose a:hover {
+  color: #1d4ed8;
+}
+
+.prose-invert a {
+  color: #60a5fa;
+}
+
+.prose-invert a:hover {
+  color: #93c5fd;
+}
+
+.w-1\/2.lg\:w-1\/2 {
+  width: 100% !important;
 }
 
 html {

@@ -4,12 +4,14 @@ import { ApiResponse, AuthResponse } from "./types";
 
 class ApiClient {
   private client: AxiosInstance;
-  private refreshTokenPromise: Promise<string> | null = null;
+  private refreshTokenPromise: Promise<void> | null = null;
+  private csrfBootstrapPromise: Promise<void> | null = null;
 
   constructor() {
     this.client = axios.create({
       baseURL: API_BASE_URL,
       timeout: 30000,
+      withCredentials: true,
       headers: {
         "Content-Type": "application/json",
       },
@@ -21,7 +23,7 @@ class ApiClient {
   private setupInterceptors() {
     // Request interceptor
     this.client.interceptors.request.use(
-      config => {
+      async config => {
         // Handle FormData - remove default Content-Type so axios can set proper multipart boundary
         if (config.data instanceof FormData) {
           if (config.headers) {
@@ -30,9 +32,15 @@ class ApiClient {
           }
         }
 
-        const token = this.getAccessToken();
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
+        const csrfToken = this.getCsrfToken();
+        const method = (config.method || "get").toUpperCase();
+        if (!csrfToken && !["GET", "HEAD", "OPTIONS"].includes(method)) {
+          await this.bootstrapCsrfToken();
+        }
+
+        const currentCsrfToken = this.getCsrfToken();
+        if (currentCsrfToken && !["GET", "HEAD", "OPTIONS"].includes(method)) {
+          config.headers["X-CSRF-Token"] = currentCsrfToken;
         }
         return config;
       },
@@ -54,16 +62,18 @@ class ApiClient {
               if (typeof window !== "undefined") {
                 window.location.href = "/login";
               }
-              return "";
             });
           }
 
           try {
-            const newToken = await this.refreshTokenPromise;
+            await this.refreshTokenPromise;
             this.refreshTokenPromise = null;
 
-            if (newToken && originalRequest.headers) {
-              originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            if (originalRequest.headers) {
+              const csrfToken = this.getCsrfToken();
+              if (csrfToken) {
+                originalRequest.headers["X-CSRF-Token"] = csrfToken;
+              }
               return this.client(originalRequest);
             }
           } catch (refreshError) {
@@ -78,60 +88,68 @@ class ApiClient {
   }
 
   // Auth Methods
-  private getAccessToken(): string | null {
+  private getCsrfToken(): string | null {
     if (typeof window !== "undefined") {
-      const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+      const token = localStorage.getItem(STORAGE_KEYS.CSRF_TOKEN);
       return token && token !== "undefined" && token !== "null" ? token : null;
     }
     return null;
   }
 
-  private getRefreshToken(): string | null {
+  setCsrfToken(csrfToken?: string | null) {
     if (typeof window !== "undefined") {
-      const token = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
-      return token && token !== "undefined" && token !== "null" ? token : null;
-    }
-    return null;
-  }
-
-  private setTokens(accessToken: string, refreshToken: string) {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
-      localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
+      if (csrfToken) {
+        localStorage.setItem(STORAGE_KEYS.CSRF_TOKEN, csrfToken);
+      } else {
+        localStorage.removeItem(STORAGE_KEYS.CSRF_TOKEN);
+      }
     }
   }
 
   private clearAuth() {
     if (typeof window !== "undefined") {
-      localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
-      localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+      localStorage.removeItem(STORAGE_KEYS.CSRF_TOKEN);
       localStorage.removeItem(STORAGE_KEYS.USER);
       localStorage.removeItem(STORAGE_KEYS.CURRENT_RESTAURANT);
     }
   }
 
-  private async refreshAccessToken(): Promise<string> {
-    const refreshToken = this.getRefreshToken();
-    if (!refreshToken) {
-      throw new Error("No refresh token available");
-    }
-
-    const response = await this.client.post<AuthResponse>("/auth/refresh", {
-      refreshToken,
-    });
+  private async refreshAccessToken(): Promise<void> {
+    const response = await this.client.post<ApiResponse<AuthResponse>>(
+      "/auth/refresh",
+      {},
+    );
 
     const payload = response.data?.data ?? response.data;
-    const { accessToken, refreshToken: newRefreshToken } = payload as {
-      accessToken?: string;
-      refreshToken?: string;
-    };
+    const { csrfToken } = payload as { csrfToken?: string };
 
-    if (!accessToken || !newRefreshToken) {
+    if (!csrfToken) {
       throw new Error("Invalid refresh token response");
     }
 
-    this.setTokens(accessToken, newRefreshToken);
-    return accessToken;
+    this.setCsrfToken(csrfToken);
+  }
+
+  private async bootstrapCsrfToken(): Promise<void> {
+    if (this.csrfBootstrapPromise) {
+      await this.csrfBootstrapPromise;
+      return;
+    }
+
+    this.csrfBootstrapPromise = this.client
+      .get<ApiResponse<AuthResponse>>("/auth/csrf")
+      .then(response => {
+        const payload = response.data?.data ?? response.data;
+        const { csrfToken } = payload as { csrfToken?: string };
+        if (csrfToken) {
+          this.setCsrfToken(csrfToken);
+        }
+      })
+      .finally(() => {
+        this.csrfBootstrapPromise = null;
+      });
+
+    await this.csrfBootstrapPromise;
   }
 
   // Public Methods

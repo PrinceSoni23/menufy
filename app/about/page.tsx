@@ -173,7 +173,7 @@ export default function AboutPage() {
       }}
     >
       <FloatingDishBackground />
-      <Header />
+      <Header skipAuth />
 
       <motion.div
         className="absolute inset-0 pointer-events-none"
@@ -190,7 +190,7 @@ export default function AboutPage() {
               className="space-y-6"
             >
               <p className="uppercase tracking-[0.32em] text-sm font-semibold text-[#8c3b3b]">
-                About MenuAR
+                About menuffy
               </p>
               <h1 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-serif font-black bg-gradient-to-r from-[#555842] via-[#555842] to-[#8b6f47] bg-clip-text text-transparent leading-tight italic">
                 See your food before you order it.
@@ -331,7 +331,7 @@ export default function AboutPage() {
                 A try-before-you-buy menu.
               </h2>
               <p className="mt-4">
-                MenuAR turns every dish into an immersive preview so guests
+                menuffy turns every dish into an immersive preview so guests
                 decide faster, spend more, and remember the brand.
               </p>
             </motion.div>
@@ -475,7 +475,7 @@ export default function AboutPage() {
                   Proof of impact
                 </p>
                 <h2 className="hero-title text-3xl sm:text-4xl md:text-5xl mt-4">
-                  Restaurants use MenuAR to grow faster.
+                  Restaurants use menuffy to grow faster.
                 </h2>
               </div>
               <Link
@@ -516,7 +516,7 @@ export default function AboutPage() {
               </h2>
               <p className="text-[#7c4b4b] mt-4">
                 We imagine a world where every menu is immersive, every dish is
-                shareable, and every decision is confident. MenuAR is the
+                shareable, and every decision is confident. menuffy is the
                 infrastructure layer that makes it real.
               </p>
               <ul className="mt-6 space-y-3 text-[#7c4b4b]">
