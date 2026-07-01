@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { apiClient } from "@/lib/api-client";
 import { API_ENDPOINTS, STORAGE_KEYS } from "@/lib/constants";
 import { User, LoginRequest, RegisterRequest } from "@/lib/types";
@@ -8,6 +9,18 @@ import { User, LoginRequest, RegisterRequest } from "@/lib/types";
 let authRequestPromise: Promise<void> | null = null;
 let authRequestAttempts = 0;
 const MAX_AUTH_RETRIES = 3;
+const PUBLIC_AUTH_PATHS = ["/login", "/register", "/forgot-password"];
+
+function shouldSkipAuthBootstrap(pathname?: string | null): boolean {
+  if (!pathname) {
+    if (typeof window === "undefined") return false;
+    pathname = window.location.pathname;
+  }
+
+  return PUBLIC_AUTH_PATHS.some(
+    path => pathname === path || pathname?.startsWith(`${path}/`),
+  );
+}
 
 // Retry with exponential backoff
 async function fetchUserWithRetry(
@@ -52,6 +65,7 @@ export function useAuth() {
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const isMountedRef = useRef(true);
+  const pathname = usePathname();
 
   // Load user from backend session on mount
   useEffect(() => {
@@ -59,6 +73,14 @@ export function useAuth() {
 
     const loadUser = async () => {
       try {
+        if (shouldSkipAuthBootstrap(pathname)) {
+          if (!cancelled) {
+            setLoading(false);
+            setError(null);
+          }
+          return;
+        }
+
         const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
 
         if (storedUser && !cancelled) {
@@ -119,7 +141,7 @@ export function useAuth() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [pathname]);
 
   const register = useCallback(async (data: RegisterRequest) => {
     try {
