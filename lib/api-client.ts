@@ -34,12 +34,22 @@ class ApiClient {
 
         const csrfToken = this.getCsrfToken();
         const method = (config.method || "get").toUpperCase();
-        if (!csrfToken && !["GET", "HEAD", "OPTIONS"].includes(method)) {
+        const isRefreshRequest = (config.url || "").includes("/auth/refresh");
+
+        if (
+          !isRefreshRequest &&
+          !csrfToken &&
+          !["GET", "HEAD", "OPTIONS"].includes(method)
+        ) {
           await this.bootstrapCsrfToken();
         }
 
         const currentCsrfToken = this.getCsrfToken();
-        if (currentCsrfToken && !["GET", "HEAD", "OPTIONS"].includes(method)) {
+        if (
+          !isRefreshRequest &&
+          currentCsrfToken &&
+          !["GET", "HEAD", "OPTIONS"].includes(method)
+        ) {
           config.headers["X-CSRF-Token"] = currentCsrfToken;
         }
         return config;
