@@ -652,7 +652,7 @@ export default function Home() {
                     ))}
                   </ul>
                   <Link
-                    href="/dashboard?mode=demo"
+                    href="/book-demo"
                     className={
                       plan.highlight
                         ? "btn-primary w-full flex justify-center text-sm sm:text-base"
@@ -670,7 +670,7 @@ export default function Home() {
                 Questions? We are happy to walk you through it.
               </p>
               <Link
-                href="/dashboard?mode=demo#walkthrough"
+                href="/book-demo"
                 className="text-[#7c2f2f] text-sm sm:text-base font-semibold hover:text-[#7c2f2f] transition"
               >
                 Book a walkthrough →

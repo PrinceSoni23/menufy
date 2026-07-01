@@ -1,68 +1,124 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { apiClient } from "@/lib/api-client";
 import { API_ENDPOINTS, STORAGE_KEYS } from "@/lib/constants";
 import { User, LoginRequest, RegisterRequest } from "@/lib/types";
 
 let authRequestPromise: Promise<void> | null = null;
+let authRequestAttempts = 0;
+const MAX_AUTH_RETRIES = 3;
+
+// Retry with exponential backoff
+async function fetchUserWithRetry(
+  maxRetries = MAX_AUTH_RETRIES,
+): Promise<{ user: User } | null> {
+  let lastError: any;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      authRequestAttempts++;
+      const response = await apiClient.get<{ user: User }>(
+        API_ENDPOINTS.AUTH_ME,
+      );
+      return response?.data ?? null;
+    } catch (err) {
+      lastError = err;
+      const status = (err as any)?.response?.status;
+
+      // Don't retry on 401 (not authenticated) or 403 (forbidden)
+      if (status === 401 || status === 403) {
+        throw err;
+      }
+
+      // For rate limits (429) or network errors, retry with backoff
+      if (status === 429 || !status) {
+        const delay = Math.min(1000 * Math.pow(2, attempt), 5000);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        continue;
+      }
+
+      // Other errors, throw immediately
+      throw err;
+    }
+  }
+
+  throw lastError;
+}
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const isMountedRef = useRef(true);
 
   // Load user from backend session on mount
   useEffect(() => {
+    let cancelled = false;
+
     const loadUser = async () => {
       try {
         const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
 
-        if (storedUser) {
+        if (storedUser && !cancelled) {
           setUser(JSON.parse(storedUser));
         }
 
+        // Use global promise to deduplicate across all useAuth instances
         if (!authRequestPromise) {
           authRequestPromise = (async () => {
-            const response = await apiClient.get<{ user: User }>(
-              API_ENDPOINTS.AUTH_ME,
-            );
+            try {
+              const result = await fetchUserWithRetry();
 
-            if (response?.data?.user) {
-              localStorage.setItem(
-                STORAGE_KEYS.USER,
-                JSON.stringify(response.data.user),
-              );
-              setUser(response.data.user);
-              setIsAuthenticated(true);
-            } else {
-              localStorage.removeItem(STORAGE_KEYS.USER);
-              localStorage.removeItem(STORAGE_KEYS.CSRF_TOKEN);
-              setUser(null);
-              setIsAuthenticated(false);
+              if (!cancelled) {
+                if (result?.user) {
+                  localStorage.setItem(
+                    STORAGE_KEYS.USER,
+                    JSON.stringify(result.user),
+                  );
+                  setUser(result.user);
+                  setIsAuthenticated(true);
+                } else {
+                  localStorage.removeItem(STORAGE_KEYS.USER);
+                  localStorage.removeItem(STORAGE_KEYS.CSRF_TOKEN);
+                  setUser(null);
+                  setIsAuthenticated(false);
+                }
+              }
+            } catch (err) {
+              if (!cancelled) {
+                console.error("Failed to load user:", err);
+                const status = (err as any)?.response?.status;
+                if (status === 401 || status === 403) {
+                  localStorage.removeItem(STORAGE_KEYS.USER);
+                  localStorage.removeItem(STORAGE_KEYS.CSRF_TOKEN);
+                  setUser(null);
+                  setIsAuthenticated(false);
+                }
+              }
             }
           })().finally(() => {
             authRequestPromise = null;
+            authRequestAttempts = 0;
           });
         }
 
         await authRequestPromise;
-      } catch (err) {
-        console.error("Failed to load user:", err);
-        const status = (err as any)?.response?.status;
-        if (status === 401) {
-          localStorage.removeItem(STORAGE_KEYS.USER);
-          localStorage.removeItem(STORAGE_KEYS.CSRF_TOKEN);
-          setUser(null);
-          setIsAuthenticated(false);
-        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
-    loadUser();
+    if (isMountedRef.current) {
+      loadUser();
+    }
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const register = useCallback(async (data: RegisterRequest) => {
@@ -136,14 +192,28 @@ export function useAuth() {
       localStorage.removeItem(STORAGE_KEYS.USER);
       localStorage.removeItem(STORAGE_KEYS.CSRF_TOKEN);
       localStorage.removeItem(STORAGE_KEYS.CURRENT_RESTAURANT);
+
+      // Reset auth state
       setUser(null);
       setIsAuthenticated(false);
+      setError(null);
       setLoading(false);
+
+      // Reset global state
+      authRequestPromise = null;
+      authRequestAttempts = 0;
     }
   }, []);
 
   const clearError = useCallback(() => {
     setError(null);
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
   }, []);
 
   return {

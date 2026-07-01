@@ -57,24 +57,13 @@ export default function LoginPage() {
             response?.data?.user?.plan === "pro" ||
             response?.data?.user?.plan === "enterprise";
 
+          // Don't make additional API call - check response data directly
           if (hasActiveAccess) {
             router.replace("/dashboard");
           } else {
-            try {
-              const subscriptionResponse = await apiClient.get<{
-                subscriptionStatus?: string;
-              }>(API_ENDPOINTS.SUBSCRIPTION_STATUS);
-              const serverSubscriptionStatus =
-                subscriptionResponse?.data?.subscriptionStatus;
-
-              router.replace(
-                serverSubscriptionStatus === "active"
-                  ? "/dashboard"
-                  : "/book-demo",
-              );
-            } catch {
-              router.replace("/dashboard");
-            }
+            // If subscription status not in response, default to dashboard
+            // Let dashboard handle subscription checks
+            router.replace("/dashboard");
           }
         } catch {
           router.replace("/dashboard");
