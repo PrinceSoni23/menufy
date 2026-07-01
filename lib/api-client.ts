@@ -133,19 +133,30 @@ class ApiClient {
   }
 
   private async refreshAccessToken(): Promise<void> {
-    const response = await this.client.post<ApiResponse<AuthResponse>>(
-      "/auth/refresh",
-      {},
-    );
+    try {
+      const response = await this.client.post<ApiResponse<AuthResponse>>(
+        "/auth/refresh",
+        {},
+      );
 
-    const payload = response.data?.data ?? response.data;
-    const { csrfToken } = payload as { csrfToken?: string };
+      const payload = response.data?.data ?? response.data;
+      const { csrfToken } = payload as { csrfToken?: string };
 
-    if (!csrfToken) {
-      throw new Error("Invalid refresh token response");
+      if (!csrfToken) {
+        throw new Error("Invalid refresh token response");
+      }
+
+      this.setCsrfToken(csrfToken);
+    } catch (error) {
+      console.error("[auth] refreshAccessToken failed", {
+        error,
+        url: `${this.client.defaults.baseURL}/auth/refresh`,
+        method: "POST",
+        withCredentials: this.client.defaults.withCredentials,
+        storedCsrfToken: this.getCsrfToken(),
+      });
+      throw error;
     }
-
-    this.setCsrfToken(csrfToken);
   }
 
   private async bootstrapCsrfToken(): Promise<void> {
@@ -163,6 +174,15 @@ class ApiClient {
           this.setCsrfToken(csrfToken);
         }
       })
+      .catch(error => {
+        console.error("[auth] bootstrapCsrfToken failed", {
+          error,
+          url: `${this.client.defaults.baseURL}/auth/csrf`,
+          method: "GET",
+          withCredentials: this.client.defaults.withCredentials,
+        });
+        throw error;
+      })
       .finally(() => {
         this.csrfBootstrapPromise = null;
       });
@@ -176,6 +196,7 @@ class ApiClient {
       const response = await this.client.get<ApiResponse<T>>(url, config);
       return response.data;
     } catch (error) {
+      this.logRequestError("GET", url, error);
       throw this.handleError(error);
     }
   }
@@ -189,6 +210,7 @@ class ApiClient {
       );
       return response.data;
     } catch (error) {
+      this.logRequestError("POST", url, error);
       throw this.handleError(error);
     }
   }
@@ -198,6 +220,7 @@ class ApiClient {
       const response = await this.client.put<ApiResponse<T>>(url, data, config);
       return response.data;
     } catch (error) {
+      this.logRequestError("PUT", url, error);
       throw this.handleError(error);
     }
   }
@@ -211,6 +234,7 @@ class ApiClient {
       );
       return response.data;
     } catch (error) {
+      this.logRequestError("PATCH", url, error);
       throw this.handleError(error);
     }
   }
@@ -220,6 +244,7 @@ class ApiClient {
       const response = await this.client.delete<ApiResponse<T>>(url, config);
       return response.data;
     } catch (error) {
+      this.logRequestError("DELETE", url, error);
       throw this.handleError(error);
     }
   }
@@ -264,11 +289,34 @@ class ApiClient {
 
       return response.data;
     } catch (error) {
+      this.logRequestError("UPLOAD", url, error);
       throw this.handleError(error);
     }
   }
 
   // Error Handling
+  private logRequestError(method: string, url: string, error: any) {
+    if (typeof window === "undefined") return;
+
+    const fullUrl = `${this.client.defaults.baseURL}${url}`;
+    const payload = {
+      method,
+      url: fullUrl,
+      withCredentials: this.client.defaults.withCredentials,
+      storedCsrfToken: this.getCsrfToken(),
+      error,
+      responseStatus: error?.response?.status,
+      responseData: error?.response?.data,
+      responseHeaders: error?.response?.headers,
+      requestHeaders: error?.config?.headers,
+      message: error?.message,
+      code: error?.code,
+      stack: error?.stack,
+    };
+
+    console.error("[auth] request failed", payload);
+  }
+
   private handleError(error: any) {
     if (axios.isAxiosError(error)) {
       if (!error.response) {
