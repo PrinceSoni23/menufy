@@ -229,8 +229,11 @@ export default function Home() {
                 Convert menus into immersive 3D and AR previews that lift order
                 confidence, raise ticket sizes, and keep guests coming back.
               </p>
-              <div className="flex flex-col rounded-full sm:flex-row gap-3 sm:gap-4 pt-2">
-                <Link href="/book-demo" className="btn-primary">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-5 pt-2 sm:pt-3 md:pt-4 w-full sm:w-auto justify-center sm:justify-start items-center sm:items-start text-center sm:text-left">
+                <Link
+                  href="/book-demo"
+                  className="btn-primary w-full sm:w-auto"
+                >
                   Book a Demo
                 </Link>
                 {/* <Link
