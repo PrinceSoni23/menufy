@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { Restaurant } from "@/lib/types";
+import { DashboardLoader } from "@/components/common/DashboardLoader";
 import {
   ArrowLeft,
   Building2,
@@ -81,12 +82,7 @@ export default function RestaurantDetailPage() {
   };
 
   if (loading) {
-    return (
-      <div className="py-12 text-center">
-        <div className="animate-spin text-4xl mb-4">⚙️</div>
-        <p className="text-slate-600">Loading restaurant...</p>
-      </div>
-    );
+    return <DashboardLoader message="Loading restaurant..." />;
   }
 
   if (!currentRestaurant) {

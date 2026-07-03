@@ -3,6 +3,7 @@
 import { createElement, useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import { showToast } from "@/components/common/Toast";
+import { DashboardLoader } from "@/components/common/DashboardLoader";
 import { motion, AnimatePresence } from "framer-motion";
 import MenuCarousel from "@/components/MenuCarousel";
 import { MenuItem, Order, OrderStatus } from "@/lib/types";
@@ -1241,12 +1242,9 @@ export default function PublicMenuPage() {
 
   if (loading) {
     return (
-      <>
-        <MenuSkeleton />
-        <div className="fixed inset-0 z-50 pointer-events-none">
-          <LoadingCinematic />
-        </div>
-      </>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+        <DashboardLoader message="Loading menu..." />
+      </div>
     );
   }
 

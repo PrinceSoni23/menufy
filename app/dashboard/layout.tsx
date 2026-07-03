@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
+import { DashboardLoader } from "@/components/common/DashboardLoader";
 import {
   Bell,
   ClipboardList,
@@ -131,10 +132,7 @@ export default function DashboardLayout({
   if (loading || !subscriptionChecked) {
     return (
       <div className="min-h-screen bg-linear-to-br from-[#fff7ec] via-[#f6f8ff] to-[#e9fbff] flex items-center justify-center text-slate-900">
-        <div className="text-center reveal reveal-visible">
-          <div className="animate-spin text-5xl mb-4">⚙️</div>
-          <p className="text-slate-600">Loading...</p>
-        </div>
+        <DashboardLoader message="Loading your dashboard…" />
       </div>
     );
   }

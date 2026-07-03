@@ -7,6 +7,7 @@ import { API_ENDPOINTS } from "@/lib/constants";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { DashboardSummary } from "@/lib/types";
 import { useSubscription } from "@/hooks/useSubscription";
+import { DashboardLoader } from "@/components/common/DashboardLoader";
 import {
   ArrowRight,
   BarChart3,
@@ -142,14 +143,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="flex min-h-[52vh] items-center justify-center rounded-3xl border border-white/80 bg-white/80 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-2xl">
-        <div className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-violet-100 via-white to-emerald-100 text-xl shadow-sm">
-            ⚙️
-          </div>
-          <p className="font-semibold text-slate-600">
-            Loading your dashboard...
-          </p>
-        </div>
+        <DashboardLoader message="Loading your dashboard..." />
       </div>
     );
   }

@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useMenu } from "@/hooks/useMenu";
 import { MenuItem } from "@/lib/types";
+import { DashboardLoader } from "@/components/common/DashboardLoader";
 import {
   ArrowLeft,
   Eye,
@@ -54,12 +55,7 @@ export default function MenuItemDetailPage() {
   };
 
   if (loading) {
-    return (
-      <div className="py-12 text-center">
-        <div className="animate-spin text-4xl mb-4">⚙️</div>
-        <p className="text-slate-400">Loading menu item...</p>
-      </div>
-    );
+    return <DashboardLoader message="Loading menu item..." />;
   }
 
   if (!menuItem) {
