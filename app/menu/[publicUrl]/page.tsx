@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import { showToast } from "@/components/common/Toast";
 import { DashboardLoader } from "@/components/common/DashboardLoader";
 import { motion, AnimatePresence } from "framer-motion";
-import MenuCarousel from "@/components/MenuCarousel";
 import { MenuItem, Order, OrderStatus } from "@/lib/types";
 import Script from "next/script";
 import { API_BASE_URL } from "@/lib/constants";
@@ -48,29 +47,18 @@ const getMenuBackgroundImage = (category?: string | null) => {
 };
 
 const MenuBackdrop = ({ category }: { category?: string | null }) => {
-  const backgroundImage = getMenuBackgroundImage(category);
+  // Kept for compatibility with existing category-based background logic,
+  // but rendered as a quiet cream backdrop to match the reference UI
+  // (a clean, bright surface rather than a hazy photo backdrop).
+  void category;
 
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-      <AnimatePresence mode="wait">
-        <motion.img
-          key={backgroundImage}
-          src={backgroundImage}
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover opacity-[0.50] scale-105 blur-[1px]"
-          initial={{ opacity: 0, scale: 1.08 }}
-          animate={{ opacity: 1, scale: 1.05 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-        />
-      </AnimatePresence>
-      <div className="absolute inset-0 bg-linear-to-br from-white/78 via-white/66 to-emerald-50/72" />
+    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[#FBF8F2]">
       <div
-        className="absolute inset-0 opacity-[0.82]"
+        className="absolute inset-0 opacity-70"
         style={{
           backgroundImage:
-            "radial-gradient(circle at top left, rgba(16,185,129,0.18) 0, transparent 34%), radial-gradient(circle at top right, rgba(251,191,36,0.12) 0, transparent 28%), radial-gradient(circle at bottom, rgba(244,114,182,0.08) 0, transparent 30%)",
+            "radial-gradient(circle at 8% 0%, rgba(31,75,63,0.07) 0, transparent 32%), radial-gradient(circle at 100% 10%, rgba(217,183,102,0.10) 0, transparent 28%)",
         }}
       />
     </div>
@@ -1279,187 +1267,223 @@ export default function PublicMenuPage() {
       <MenuBackdrop category={currentCategory} />
       {!introDone && <IntroCinematic onComplete={() => setIntroDone(true)} />}
 
-      <div className="relative z-10 min-h-screen bg-linear-to-br from-white/30 via-amber-50/20 to-rose-50/20 text-slate-900 font-sans selection:bg-emerald-500 selection:text-white overflow-x-hidden pb-40">
-        <div className="fixed inset-0 pointer-events-none">
-          <div
-            className="absolute inset-0 opacity-[0.32]"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at top left, rgba(16,185,129,0.14) 0, transparent 28%), radial-gradient(circle at top right, rgba(251,191,36,0.18) 0, transparent 22%), radial-gradient(circle at 12% 78%, rgba(244,114,182,0.14) 0, transparent 18%), radial-gradient(circle at bottom right, rgba(34,197,94,0.12) 0, transparent 26%), radial-gradient(circle at 68% 20%, rgba(59,130,246,0.10) 0, transparent 18%), linear-gradient(rgba(15,23,42,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,0.035) 1px, transparent 1px)",
-              backgroundSize: "auto, auto, auto, 24px 24px, 24px 24px",
-            }}
-          />
-          <motion.div
-            className="absolute top-20 left-6 sm:left-12 w-28 h-28 rounded-full bg-amber-300/30 blur-3xl"
-            animate={{ y: [0, 18, 0], x: [0, 10, 0], scale: [1, 1.12, 1] }}
-            transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="absolute top-36 right-10 sm:right-16 w-24 h-24 rounded-full bg-rose-300/26 blur-3xl"
-            animate={{ y: [0, -16, 0], x: [0, -8, 0], scale: [1, 1.1, 1] }}
-            transition={{ duration: 7.5, repeat: Infinity, ease: "easeInOut" }}
-          />
-          {/* Animated background gradients */}
-          <motion.div
-            className="absolute top-0 right-0 w-96 h-96 bg-emerald-200/26 rounded-full blur-3xl"
-            animate={{ y: [0, 30, 0], x: [0, -20, 0] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="absolute bottom-0 left-0 w-96 h-96 bg-sky-200/18 rounded-full blur-3xl"
-            animate={{ y: [0, -30, 0], x: [0, 20, 0] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </div>
-
-        <div className="relative z-10 max-w-140 mx-auto lg:max-w-5xl">
+      <div className="relative z-10 min-h-screen bg-[#FBF8F2] text-slate-900 font-sans selection:bg-emerald-800 selection:text-white overflow-x-hidden pb-40">
+        <div className="max-w-140 mx-auto lg:max-w-5xl">
           {/* Header */}
           <motion.header
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
-            className="relative pt-8 pb-4 px-4 sm:px-6 text-left border-b border-slate-200/55"
+            className="relative pt-8 pb-6 px-4 sm:px-6"
           >
-            <div className="absolute -top-4 right-4 hidden sm:block w-28 h-28 rounded-full bg-linear-to-br from-emerald-200/25 via-amber-200/20 to-rose-200/20 blur-3xl" />
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-200/70 bg-linear-to-r from-emerald-50/80 via-amber-50/80 to-rose-50/80 text-emerald-700 text-[11px] font-bold uppercase tracking-[0.25em] mb-3 shadow-none backdrop-blur-sm">
-              <motion.span
-                className="h-2 w-2 rounded-full bg-linear-to-r from-emerald-500 via-amber-400 to-rose-500 shadow-[0_0_12px_rgba(16,185,129,0.5)]"
-                animate={{ scale: [1, 1.25, 1], opacity: [1, 0.6, 1] }}
-                transition={{
-                  duration: 1.8,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              />
-              Freshly curated menu
-            </div>
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              className="text-3xl sm:text-4xl md:text-5xl font-black mb-3 tracking-tight bg-linear-to-r from-slate-900 via-emerald-700 to-rose-600 bg-clip-text text-transparent drop-shadow-[0_10px_24px_rgba(244,114,182,0.08)]"
-            >
-              {restaurant?.name || "Premium Menu"}
-            </motion.h1>
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ delay: 0.65, duration: 0.55 }}
-              className="h-1 w-28 bg-linear-to-r from-emerald-400 via-amber-400 to-rose-400 rounded-full shadow-[0_0_22px_rgba(244,114,182,0.24)]"
-            />
-            <div className="mt-5 grid grid-cols-3 gap-3">
-              {[
-                { label: "Fast delivery", value: "10-15 min" },
-                { label: "Freshly made", value: "Daily" },
-                { label: "Top rated", value: "4.5+" },
-              ].map((stat, idx) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{
-                    delay: 0.85 + idx * 0.1,
-                    duration: 0.5,
-                    ease: "easeOut",
-                  }}
-                  whileHover={{
-                    scale: 1.04,
-                    y: -4,
-                    rotate: idx === 1 ? 1.5 : -1.5,
-                  }}
-                  className="rounded-3xl border border-white/70 bg-linear-to-br from-white/60 via-white/50 to-amber-50/45 px-3 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.04)] backdrop-blur-xl hover:bg-white/80 transition-all cursor-pointer"
-                >
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`h-2.5 w-2.5 rounded-full ${idx === 0 ? "bg-emerald-500" : idx === 1 ? "bg-amber-500" : "bg-rose-500"}`}
-                    />
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
-                      {stat.label}
-                    </p>
+            <div className="w-full flex justify-center mb-6 pointer-events-auto">
+              <div className="relative w-full max-w-3xl">
+                <div className="absolute left-0 right-0 top-0 -translate-y-3">
+                  <div className="mx-auto w-full max-w-3xl h-4 bg-emerald-100 rounded-full shadow-inner" />
+                </div>
+
+                <div className="relative flex items-center justify-center">
+                  <div className="absolute left-2 top-1/2 -translate-y-1/2">
+                    <svg
+                      className="w-6 h-6 text-emerald-500"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    >
+                      <path
+                        d="M12 2c1.5 2.2 4.5 5 6.5 6.5-1.2 2-4.3 4.6-6.5 6.5-2.2-1.9-4.9-4.9-6.5-6.5C7.1 7 10.5 3.9 12 2z"
+                        stroke="currentColor"
+                      />
+                    </svg>
                   </div>
-                  <motion.p
-                    className={`mt-1 text-sm font-black ${idx === 0 ? "text-emerald-700" : idx === 1 ? "text-amber-700" : "text-rose-700"}`}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1.2 + idx * 0.12, duration: 0.4 }}
-                  >
-                    {stat.value}
-                  </motion.p>
-                </motion.div>
-              ))}
-            </div>
-          </motion.header>
 
-          {/* Sticky Search & Filter Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="sticky top-0 z-40 bg-transparent border-b border-transparent py-3.5 px-4 shadow-none backdrop-blur-0"
-          >
-            <div className="max-w-140 mx-auto lg:max-w-5xl space-y-2.5 relative">
-              <div className="absolute inset-x-8 -top-3 h-8 bg-linear-to-r from-emerald-200/0 via-amber-200/18 to-rose-200/0 blur-2xl pointer-events-none" />
-              <motion.div
-                whileFocus={{ scale: 1.01 }}
-                className="relative group"
-              >
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  placeholder="Search for paneer, thali, biryani..."
-                  className="w-full rounded-full border border-white/70 bg-white/80 py-3.25 pl-12 pr-4 text-sm font-semibold text-slate-900 placeholder:text-slate-500 focus:outline-none focus:border-emerald-200 focus:bg-white transition-all shadow-[0_8px_24px_rgba(15,23,42,0.05)]"
-                />
-                <svg
-                  className="w-5 h-5 absolute left-4 top-3.5 text-slate-400 group-focus-within:text-emerald-600 transition-colors"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2.3}
-                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                  />
-                </svg>
-              </motion.div>
+                  <div className="inline-flex items-center gap-4 bg-white/95 backdrop-blur-sm px-6 py-2 rounded-3xl shadow-lg border border-emerald-50">
+                    <h2
+                      className="text-center font-extrabold italic tracking-tight text-2xl sm:text-3xl text-[#123b2f]"
+                      style={{
+                        fontFamily:
+                          "'Plus Jakarta Sans', ui-sans-serif, system-ui",
+                      }}
+                    >
+                      {restaurant?.name || ""}
+                    </h2>
+                  </div>
 
-              <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1">
-                <button
-                  onClick={() => setVegOnly(prev => !prev)}
-                  className={`shrink-0 rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.17em] border transition-all ${vegOnly ? "bg-linear-to-r from-emerald-500 via-teal-500 to-lime-500 border-emerald-500 text-white shadow-sm" : "bg-white/60 border-slate-200/60 text-slate-500 hover:border-emerald-200 hover:text-emerald-700"}`}
-                >
-                  Classy dishes
-                </button>
-                <span className="shrink-0 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] bg-linear-to-r from-amber-50/90 to-yellow-50/90 border border-amber-100 text-amber-700 shadow-[0_6px_18px_rgba(251,191,36,0.10)]">
-                  Sleek picks
-                </span>
-                <span className="shrink-0 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] bg-linear-to-r from-rose-50/90 to-pink-50/90 border border-rose-100 text-rose-700 shadow-[0_6px_18px_rgba(244,114,182,0.10)]">
-                  Fast prep
-                </span>
-                <span className="shrink-0 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] bg-linear-to-r from-teal-50/90 to-cyan-50/90 border border-teal-100 text-teal-700 shadow-[0_6px_18px_rgba(45,212,191,0.10)]">
-                  Fresh drop
-                </span>
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                    <svg
+                      className="w-6 h-6 text-emerald-500 rotate-180"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    >
+                      <path
+                        d="M12 2c1.5 2.2 4.5 5 6.5 6.5-1.2 2-4.3 4.6-6.5 6.5-2.2-1.9-4.9-4.9-6.5-6.5C7.1 7 10.5 3.9 12 2z"
+                        stroke="currentColor"
+                      />
+                    </svg>
+                  </div>
+                </div>
+
+                <div className="absolute left-0 right-0 bottom-0 translate-y-3">
+                  <div className="mx-auto w-full max-w-3xl h-2 bg-emerald-50 rounded-full opacity-80" />
+                </div>
               </div>
             </div>
-          </motion.div>
+            <div className="grid gap-8 xl:grid-cols-[1.05fr_0.95fr] items-start">
+              <div className="space-y-6">
+                <div className="flex items-center gap-2 text-sm font-semibold text-[#1F4B3F]">
+                  <span className="text-base">🌿</span>
+                  <span className="font-serif italic tracking-wide">
+                    Good food, good mood
+                  </span>
+                </div>
+
+                <div className="space-y-2 max-w-xl">
+                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-medium italic tracking-tight leading-[1.05] text-slate-950">
+                    Freshly made.
+                    <br />
+                    Especially for <span className="text-[#1F4B3F]">you.</span>
+                  </h1>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  {[
+                    { icon: "🕐", label: "Fast Delivery", value: "10-15 min" },
+                    { icon: "🌿", label: "Freshly Made", value: "Daily" },
+                    { icon: "⭐", label: "Top Rated", value: "4.5+" },
+                  ].map(stat => (
+                    <div
+                      key={stat.label}
+                      className="flex items-center gap-2.5 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 shadow-sm"
+                    >
+                      <span className="text-base">{stat.icon}</span>
+                      <div className="leading-tight">
+                        <p className="text-[10px] font-medium text-slate-400">
+                          {stat.label}
+                        </p>
+                        <p className="text-sm font-bold text-slate-900">
+                          {stat.value}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="rounded-full border border-slate-200 bg-white shadow-sm px-2 py-2 flex items-center gap-2 max-w-xl">
+                  <div className="relative flex-1">
+                    <input
+                      aria-label="Search menu"
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      placeholder="Search for paneer, thali, biryani..."
+                      className="w-full rounded-full bg-transparent pl-11 pr-4 py-2.5 text-sm font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none"
+                    />
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                      <svg
+                        className="w-4.5 h-4.5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M21 21l-5.2-5.2" />
+                        <circle cx="10" cy="10" r="6" />
+                      </svg>
+                    </span>
+                  </div>
+                  <button
+                    aria-label="Filter menu"
+                    className="h-10 w-10 shrink-0 rounded-full bg-[#1F4B3F] text-white shadow-md hover:opacity-90 transition-opacity flex items-center justify-center"
+                  >
+                    <svg
+                      className="w-4.5 h-4.5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M4 6h16M7 12h10M10 18h4" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div className="relative overflow-hidden rounded-[2rem] shadow-[0_30px_90px_rgba(15,23,42,0.14)]">
+                <img
+                  src={getMenuBackgroundImage(currentCategory)}
+                  alt="Hero"
+                  className="w-full h-[340px] sm:h-[400px] object-cover"
+                />
+                <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-3">
+                  <div className="rounded-2xl bg-white/95 backdrop-blur-xl p-4 shadow-xl">
+                    <p className="flex items-center gap-1.5 text-[10px] font-bold text-[#1F4B3F]">
+                      Today&apos;s Special{" "}
+                      <span className="text-red-500">♥</span>
+                    </p>
+                    <p className="mt-1.5 text-base font-bold text-slate-900">
+                      {menuItems[0]?.name || "Tiramisu"}
+                    </p>
+                    <p className="text-lg font-black text-[#1F4B3F]">
+                      ₹{menuItems[0]?.price ?? 345}
+                    </p>
+                  </div>
+                </div>
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+                  {[0, 1, 2, 3].map(dot => (
+                    <span
+                      key={dot}
+                      className={`h-1.5 rounded-full transition-all ${
+                        dot === 1 ? "w-4 bg-[#1F4B3F]" : "w-1.5 bg-white/70"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.header>
 
           {!searchQuery && categories.length > 0 && (
             <div className="px-4 pt-5">
               <div className="flex items-center justify-between mb-3">
-                <p className="text-sm font-bold text-slate-700">
+                <p className="text-base font-bold text-slate-900">
                   Popular categories
                 </p>
-                <p className="text-xs font-semibold text-slate-900 uppercase tracking-[0.22em]">
-                  Swipe
-                </p>
+                <button className="flex items-center gap-1 text-sm font-semibold text-slate-500 hover:text-[#1F4B3F]">
+                  View all
+                  <svg
+                    className="w-3.5 h-3.5"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M7 4l6 6-6 6" />
+                  </svg>
+                </button>
               </div>
-              <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
+                <div className="mb-3 flex gap-3">
+                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/90 border border-emerald-100 text-emerald-700 text-xs font-semibold shadow-sm">Classy dishes</span>
+                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/90 border border-emerald-100 text-emerald-700 text-xs font-semibold shadow-sm">Sleek picks</span>
+                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/90 border border-emerald-100 text-emerald-700 text-xs font-semibold shadow-sm">Fast prep</span>
+                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/90 border border-emerald-100 text-emerald-700 text-xs font-semibold shadow-sm">Fresh drop</span>
+                </div>
+
+                <div className="flex gap-5 overflow-x-auto overflow-y-visible hide-scrollbar pb-2 pl-3 pt-2">
                 {categories.map((cat, idx) => {
                   const sampleItem = menuItems.find(
                     item => (item.category || "Other") === cat,
                   );
+                  const itemCount = menuItems.filter(
+                    item => (item.category || "Other") === cat,
+                  ).length;
                   const isActive = cat === currentCategory;
                   return (
                     <motion.button
@@ -1469,44 +1493,30 @@ export default function PublicMenuPage() {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.5 + idx * 0.08 }}
-                      whileHover={{
-                        y: -8,
-                        scale: 1.12,
-                        rotate: idx % 2 === 0 ? 2 : -2,
-                      }}
-                      whileTap={{ scale: 0.92 }}
+                      whileHover={{ y: -4 }}
+                      whileTap={{ scale: 0.94 }}
                     >
                       <div
-                        className={`w-18 h-18 rounded-full border-4 ${isActive ? "border-emerald-500 shadow-[0_0_0_6px_rgba(16,185,129,0.10),0_18px_36px_rgba(16,185,129,0.22)]" : "border-white shadow-[0_8px_24px_rgba(15,23,42,0.08)] hover:shadow-[0_12px_32px_rgba(16,185,129,0.20)]"} bg-linear-to-br from-white via-white to-amber-50/50 overflow-hidden relative transition-all duration-300`}
-                      >
+                          className={`relative w-16 h-16 rounded-full overflow-hidden ${isActive ? "ring-4 ring-emerald-500 ring-offset-2 shadow-lg" : "ring-1 ring-slate-200 ring-offset-2"} transition-all duration-300`}
+                        >
                         {sampleItem?.imageUrl2D ? (
                           <img
                             src={sampleItem.imageUrl2D}
                             alt={cat}
-                            className="w-full h-full object-cover will-change-transform"
+                            className="w-full h-full object-cover"
                           />
                         ) : (
                           <div className="w-full h-full bg-linear-to-br from-emerald-100 via-amber-100 to-rose-100 flex items-center justify-center text-emerald-700 font-black">
                             {cat.slice(0, 1).toUpperCase()}
                           </div>
                         )}
-                        {isActive && (
-                          <motion.div
-                            className="absolute inset-0 rounded-full border-4 border-emerald-500"
-                            initial={{ scale: 0.8, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            transition={{ duration: 0.4, ease: "easeOut" }}
-                          />
-                        )}
+                        {/* small badge removed to show image cleanly */}
                       </div>
-                      <motion.span
-                        className={`text-sm font-semibold whitespace-nowrap transition-colors ${isActive ? "text-slate-900" : "text-slate-600 group-hover:text-slate-900"}`}
-                        animate={
-                          isActive ? { fontWeight: 700 } : { fontWeight: 600 }
-                        }
+                      <span
+                        className={`text-xs font-semibold whitespace-nowrap ${isActive ? "text-slate-900" : "text-slate-500"}`}
                       >
                         {cat}
-                      </motion.span>
+                      </span>
                     </motion.button>
                   );
                 })}
@@ -1515,19 +1525,30 @@ export default function PublicMenuPage() {
           )}
 
           {/* Menu Items Grid */}
-          <div className="relative mt-12 px-4">
+          <div className="relative mt-10 px-4">
             <div className="flex items-center justify-between mb-4 px-1">
-              <div>
-                <p className="text-sm font-black text-slate-900">
-                  Choose your craving
-                </p>
-                <p className="text-xs uppercase tracking-[0.22em] text-slate-900 mt-1">
-                  Handpicked from the menu
-                </p>
-              </div>
-              <div className="rounded-full border border-white/70 bg-white/70 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-emerald-700 shadow-[0_8px_20px_rgba(15,23,42,0.05)] backdrop-blur-md">
-                {displayItems.length} items
-              </div>
+              <p className="text-base font-bold text-slate-900">
+                {searchQuery ? "Search results" : "Recommended for you"}
+              </p>
+              <button
+                onClick={() => cart.length > 0 && setCheckoutOpen(true)}
+                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-[#1F4B3F] shadow-sm"
+              >
+                {cartItemCount} items
+                <svg
+                  className="w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M6 6h15l-1.5 9h-12z" />
+                  <circle cx="9" cy="20" r="1" />
+                  <circle cx="18" cy="20" r="1" />
+                </svg>
+              </button>
             </div>
             <AnimatePresence custom={turnDirection} mode="wait">
               <motion.div
@@ -1540,11 +1561,130 @@ export default function PublicMenuPage() {
                 className="origin-center"
               >
                 {displayItems.length > 0 ? (
-                  <MenuCarousel
-                    items={displayItems}
-                    onSelect={handleSelectDish}
-                    addToCart={addToCart}
-                  />
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+                    {displayItems.map((item, idx) => {
+                      const cartEntry = cart.find(
+                        entry => entry.item._id === item._id,
+                      );
+                      const accent = idx % 4 === 1;
+                      const badge =
+                        idx % 4 === 0
+                          ? "Bestseller"
+                          : idx % 4 === 1
+                            ? "Chef's Choice"
+                            : null;
+
+                      return (
+                        <motion.div
+                          key={item._id}
+                          initial={{ opacity: 0, y: 16 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: Math.min(idx, 8) * 0.05 }}
+                          whileHover={{ y: -4 }}
+                          className={`group rounded-[1.75rem] overflow-hidden border shadow-sm hover:shadow-lg transition-shadow ${
+                            accent
+                              ? "border-[#1F4B3F] bg-[#1F4B3F] text-white"
+                              : "border-slate-200 bg-white"
+                          }`}
+                        >
+                          <button
+                            type="button"
+                            onClick={() => handleSelectDish(item)}
+                            className="relative block w-full aspect-square overflow-hidden"
+                          >
+                            <img
+                              src={item.imageUrl2D || "/placeholder.jpg"}
+                              alt={item.name}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                            <span
+                              className="absolute top-2.5 right-2.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-red-500 shadow"
+                              aria-hidden="true"
+                            >
+                              ♥
+                            </span>
+                            {badge && (
+                              <span
+                                className={`absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold ${
+                                  idx % 4 === 0
+                                    ? "bg-amber-400 text-amber-950"
+                                    : "bg-white/95 text-[#1F4B3F]"
+                                }`}
+                              >
+                                {idx % 4 === 0 ? "⭐" : ""} {badge}
+                              </span>
+                            )}
+                          </button>
+
+                          <div className="p-3.5 space-y-1.5">
+                            <p
+                              className={`text-sm font-bold truncate ${accent ? "text-white" : "text-slate-900"}`}
+                            >
+                              {item.name}
+                            </p>
+                            <p
+                              className={`text-xs leading-snug line-clamp-2 ${accent ? "text-white/75" : "text-slate-500"}`}
+                            >
+                              {item.description || "Freshly prepared for you"}
+                            </p>
+                            <p
+                              className={`text-sm font-black ${accent ? "text-white" : "text-slate-900"}`}
+                            >
+                              ₹{Number(item.price).toFixed(0)}
+                            </p>
+
+                            {cartEntry ? (
+                              <div
+                                className={`mt-1 flex items-center justify-between rounded-full px-1 py-1 ${accent ? "bg-white/15" : "bg-slate-50"}`}
+                              >
+                                <button
+                                  onClick={() => decreaseCartQty(item._id)}
+                                  className={`h-7 w-7 rounded-full flex items-center justify-center font-bold ${accent ? "bg-white/20 text-white" : "bg-white text-slate-700 border border-slate-200"}`}
+                                >
+                                  -
+                                </button>
+                                <span
+                                  className={`text-sm font-bold ${accent ? "text-white" : "text-slate-900"}`}
+                                >
+                                  {cartEntry.qty}
+                                </span>
+                                <button
+                                  onClick={() => increaseCartQty(item._id)}
+                                  className={`h-7 w-7 rounded-full flex items-center justify-center font-bold ${accent ? "bg-white/20 text-white" : "bg-white text-slate-700 border border-slate-200"}`}
+                                >
+                                  +
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => addToCart(item)}
+                                className={`mt-1 w-full rounded-full py-2 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors ${
+                                  accent
+                                    ? "bg-white text-[#1F4B3F] hover:bg-white/90"
+                                    : "bg-slate-900/5 text-slate-800 hover:bg-slate-900/10"
+                                }`}
+                              >
+                                Add to cart
+                                <svg
+                                  className="w-3.5 h-3.5"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <path d="M6 6h15l-1.5 9h-12z" />
+                                  <circle cx="9" cy="20" r="1" />
+                                  <circle cx="18" cy="20" r="1" />
+                                </svg>
+                              </button>
+                            )}
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
                 ) : (
                   <motion.div
                     initial={{ opacity: 0 }}
@@ -2074,43 +2214,74 @@ export default function PublicMenuPage() {
             {cart.length > 0 && !selectedDish && (
               <motion.div
                 key="cart-summary-bar"
-                initial={{ y: 100, opacity: 0, scale: 0.9 }}
-                animate={{ y: 0, opacity: 1, scale: 1 }}
-                exit={{ y: 100, opacity: 0, scale: 0.9 }}
+                initial={{ y: 100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 100, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="fixed bottom-4 left-3 right-3 md:left-1/2 md:right-auto md:-translate-x-1/2 md:min-w-105 z-40 bg-emerald-600 border border-emerald-700 text-white p-4 rounded-3xl shadow-[0_20px_50px_rgba(16,185,129,0.40)] flex justify-between items-center backdrop-blur-xl hover:shadow-[0_24px_60px_rgba(16,185,129,0.50)] transition-shadow"
+                className="fixed bottom-4 left-3 right-3 md:left-1/2 md:right-auto md:-translate-x-1/2 md:min-w-[560px] z-40 bg-white border border-slate-200 text-slate-900 p-3 rounded-3xl shadow-[0_20px_50px_rgba(15,23,42,0.16)] flex items-center gap-4"
               >
-                <motion.div className="pl-2" whileHover={{ x: 4 }}>
-                  <motion.p className="text-[10px] text-emerald-100 font-bold uppercase tracking-widest mb-1">
-                    Items in Cart
-                  </motion.p>
-                  <motion.p
-                    className="font-bold text-2xl text-white"
-                    initial={{ scale: 1 }}
-                    animate={{ scale: [1, 1.08, 1] }}
-                    transition={{
-                      duration: 0.4,
-                      repeat: Infinity,
-                      repeatDelay: 2,
-                    }}
-                  >
-                    ₹{cartTotal.toFixed(0)}
-                  </motion.p>
-                </motion.div>
+                <div className="hidden sm:flex -space-x-3">
+                  {cart.slice(0, 4).map(entry => (
+                    <div
+                      key={entry.item._id}
+                      className="relative h-11 w-11 rounded-full ring-2 ring-white overflow-hidden bg-slate-100"
+                    >
+                      {entry.item.imageUrl2D ? (
+                        <img
+                          src={entry.item.imageUrl2D}
+                          alt={entry.item.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="h-full w-full flex items-center justify-center text-xs font-bold text-slate-500">
+                          {entry.item.name?.slice(0, 1)}
+                        </div>
+                      )}
+                      <span className="absolute -bottom-0.5 -right-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full bg-[#1F4B3F] text-[9px] font-bold text-white">
+                        {entry.qty}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => setCheckoutOpen(true)}
+                  className="min-w-0 flex-1 text-left"
+                >
+                  <p className="text-sm font-bold text-slate-900">
+                    {cartItemCount} Items
+                  </p>
+                  <p className="text-xs font-semibold text-slate-500">
+                    View cart →
+                  </p>
+                </button>
+
                 <motion.button
                   onClick={() => setCheckoutOpen(true)}
-                  className="bg-white text-emerald-700 hover:bg-emerald-50 px-6 py-3 rounded-full font-bold uppercase tracking-wider text-sm transition-colors shadow-lg"
-                  whileHover={{
-                    scale: 1.08,
-                    boxShadow: "0 8px 20px rgba(255, 255, 255, 0.3)",
-                  }}
-                  whileTap={{ scale: 0.95 }}
+                  className="inline-flex items-center gap-2 bg-[#1F4B3F] text-white hover:opacity-90 px-5 py-3 rounded-2xl font-bold text-sm transition-opacity shadow-md shrink-0"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
                 >
-                  Checkout ({cartItemCount})
+                  Checkout • ₹{cartTotal.toFixed(0)}
+                  <svg
+                    className="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
                 </motion.button>
               </motion.div>
             )}
           </AnimatePresence>
+
+          <p className="fixed bottom-1 left-1/2 -translate-x-1/2 z-30 hidden text-[11px] font-medium text-slate-400 md:block">
+            🔒 Secure payments · 100% safe &amp; hygienic
+          </p>
 
           <AnimatePresence>
             {orderPopup && (
