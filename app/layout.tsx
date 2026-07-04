@@ -4,6 +4,7 @@ import "./globals.css";
 import { RootLayoutClient } from "./layout-client";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { siteConfig } from "@/lib/seo";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -111,6 +112,7 @@ export default function RootLayout({
           ]}
         />
         <RootLayoutClient>{children}</RootLayoutClient>
+        <Analytics />
       </body>
     </html>
   );
