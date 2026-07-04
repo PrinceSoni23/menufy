@@ -164,6 +164,7 @@ export default function AboutPage() {
 
   return (
     <main
+      id="main-content"
       className="min-h-screen bg-gradient-to-br from-[#cce5ff] via-[#fff1cf] to-[#e7d3d3] relative isolate overflow-x-hidden"
       onMouseMove={event => {
         const width = window.innerWidth;

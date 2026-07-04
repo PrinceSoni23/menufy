@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 
 export function Footer() {
@@ -15,11 +16,18 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#8b2323] to-[#8b2323] text-[#fff1cf] text-sm font-black shadow-lg shadow-[#8b2323]/40">
-                MR
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br text-[#fff1cf] text-sm font-black shadow-lg shadow-[#8b2323]/40">
+                <Image
+                  src="/logo2.png"
+                  alt="Menuffy logo"
+                  width={20}
+                  height={20}
+                  className="h-5 w-5"
+                  loading="lazy"
+                />
               </span>
               <span className="text-xl font-bold bg-gradient-to-r from-[#8b2323] via-[#8b2323] to-[#e7d3d3] bg-clip-text text-transparent">
-                menuffy
+                Menuffy
               </span>
             </div>
             <p className="text-[#8b2323] text-sm leading-relaxed">
@@ -52,10 +60,10 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/dashboard"
+                  href="/book-demo"
                   className="text-[#8b2323] hover:text-[#8b2323] transition-colors"
                 >
-                  Dashboard
+                  Book a Demo
                 </Link>
               </li>
             </ul>
@@ -82,7 +90,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/dashboard/analytics"
+                  href="/book-demo"
                   className="text-[#8b2323] hover:text-[#8b2323] transition-colors"
                 >
                   Analytics
@@ -96,7 +104,7 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/"
+                  href="/legal/privacy"
                   className="text-[#8b2323] hover:text-[#8b2323] transition-colors"
                 >
                   Privacy
@@ -104,7 +112,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/"
+                  href="/legal/terms"
                   className="text-[#8b2323] hover:text-[#8b2323] transition-colors"
                 >
                   Terms
@@ -112,7 +120,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/"
+                  href="/legal"
                   className="text-[#8b2323] hover:text-[#8b2323] transition-colors"
                 >
                   Security

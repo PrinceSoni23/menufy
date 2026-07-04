@@ -68,7 +68,10 @@ export default function BookDemoPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(135deg,_#fff1cf_0%,_#e7d3d3_35%,_#cce5ff_100%)] text-[#6d3c3c]">
+    <main
+      id="main-content"
+      className="min-h-screen bg-[linear-gradient(135deg,_#fff1cf_0%,_#e7d3d3_35%,_#cce5ff_100%)] text-[#6d3c3c]"
+    >
       <Header skipAuth />
 
       <section className="relative overflow-hidden px-4 pt-6 pb-12 sm:px-6 sm:pt-8 lg:px-8 lg:pt-10 lg:pb-16">

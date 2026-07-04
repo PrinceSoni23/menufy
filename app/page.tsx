@@ -11,6 +11,16 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
+import {
+  ShoppingBag,
+  Sparkles,
+  BarChart3,
+  SlidersHorizontal,
+  QrCode,
+  Smartphone,
+  Gift,
+  BadgeCheck,
+} from "lucide-react";
 import { Header } from "@/components/common/Header";
 import { Footer } from "@/components/common/Footer";
 
@@ -38,83 +48,158 @@ const InteractivePizza = dynamic(
 const features = [
   {
     number: "01",
-    title: "Look Premium",
+    title: "End-to-End Ordering",
     description:
-      "Every pixel designed to feel expensive. Your menu should look like it cost $50K to build—not cost $0.",
-    icon: "✨",
+      "From QR scan to checkout, guests can browse dishes, customize orders, and complete purchases in one smooth journey.",
+    icon: ShoppingBag,
+    imageSrc: "/features/Customer_scanning.jpeg",
+    imageAlt: "Stylish plated appetizer on a menu image",
+    glow: "radial-gradient(circle, rgba(255, 151, 108, 0.24), transparent 60%)",
+    iconBg: "bg-[#ffe5d5]/90 text-[#c25a3b]",
+    ctaColor: "text-[#c25a3b] hover:text-[#a24e4e]",
   },
   {
     number: "02",
-    title: "Convert Faster",
+    title: "Personalized Dining",
     description:
-      "Intentional design removes friction. Customers scan, they smile, they order. No hesitation.",
-    icon: "🎯",
+      "Support custom dishes, modifiers, preferences, and multilingual menus so every order feels clear and convenient.",
+    icon: Sparkles,
+    imageSrc: "/features/Guest.jpeg",
+    imageAlt: "Premium menu dish photo",
+    glow: "radial-gradient(circle, rgba(249, 199, 188, 0.24), transparent 55%)",
+    iconBg: "bg-[#ffe7e0]/90 text-[#c16143]",
+    ctaColor: "text-[#c16143] hover:text-[#a24e4e]",
   },
   {
     number: "03",
-    title: "Optimize With Confidence",
+    title: "Smarter Insights",
     description:
-      "Real heat maps, real engagement data, real conversion lift. Stop guessing, start scaling.",
-    icon: "📈",
+      "Track scans, item views, conversion, repeat visits, and top-performing dishes so owners can act on real behavior.",
+    icon: BarChart3,
+    imageSrc: "/features/Analytics.jpeg",
+    imageAlt: "Dining table with menu analytics ambiance",
+    glow: "radial-gradient(circle, rgba(94, 147, 255, 0.2), transparent 60%)",
+    iconBg: "bg-[#eef5ff]/90 text-[#2352b5]",
+    ctaColor: "text-[#2352b5] hover:text-[#1d3f83]",
+  },
+  {
+    number: "04",
+    title: "Fast Owner Control",
+    description:
+      "Manage availability, pricing, seasonal specials, and menu content effortlessly from one centralized dashboard in just minutes.",
+    icon: SlidersHorizontal,
+    imageSrc: "/features/Restaurant_owner.jpeg",
+    imageAlt: "Cocktails and menu controls in a restaurant setting",
+    glow: "radial-gradient(circle, rgba(129, 191, 127, 0.2), transparent 60%)",
+    iconBg: "bg-[#e6f6e8]/90 text-[#3f7b4f]",
+    ctaColor: "text-[#3f7b4f] hover:text-[#2d5f3c]",
+  },
+  {
+    number: "05",
+    title: "QR Code Menu",
+    description:
+      "Guests scan a single code and access a premium digital menu instantly on any device and can order the dishes .",
+    icon: QrCode,
+    imageSrc: "/features/Hand_scanning_QR.jpeg",
+    imageAlt: "QR code menu experience on a mobile device",
+    glow: "radial-gradient(circle, rgba(255, 197, 96, 0.2), transparent 60%)",
+    iconBg: "bg-[#fff1dc]/90 text-[#c87f3b]",
+    ctaColor: "text-[#c87f3b] hover:text-[#a24e4e]",
+  },
+  {
+    number: "06",
+    title: "AR Dish Views",
+    description:
+      "Let guests preview dishes in augmented reality before they order for a more confident experience.",
+    icon: Smartphone,
+    imageSrc: "/features/AR.jpeg",
+    imageAlt: "Augmented reality dish preview on a mobile screen",
+    glow: "radial-gradient(circle, rgba(142, 191, 255, 0.2), transparent 60%)",
+    iconBg: "bg-[#e6f2ff]/90 text-[#3b6fa2]",
+    ctaColor: "text-[#3b6fa2] hover:text-[#1d4d7b]",
+  },
+  {
+    number: "07",
+    title: "Loyalty & Offers",
+    description:
+      "Reward repeat guests with personalized offers, promotions, and loyalty perks right in the menu experience.",
+    icon: Gift,
+    imageSrc: "/features/Loyalty_offers.jpeg",
+    imageAlt: "Special offer and loyalty badge for guests",
+    glow: "radial-gradient(circle, rgba(255, 221, 155, 0.2), transparent 60%)",
+    iconBg: "bg-[#fff4dc]/90 text-[#b36d32]",
+    ctaColor: "text-[#b36d32] hover:text-[#8c4a2b]",
+  },
+  {
+    number: "08",
+    title: "Kitchen Live Updates",
+    description:
+      "Keep guests informed with real-time kitchen status, order progress, and availability updates.",
+    icon: BadgeCheck,
+    imageSrc: "/features/Live_kitchen_updates.jpeg",
+    imageAlt: "Real-time kitchen updates and availability status",
+    glow: "radial-gradient(circle, rgba(167, 226, 180, 0.2), transparent 60%)",
+    iconBg: "bg-[#e7f5eb]/90 text-[#3f7b47]",
+    ctaColor: "text-[#3f7b47] hover:text-[#2d5f39]",
   },
 ];
 
 const personas = [
   {
     role: "For New Brands",
-    headline: "Launch Like You've Been Here 10 Years",
+    headline: "Launch a polished dining experience from day one",
     subtext:
-      "Your first impression gets ONE shot. Make it unforgettable. menuffy puts you on par with century-old establishments before you open your doors.",
-    benefit: "Year-one credibility in week one",
+      "Turn a first scan into a confident ordering journey with premium visuals, clear menus, and a seamless path from discovery to checkout.",
+    benefit: "Professional presentation without a big team",
   },
   {
     role: "For Growing Restaurants",
-    headline: "Scale Without Hiring 3 Designers",
+    headline: "Scale faster with less manual work",
     subtext:
-      "Update menus, run seasonal campaigns, test pricing—all while maintaining pristine brand consistency. No design team required.",
-    benefit: "Speed meets sophistication",
+      "Update items, manage availability, support custom orders, and review guest behavior from one simple dashboard as your business grows.",
+    benefit: "Operational clarity at every location",
   },
   {
     role: "For Premium Concepts",
-    headline: "Your Brand Experience Should Match Your Price",
+    headline: "Make every interaction feel premium and intentional",
     subtext:
-      "High-end restaurants deserve high-end digital experiences. Every detail matters. We match your premium positioning perfectly.",
-    benefit: "Design parity with pricing",
+      "Pair immersive visuals with smart ordering flows, personalization, and insights that support both guest delight and revenue growth.",
+    benefit: "Brand experience that supports business results",
   },
 ];
 
 const steps = [
   {
     number: "1",
-    title: "Import Your Story",
+    title: "Open the menu",
     description:
-      "Upload dishes, craft your narrative. We handle the premium layout automatically.",
+      "Guests scan a QR code and land in a premium, mobile-first experience that feels fast and effortless.",
   },
   {
     number: "2",
-    title: "Customize in Minutes",
+    title: "Explore and personalize",
     description:
-      "Change colors, fonts, copy—everything feels premium. No code needed. No design skills required.",
+      "Customers browse dishes, view 3D previews, and customize orders with modifiers, preferences, and clear options.",
   },
   {
     number: "3",
-    title: "Watch Conversions Rise",
+    title: "Complete the order",
     description:
-      "Real-time engagement tracking. See exactly what converts. Every scan tells a story.",
+      "The flow continues smoothly into checkout so guests can move from curiosity to purchase without friction.",
   },
   {
     number: "4",
-    title: "Optimize Indefinitely",
+    title: "Learn and improve",
     description:
-      "A/B test layouts, copy, pricing. Let data guide your design. Never stop improving.",
+      "Owners see what guests engage with most and use analytics to refine menus, offers, and conversion paths.",
   },
 ];
 
 const proofMetrics = [
-  { value: "31%", label: "Avg order value increase", icon: "📈" },
-  { value: "4.2x", label: "Repeat customer scanning", icon: "🔄" },
-  { value: "78%", label: "Mobile engagement boost", icon: "📱" },
-  { value: "3.1s", label: "Average decision time", icon: "⚡" },
+  { value: "31%", label: "Average order value lift", icon: "📈" },
+  { value: "4.2x", label: "More repeat visits from QR menus", icon: "🔄" },
+  { value: "78%", label: "Higher mobile engagement", icon: "📱" },
+  { value: "3.1s", label: "Faster dish decision time", icon: "⚡" },
 ];
 
 const testimonials = [
@@ -148,9 +233,9 @@ const plans = [
     description: "For scaling restaurants",
     features: [
       "Unlimited dishes & pages",
-      "10K monthly scans",
-      "Advanced analytics",
-      "A/B testing tools",
+      "End-to-end ordering flow",
+      "Custom dish options & modifiers",
+      "Advanced analytics dashboard",
       "Priority support",
       "Custom domain",
     ],
@@ -163,10 +248,10 @@ const plans = [
     description: "For multi-location businesses",
     features: [
       "White-label solution",
-      "Unlimited everything",
-      "Dedicated account manager",
+      "Multi-branch menu management",
+      "Advanced reporting & insights",
       "Custom integrations",
-      "Custom Domain",
+      "Dedicated account manager",
       "SLA guarantee",
     ],
   },
@@ -193,6 +278,7 @@ export default function Home() {
 
   return (
     <main
+      id="main-content"
       className="min-h-screen bg-gradient-to-br from-[#cce5ff] via-[#fff1cf] to-[#e7d3d3] relative isolate overflow-x-hidden"
       onMouseMove={event => {
         const width = window.innerWidth;
@@ -226,8 +312,9 @@ export default function Home() {
                 Make ordering feel like an experience, not a guess.
               </h1>
               <p className="text-base sm:text-xl text-[#5a443a] sm:text-[#5f4a40] max-w-xl leading-7 sm:leading-8">
-                Convert menus into immersive 3D and AR previews that lift order
-                confidence, raise ticket sizes, and keep guests coming back.
+                Menuffy helps restaurants present dishes beautifully, support
+                custom orders, guide guests through checkout, and turn menu
+                engagement into actionable analytics.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-5 pt-2 sm:pt-3 md:pt-4 w-full sm:w-auto justify-center sm:justify-start items-center sm:items-start text-center sm:text-left">
                 <Link
@@ -379,31 +466,108 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="px-4 sm:px-6 lg:px-12 py-12">
-          <div className="max-w-6xl mx-auto grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {features.map(feature => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="rounded-3xl p-6 bg-white/70 border border-white/70 shadow-[0_20px_60px_rgba(124,47,47,0.12)]"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl">{feature.icon}</span>
-                  <span className="text-xs uppercase tracking-[0.3em] text-[#8c3b3b]">
-                    {feature.number}
-                  </span>
-                </div>
-                <h3 className="text-lg font-semibold text-[#7c2f2f] mt-4">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-[#7c4b4b] mt-3">
-                  {feature.description}
-                </p>
-              </motion.div>
-            ))}
+        <section className="px-4 sm:px-6 lg:px-12 py-12 bg-[#fff7f1]">
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="mb-8 text-center"
+            >
+              <p className="text-sm uppercase tracking-[0.32em] text-[#a15944]">
+                SIGNATURE EXPERIENCE
+              </p>
+              <h2 className="hero-title text-3xl sm:text-4xl md:text-5xl text-[#241b18] mt-4">
+                Designed to feel as good as it performs.
+              </h2>
+              <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[#6d5e57] sm:text-base">
+                Everything you need to deliver a delightful dining experience
+                and run your restaurant smarter.
+              </p>
+            </motion.div>
+
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {features.map((feature, index) => (
+                <motion.div
+                  key={feature.title}
+                  initial={{ opacity: 0, y: 28, scale: 0.98 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.55, delay: index * 0.08 }}
+                  whileHover={{ y: -6, scale: 1.02 }}
+                  className="group overflow-hidden rounded-[32px] border border-white/80 bg-white shadow-[0_28px_110px_rgba(124,47,47,0.12)]"
+                >
+                  <div className="relative h-64 overflow-hidden rounded-[32px] bg-slate-100">
+                    <div className="absolute inset-0">
+                      <Image
+                        src={feature.imageSrc}
+                        alt={feature.imageAlt}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
+                      <div className="absolute inset-0 bg-black/15" />
+                    </div>
+                    {/* <div className="absolute left-5 top-5 flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-sm font-semibold text-[#241b18] shadow-sm">
+                      {feature.number}
+                    </div> */}
+                    {/* <div className="absolute inset-x-4 top-16 rounded-[28px] border border-white/80 bg-white/85 p-4 shadow-[0_24px_68px_rgba(0,0,0,0.08)] backdrop-blur-xl">
+                      <div className="h-9 rounded-[22px] bg-slate-100" />
+                      <div className="mt-3 flex items-center gap-3">
+                        <div className="h-3 w-3 rounded-full bg-[#f3e4db]" />
+                        <div className="h-3 w-3 rounded-full bg-[#f3e4db]" />
+                        <div className="h-3 w-3 rounded-full bg-[#f3e4db]" />
+                      </div>
+                      <div className="mt-4 space-y-3">
+                        <div className="h-12 rounded-[20px] bg-white shadow-[inset_0_1px_1px_rgba(0,0,0,0.05)]" />
+                        <div className="h-10 rounded-[18px] bg-white shadow-[inset_0_1px_1px_rgba(0,0,0,0.05)]" />
+                        <div className="h-10 rounded-[18px] bg-white shadow-[inset_0_1px_1px_rgba(0,0,0,0.05)]" />
+                      </div>
+                    </div> */}
+                    <div
+                      className="absolute -right-8 -bottom-8 h-28 w-28 rounded-full opacity-90 transition duration-500 group-hover:scale-105"
+                      style={{ background: feature.glow }}
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-4 bg-white px-6 pb-6 pt-5">
+                    <div className="flex items-start gap-4">
+                      <div
+                        className={`flex h-12 w-12 items-center justify-center rounded-2xl ${feature.iconBg}`}
+                      >
+                        <feature.icon className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-[#241b18]">
+                          {feature.title}
+                        </h3>
+                        <p className="mt-2 text-sm leading-6 text-[#6d5e57]">
+                          {feature.description}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between pt-2">
+                      <span
+                        className={`text-sm font-semibold ${feature.ctaColor}`}
+                      >
+                        Explore
+                      </span>
+                      <span className={`text-lg font-bold ${feature.ctaColor}`}>
+                        →
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="mt-10 text-center">
+              <p className="text-sm text-[#6d5e57]">
+                And Many more such features..Built for restaurants. Loved by
+                guests. <span className="text-[#d65a45]">♥</span>
+              </p>
+            </div>
           </div>
         </section>
 
@@ -417,11 +581,12 @@ export default function Home() {
               className="mb-10"
             >
               <h2 className="hero-title text-3xl sm:text-4xl md:text-5xl text-[#7c2f2f]">
-                Built for every restaurant stage.
+                Built for restaurants that want more than a static menu.
               </h2>
               <p className="text-[#7c4b4b] mt-4 max-w-3xl">
-                From brand-new concepts to multi-location groups, menuffy brings
-                consistency, speed, and premium polish.
+                From first-time launches to multi-location groups, menuffy
+                brings premium presentation, smoother ordering, personalization,
+                and real analytics into one platform.
               </p>
             </motion.div>
 
@@ -464,11 +629,11 @@ export default function Home() {
               className="mb-10"
             >
               <h2 className="hero-title text-3xl sm:text-4xl md:text-5xl text-[#7c2f2f]">
-                Scan. View. Order.
+                Scan. Personalize. Order. Learn.
               </h2>
               <p className="text-[#7c4b4b] mt-4 max-w-3xl">
                 A frictionless flow that turns curiosity into confident
-                purchases.
+                purchases and gives owners the insight to improve every step.
               </p>
             </motion.div>
 
@@ -507,7 +672,7 @@ export default function Home() {
                   Proof of impact
                 </p>
                 <h2 className="hero-title text-3xl sm:text-4xl md:text-5xl mt-4">
-                  Restaurants grow faster with menuffy.
+                  Restaurants grow smarter with menuffy.
                 </h2>
               </div>
               <Link
@@ -716,25 +881,30 @@ export default function Home() {
               </div> */}
             {/* </motion.div> */}
 
-            <div className="mt-8 flex flex-col lg:flex-row items-center justify-between gap-6">
-              <div>
+            <div className="mt-8 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex-1">
                 <h2 className="hero-title text-3xl sm:text-4xl md:text-5xl text-[#7c2f2f]">
-                  Bring your menu to life.
+                  Bring your full dining experience online.
                 </h2>
                 <p className="text-[#7c4b4b] mt-3">
-                  Join restaurants using immersive menus to drive more confident
-                  orders.
+                  Join restaurants using immersive menus, smart ordering flows,
+                  <br />
+                  and analytics to create better guest experiences and stronger
+                  results.
                 </p>
               </div>
-              <div className="flex flex-wrap gap-4">
-                <Link href="/book-demo" className="btn-primary">
+              <div className="flex flex-row flex-wrap items-center justify-start gap-3 sm:gap-4">
+                <Link
+                  href="/book-demo"
+                  className="btn-primary whitespace-nowrap"
+                >
                   Ask the demo
                 </Link>
                 <Link
                   href="/menu/kitchen"
-                  className="px-6 py-3 rounded-full border border-[#a24e4e] text-[#7c2f2f] font-semibold hover:bg-[#a24e4e] hover:text-[#fff1cf] transition"
+                  className="whitespace-nowrap px-6 py-3 rounded-full border border-[#a24e4e] text-[#7c2f2f] font-semibold hover:bg-[#a24e4e] hover:text-[#fff1cf] transition"
                 >
-                  Explore demo Menu{" "}
+                  Explore demo Menu
                 </Link>
               </div>
             </div>

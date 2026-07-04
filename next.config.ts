@@ -8,11 +8,14 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(__dirname),
   },
+  compress: true,
   typescript: {
     ignoreBuildErrors: true,
   },
   allowedDevOrigins: ["10.77.116.88"],
   images: {
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 60,
     remotePatterns: [
       {
         protocol: "https",

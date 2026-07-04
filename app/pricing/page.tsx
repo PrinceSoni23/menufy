@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useSubscription } from "@/hooks/useSubscription";
 import type { Plan, GatewayInfo, GatewayId } from "@/lib/types";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 // ─── Feature List ──────────────────────────────────────────────────────────────
 const FEATURES = [

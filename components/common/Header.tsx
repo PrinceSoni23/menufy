@@ -14,9 +14,15 @@ export function Header({ skipAuth }: { skipAuth?: boolean }) {
       : useAuth();
 
   return (
-    <header className="relative z-50 w-full bg-transparent border-b border-[#8b2323]/20 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-        <div className="flex justify-between items-center h-16 sm:h-20">
+    <header className="relative z-50 w-full border-b border-[#8b2323]/20 bg-transparent backdrop-blur-md">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-[#8b2323] focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-[#fff1cf]"
+      >
+        Skip to content
+      </a>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
+        <div className="flex h-16 items-center justify-between sm:h-20">
           {/* Left - haven logo */}
           <Link
             href="/"
@@ -34,7 +40,10 @@ export function Header({ skipAuth }: { skipAuth?: boolean }) {
           </Link>
 
           {/* Center - Navigation Items (Hidden on mobile) */}
-          <nav className="hidden lg:flex items-center gap-8 text-sm text-[#8b2323] flex-1 justify-center">
+          <nav
+            aria-label="Primary"
+            className="hidden flex-1 items-center justify-center gap-8 text-sm text-[#8b2323] lg:flex"
+          >
             <Link
               href="/"
               className="font-semibold text-[#8b2323] hover:text-[#8b2323] transition duration-300"
@@ -111,8 +120,11 @@ export function Header({ skipAuth }: { skipAuth?: boolean }) {
 
           {/* Mobile Menu Button */}
           <button
-            className="lg:hidden text-[#8b2323] ml-4"
+            className="ml-4 text-[#8b2323] lg:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
+            aria-label="Toggle navigation"
           >
             <svg
               className="w-6 h-6"
@@ -137,9 +149,10 @@ export function Header({ skipAuth }: { skipAuth?: boolean }) {
               initial={{ opacity: 0, y: -12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              className="lg:hidden pb-4 border-t border-[#8b2323]/20 mt-2"
+              id="mobile-navigation"
+              className="mt-2 border-t border-[#8b2323]/20 pb-4 lg:hidden"
             >
-              <nav className="space-y-3 py-4">
+              <nav aria-label="Mobile" className="space-y-3 py-4">
                 <button
                   className="block w-full text-left py-2 font-semibold text-[#8b2323] hover:text-[#8b2323]"
                   onClick={() => setMobileMenuOpen(false)}
