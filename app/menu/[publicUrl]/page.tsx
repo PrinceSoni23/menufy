@@ -20,6 +20,93 @@ const API_BASE =
   process.env.NEXT_PUBLIC_API_URL ||
   "http://localhost:5000/api";
 
+type CachedPublicMenuData = {
+  publicUrl: string;
+  restaurantId: string;
+  restaurant: any;
+  menuItems: MenuItem[];
+  timestamp: number;
+};
+
+const PUBLIC_MENU_CACHE_PREFIX = "public-menu-cache-v1";
+const PUBLIC_MENU_CACHE_TTL = 1000 * 60 * 5;
+
+const getPublicMenuCacheKey = (publicUrl: string) =>
+  `${PUBLIC_MENU_CACHE_PREFIX}:${publicUrl.toLowerCase()}`;
+
+const readCachedMenuPayload = (
+  publicUrl: string,
+): CachedPublicMenuData | null => {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const key = getPublicMenuCacheKey(publicUrl);
+    const raw =
+      window.sessionStorage.getItem(key) || window.localStorage.getItem(key);
+
+    if (!raw) return null;
+
+    const payload = JSON.parse(raw) as CachedPublicMenuData;
+    if (!payload?.restaurantId || !Array.isArray(payload.menuItems))
+      return null;
+    if (Date.now() - payload.timestamp > PUBLIC_MENU_CACHE_TTL) {
+      window.sessionStorage.removeItem(key);
+      window.localStorage.removeItem(key);
+      return null;
+    }
+
+    return payload;
+  } catch (error) {
+    console.warn("Failed to read cached public menu payload", error);
+    return null;
+  }
+};
+
+const writeCachedMenuPayload = (
+  publicUrl: string,
+  payload: CachedPublicMenuData,
+) => {
+  if (typeof window === "undefined") return;
+
+  try {
+    const key = getPublicMenuCacheKey(publicUrl);
+    const serialized = JSON.stringify(payload);
+    window.sessionStorage.setItem(key, serialized);
+    window.localStorage.setItem(key, serialized);
+  } catch (error) {
+    console.warn("Failed to write cached public menu payload", error);
+  }
+};
+
+const trackAnalyticsEvent = (
+  payload: Record<string, unknown>,
+  baseUrl = API_BASE,
+) => {
+  if (typeof window === "undefined") return;
+
+  const endpoint = `${baseUrl}/analytics/track`;
+  const body = JSON.stringify(payload);
+
+  try {
+    if (typeof navigator !== "undefined" && "sendBeacon" in navigator) {
+      const blob = new Blob([body], { type: "application/json" });
+      navigator.sendBeacon(endpoint, blob);
+      return;
+    }
+
+    void fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      keepalive: true,
+    }).catch(error => {
+      console.warn("Failed to track analytics event:", error);
+    });
+  } catch (error) {
+    console.warn("Failed to track analytics event:", error);
+  }
+};
+
 const DEFAULT_MENU_BACKGROUND = "/download%20(5).jpeg";
 const CATEGORY_BACKGROUNDS: Array<{ match: RegExp; src: string }> = [
   { match: /\b(starter|appetizer|snack|salad)s?\b/i, src: "/starters.jpeg" },
@@ -895,8 +982,28 @@ export default function PublicMenuPage() {
       }
     };
 
-    trackModelView();
+    void trackModelView();
   }, [activeTab, selectedDish?._id]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !publicUrl || !restaurantId) return;
+
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        trackAnalyticsEvent({
+          restaurantId,
+          eventType: "view_menu",
+          deviceType: "Web",
+          sessionId: sessionIdRef.current,
+          deviceId: deviceIdRef.current,
+          source: "pageshow",
+        });
+      }
+    };
+
+    window.addEventListener("pageshow", handlePageShow);
+    return () => window.removeEventListener("pageshow", handlePageShow);
+  }, [publicUrl, restaurantId]);
 
   // Load data
   useEffect(() => {
@@ -906,13 +1013,23 @@ export default function PublicMenuPage() {
         setLoading(false);
         return;
       }
-      try {
+
+      const cachedPayload = readCachedMenuPayload(publicUrl);
+      if (cachedPayload) {
+        setRestaurantId(cachedPayload.restaurantId);
+        setRestaurant(cachedPayload.restaurant);
+        setMenuItems(cachedPayload.menuItems);
+        setLoading(false);
+      } else {
         setLoading(true);
-        // Scroll to top when page loads
+      }
+
+      try {
         if (typeof window !== "undefined") {
           window.scrollTo(0, 0);
         }
         setError(null);
+
         const qrResponse = await fetch(
           `${API_BASE}/qrcode/public/${publicUrl}`,
         );
@@ -920,103 +1037,116 @@ export default function PublicMenuPage() {
         if (!qrResponse.ok || !qrData.data?.restaurantId) {
           throw new Error(qrData.message || "Restaurant not found");
         }
+
         const rId = qrData.data.restaurantId;
         setRestaurantId(rId);
 
+        trackAnalyticsEvent({
+          restaurantId: rId,
+          eventType: "view_menu",
+          deviceType: "Web",
+          sessionId: sessionIdRef.current,
+          deviceId: deviceIdRef.current,
+          source: "load",
+        });
+
         const qrCodeToken = qrData.data?.qrCode?.code;
         if (qrCodeToken) {
-          try {
-            await fetch(`${API_BASE}/qrcode/scan/${qrCodeToken}`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                deviceId: deviceIdRef.current,
-                sessionId: sessionIdRef.current,
-              }),
-            });
-          } catch (scanError) {
+          void fetch(`${API_BASE}/qrcode/scan/${qrCodeToken}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              deviceId: deviceIdRef.current,
+              sessionId: sessionIdRef.current,
+            }),
+            keepalive: true,
+          }).catch(scanError => {
             console.warn("Failed to track QR scan:", scanError);
-          }
+          });
         }
 
-        if (trackedMenuViewRef.current !== rId) {
-          trackedMenuViewRef.current = rId;
-          try {
-            await fetch(`${API_BASE}/analytics/track`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                restaurantId: rId,
-                eventType: "view_menu",
-                deviceType: "Web",
-                sessionId: sessionIdRef.current,
-                deviceId: deviceIdRef.current,
-              }),
-            });
-          } catch (menuViewError) {
-            console.warn("Failed to track menu view:", menuViewError);
-          }
-        }
+        const [restaurantResult, menuResult] = await Promise.allSettled([
+          fetch(`${API_BASE}/restaurants/public/${publicUrl}`),
+          fetch(`${API_BASE}/menu/public/${rId}`),
+        ]);
 
-        try {
-          const restaurantRes = await fetch(
-            `${API_BASE}/restaurants/public/${publicUrl}`,
+        let nextRestaurant: any = null;
+        if (
+          restaurantResult.status === "fulfilled" &&
+          restaurantResult.value.ok
+        ) {
+          const restaurantData = await restaurantResult.value.json();
+          nextRestaurant = restaurantData?.data || restaurantData;
+          setRestaurant(nextRestaurant);
+        } else if (restaurantResult.status === "fulfilled") {
+          console.warn(
+            "Could not load restaurant details:",
+            restaurantResult.value.status,
           );
-          if (restaurantRes.ok) {
-            const restaurantData = await restaurantRes.json();
-            setRestaurant(restaurantData?.data || restaurantData);
-          }
-        } catch (err) {
-          console.warn("Could not load restaurant details:", err);
         }
 
-        const menuResponse = await fetch(`${API_BASE}/menu/public/${rId}`);
-        const menuData = await menuResponse.json();
-        if (!menuResponse.ok) {
-          throw new Error(menuData.message || "Failed to load menu items");
+        if (menuResult.status === "fulfilled" && menuResult.value.ok) {
+          const menuData = await menuResult.value.json();
+          const items = menuData?.data?.menuItems || menuData?.data || [];
+          const itemsArray = Array.isArray(items) ? items : [];
+          const typedItems = itemsArray as Array<{
+            _id?: string;
+            id?: string;
+            name?: string;
+            category?: string;
+            price?: number;
+            imageUrl2D?: string;
+            model3DUrl?: string | null;
+          }>;
+          const normalizedItems = typedItems.map((item, index) => ({
+            ...item,
+            _id:
+              item._id?.trim() ||
+              item.id?.trim() ||
+              `menu-item-${rId}-${index}-${(item.name || "item").replace(/\s+/g, "-").toLowerCase()}-${(item.category || "cat").replace(/\s+/g, "-").toLowerCase()}-${Math.round(Number(item.price || 0))}`,
+          }));
+
+          console.log("[Menu]", {
+            itemCount: normalizedItems.length,
+            itemsWithModels: normalizedItems.filter(item => item.model3DUrl)
+              .length,
+          });
+          console.log(
+            "[Menu] sample media URLs",
+            normalizedItems.slice(0, 5).map(it => ({
+              id: it._id,
+              image: it.imageUrl2D,
+              model: it.model3DUrl,
+            })),
+          );
+
+          setMenuItems(normalizedItems as MenuItem[]);
+          writeCachedMenuPayload(publicUrl, {
+            publicUrl,
+            restaurantId: rId,
+            restaurant: nextRestaurant,
+            menuItems: normalizedItems as MenuItem[],
+            timestamp: Date.now(),
+          });
+        } else {
+          throw new Error(
+            menuResult.status === "fulfilled"
+              ? "Failed to load menu items"
+              : "Menu request failed",
+          );
         }
-        const items = menuData?.data?.menuItems || menuData?.data || [];
-        const itemsArray = Array.isArray(items) ? items : [];
-        const typedItems = itemsArray as Array<{
-          _id?: string;
-          id?: string;
-          name?: string;
-          category?: string;
-          price?: number;
-          imageUrl2D?: string;
-          model3DUrl?: string | null;
-        }>;
-        const normalizedItems = typedItems.map((item, index) => ({
-          ...item,
-          _id:
-            item._id?.trim() ||
-            item.id?.trim() ||
-            `menu-item-${rId}-${index}-${(item.name || "item").replace(/\s+/g, "-").toLowerCase()}-${(item.category || "cat").replace(/\s+/g, "-").toLowerCase()}-${Math.round(Number(item.price || 0))}`,
-        }));
-        console.log("[Menu]", {
-          itemCount: normalizedItems.length,
-          itemsWithModels: normalizedItems.filter(item => item.model3DUrl)
-            .length,
-        });
-        // Debug: list first few media URLs to ensure server returned public URLs
-        console.log(
-          "[Menu] sample media URLs",
-          normalizedItems.slice(0, 5).map(it => ({
-            id: it._id,
-            image: it.imageUrl2D,
-            model: it.model3DUrl,
-          })),
-        );
-        setMenuItems(normalizedItems as MenuItem[]);
       } catch (err) {
         const errorMsg =
-          err.response?.data?.message || err.message || "Failed to load menu";
-        setError(errorMsg);
-        showToast(errorMsg, "error");
+          err instanceof Error ? err.message : "Failed to load menu";
+        if (!cachedPayload) {
+          setError(errorMsg);
+          showToast(errorMsg, "error");
+        }
       } finally {
         setLoading(false);
       }
     };
+
     loadMenuData();
   }, [publicUrl]);
 
@@ -1086,19 +1216,13 @@ export default function PublicMenuPage() {
       return [...prev, { item, qty: 1 }];
     });
     if (restaurantId) {
-      fetch(`${API_BASE}/analytics/track`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          restaurantId,
-          eventType: "add_to_cart",
-          deviceType: "Web",
-          sessionId: sessionIdRef.current,
-          deviceId: deviceIdRef.current,
-          menuItemId: item._id,
-        }),
-      }).catch(error => {
-        console.warn("Failed to track add to cart:", error);
+      trackAnalyticsEvent({
+        restaurantId,
+        eventType: "add_to_cart",
+        deviceType: "Web",
+        sessionId: sessionIdRef.current,
+        deviceId: deviceIdRef.current,
+        menuItemId: item._id,
       });
     }
     showToast(`${item.name} added`, "success");
@@ -1205,7 +1329,16 @@ export default function PublicMenuPage() {
 
   const handleSelectDish = (item: MenuItem) => {
     if (restaurantId) {
-      fetch(`${API_BASE}/menu/${item._id}/view`, {
+      trackAnalyticsEvent({
+        restaurantId,
+        eventType: "view_menu_item",
+        deviceType: "Web",
+        sessionId: sessionIdRef.current,
+        deviceId: deviceIdRef.current,
+        menuItemId: item._id,
+      });
+
+      void fetch(`${API_BASE}/menu/${item._id}/view`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1213,6 +1346,7 @@ export default function PublicMenuPage() {
           deviceId: deviceIdRef.current,
           deviceType: "Web",
         }),
+        keepalive: true,
       }).catch(error => {
         console.warn("Failed to track menu item view:", error);
       });
@@ -1469,14 +1603,22 @@ export default function PublicMenuPage() {
                   </svg>
                 </button>
               </div>
-                <div className="mb-3 flex gap-3">
-                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/90 border border-emerald-100 text-emerald-700 text-xs font-semibold shadow-sm">Classy dishes</span>
-                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/90 border border-emerald-100 text-emerald-700 text-xs font-semibold shadow-sm">Sleek picks</span>
-                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/90 border border-emerald-100 text-emerald-700 text-xs font-semibold shadow-sm">Fast prep</span>
-                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/90 border border-emerald-100 text-emerald-700 text-xs font-semibold shadow-sm">Fresh drop</span>
-                </div>
+              <div className="mb-3 flex gap-3">
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/90 border border-emerald-100 text-emerald-700 text-xs font-semibold shadow-sm">
+                  Classy dishes
+                </span>
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/90 border border-emerald-100 text-emerald-700 text-xs font-semibold shadow-sm">
+                  Sleek picks
+                </span>
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/90 border border-emerald-100 text-emerald-700 text-xs font-semibold shadow-sm">
+                  Fast prep
+                </span>
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/90 border border-emerald-100 text-emerald-700 text-xs font-semibold shadow-sm">
+                  Fresh drop
+                </span>
+              </div>
 
-                <div className="flex gap-5 overflow-x-auto overflow-y-visible hide-scrollbar pb-2 pl-3 pt-2">
+              <div className="flex gap-5 overflow-x-auto overflow-y-visible hide-scrollbar pb-2 pl-3 pt-2">
                 {categories.map((cat, idx) => {
                   const sampleItem = menuItems.find(
                     item => (item.category || "Other") === cat,
@@ -1497,8 +1639,8 @@ export default function PublicMenuPage() {
                       whileTap={{ scale: 0.94 }}
                     >
                       <div
-                          className={`relative w-16 h-16 rounded-full overflow-hidden ${isActive ? "ring-4 ring-emerald-500 ring-offset-2 shadow-lg" : "ring-1 ring-slate-200 ring-offset-2"} transition-all duration-300`}
-                        >
+                        className={`relative w-16 h-16 rounded-full overflow-hidden ${isActive ? "ring-4 ring-emerald-500 ring-offset-2 shadow-lg" : "ring-1 ring-slate-200 ring-offset-2"} transition-all duration-300`}
+                      >
                         {sampleItem?.imageUrl2D ? (
                           <img
                             src={sampleItem.imageUrl2D}
