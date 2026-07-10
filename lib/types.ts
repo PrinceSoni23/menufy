@@ -109,6 +109,7 @@ export interface AuthResponse {
 
 // Restaurant
 export interface Restaurant {
+  image: any;
   _id: string;
   ownerId: string;
   name: string;

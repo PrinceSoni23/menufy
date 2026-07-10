@@ -65,9 +65,17 @@ class ApiClient {
 
         // Handle 401 Unauthorized - try to refresh token
         if (error.response?.status === 401 && originalRequest) {
+          const reqAny = originalRequest as any;
+          // If we've already retried this request once, don't attempt again
+          if (reqAny._retry) {
+            return Promise.reject(error);
+          }
+          reqAny._retry = true;
+
           // Prevent multiple token refresh requests
           if (!this.refreshTokenPromise) {
-            this.refreshTokenPromise = this.refreshAccessToken().catch(() => {
+            this.refreshTokenPromise = this.refreshAccessToken().catch(err => {
+              // Clear local auth state and redirect to login, then rethrow
               this.clearAuth();
               if (typeof window !== "undefined") {
                 try {
@@ -80,6 +88,7 @@ class ApiClient {
                   // fallback: do nothing
                 }
               }
+              throw err;
             });
           }
 

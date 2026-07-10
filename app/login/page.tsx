@@ -102,7 +102,7 @@ export default function LoginPage() {
                 className="w-12 h-12 object-contain"
               />
               <h2 className="text-5xl sm:text-6xl font-serif font-extrabold italic tracking-[0.12em] text-white drop-shadow-[0_0_24px_rgba(255,255,255,0.55)]">
-                Menufy
+                Menuffy
               </h2>
             </div>
             <p className="text-lg leading-8 font-semibold text-white/90 mb-8 max-w-md drop-shadow-[0_8px_24px_rgba(0,0,0,0.35)]">

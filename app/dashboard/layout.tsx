@@ -175,7 +175,9 @@ export default function DashboardLayout({
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.10),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.10),transparent_26%)]" />
           <div className="relative flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-[0_18px_30px_rgba(15,23,42,0.18)]">
-              <span className="text-sm font-black tracking-[0.18em]">MR</span>
+              <span className="text-sm font-black tracking-[0.18em]">
+                <img src="/logo.png" alt="" />
+              </span>
             </div>
             <div>
               <h2 className="text-2xl font-black tracking-[-0.04em] text-slate-950">
