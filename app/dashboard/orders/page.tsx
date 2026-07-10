@@ -627,19 +627,41 @@ export default function OrdersPage() {
                           Items
                         </p>
                         <div className="mt-2 space-y-1.5">
-                          {order.lineItems.map((item, idx) => (
-                            <div
-                              key={`${orderKey}-${item.menuItemId || item.name || idx}`}
-                              className="flex items-center justify-between text-sm"
-                            >
-                              <span className="text-[#374151]">
-                                {item.name} × {item.quantity}
-                              </span>
-                              <span className="font-mono-ticket font-semibold text-[#22262B]">
-                                ₹{Number(item.lineTotal || 0).toFixed(0)}
-                              </span>
-                            </div>
-                          ))}
+                          {order.lineItems.map((item, idx) => {
+                            const itemImage = item.imageUrl2D || item.imageUrl;
+
+                            return (
+                              <div
+                                key={`${orderKey}-${item.menuItemId || item.name || idx}`}
+                                className="flex items-center justify-between gap-3 text-sm"
+                              >
+                                <div className="flex min-w-0 items-center gap-3">
+                                  {itemImage ? (
+                                    <img
+                                      src={itemImage}
+                                      alt={item.name}
+                                      className="h-12 w-12 shrink-0 rounded-xl border border-[#EDEAE1] object-cover"
+                                    />
+                                  ) : (
+                                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[#EDEAE1] bg-[#F3F1EA] text-[#9CA3AF]">
+                                      <Utensils className="h-5 w-5" />
+                                    </div>
+                                  )}
+                                  <div className="min-w-0">
+                                    <p className="truncate text-[#374151]">
+                                      {item.name}
+                                    </p>
+                                    <p className="text-xs text-[#9CA3AF]">
+                                      Qty {item.quantity}
+                                    </p>
+                                  </div>
+                                </div>
+                                <span className="font-mono-ticket font-semibold text-[#22262B]">
+                                  ₹{Number(item.lineTotal || 0).toFixed(0)}
+                                </span>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
@@ -662,68 +684,117 @@ export default function OrdersPage() {
               animate={{ scale: 1, y: 0, rotate: 0, opacity: 1 }}
               exit={{ scale: 0.92, y: -40, opacity: 0 }}
               transition={{ type: "spring", stiffness: 260, damping: 20 }}
-              className="relative w-full max-w-md overflow-hidden rounded-2xl border border-[#EDEAE1] bg-white p-5 shadow-2xl"
+              className="relative w-full max-w-md max-h-[85vh] overflow-hidden rounded-2xl border border-[#EDEAE1] bg-white p-5 shadow-2xl"
             >
               <TicketPerforation />
-              <div className="mb-1 flex items-center gap-2 pt-3">
-                <motion.span
-                  animate={{ rotate: [0, -12, 12, -8, 0] }}
-                  transition={{
-                    duration: 1.2,
-                    repeat: Infinity,
-                    repeatDelay: 1.4,
-                  }}
-                  className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#FDEDE8] text-[#C1432B]"
-                >
-                  <PartyPopper className="h-4 w-4" />
-                </motion.span>
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#C1432B]">
-                  New Order Printing…
+              <div className="max-h-[calc(85vh-4rem)] overflow-y-auto pr-1">
+                <div className="mb-1 flex items-center gap-2 pt-3">
+                  <motion.span
+                    animate={{ rotate: [0, -12, 12, -8, 0] }}
+                    transition={{
+                      duration: 1.2,
+                      repeat: Infinity,
+                      repeatDelay: 1.4,
+                    }}
+                    className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#FDEDE8] text-[#C1432B]"
+                  >
+                    <PartyPopper className="h-4 w-4" />
+                  </motion.span>
+                  <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#C1432B]">
+                    New Order Printing…
+                  </p>
+                </div>
+
+                <h3 className="font-display mt-2 text-xl font-bold text-[#22262B]">
+                  {newOrderPopup.customerName || "Guest"}
+                </h3>
+                <p className="mt-1 flex items-center gap-1.5 text-sm text-[#374151]">
+                  <Phone className="h-3.5 w-3.5 text-[#9CA3AF]" />
+                  {newOrderPopup.customerPhone || "Not provided"}
                 </p>
-              </div>
+                <p className="mt-1 flex items-center gap-1.5 text-sm text-[#374151]">
+                  <MessageSquareText className="h-3.5 w-3.5 text-[#9CA3AF]" />
+                  Remark: {newOrderPopup.customerRemark || "Not provided"}
+                </p>
+                <p className="mt-1 flex items-center gap-1.5 text-sm text-[#374151]">
+                  <Flame className="h-3.5 w-3.5 text-[#9CA3AF]" />
+                  Cooking request:{" "}
+                  {newOrderPopup.customerCookingRequest || "Not provided"}
+                </p>
+                <p className="font-mono-ticket mt-2 flex items-center gap-1 text-base font-bold text-[#22262B]">
+                  <IndianRupee className="h-4 w-4" />
+                  {Number(newOrderPopup.totalPrice || 0).toFixed(0)}
+                </p>
 
-              <h3 className="font-display mt-2 text-xl font-bold text-[#22262B]">
-                {newOrderPopup.customerName || "Guest"}
-              </h3>
-              <p className="mt-1 flex items-center gap-1.5 text-sm text-[#374151]">
-                <Phone className="h-3.5 w-3.5 text-[#9CA3AF]" />
-                {newOrderPopup.customerPhone || "Not provided"}
-              </p>
-              <p className="mt-1 flex items-center gap-1.5 text-sm text-[#374151]">
-                <MessageSquareText className="h-3.5 w-3.5 text-[#9CA3AF]" />
-                Remark: {newOrderPopup.customerRemark || "Not provided"}
-              </p>
-              <p className="mt-1 flex items-center gap-1.5 text-sm text-[#374151]">
-                <Flame className="h-3.5 w-3.5 text-[#9CA3AF]" />
-                Cooking request:{" "}
-                {newOrderPopup.customerCookingRequest || "Not provided"}
-              </p>
-              <p className="font-mono-ticket mt-2 flex items-center gap-1 text-base font-bold text-[#22262B]">
-                <IndianRupee className="h-4 w-4" />
-                {Number(newOrderPopup.totalPrice || 0).toFixed(0)}
-              </p>
+                {Array.isArray(newOrderPopup.lineItems) &&
+                  newOrderPopup.lineItems.length > 0 && (
+                    <div className="mt-4 rounded-xl border border-dashed border-[#EDEAE1] bg-[#FAFAF9] p-3">
+                      <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-[#9CA3AF]">
+                        <Utensils className="h-3 w-3" />
+                        Ordered dishes
+                      </p>
+                      <div className="mt-2 space-y-2">
+                        {newOrderPopup.lineItems.map((item, idx) => {
+                          const itemImage = item.imageUrl2D || item.imageUrl;
 
-              <div className="mt-4 flex gap-2 border-t border-dashed border-[#EDEAE1] pt-4">
-                <motion.button
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => setNewOrderPopup(null)}
-                  className="flex-1 rounded-xl border border-[#EDEAE1] bg-white px-3 py-2 text-sm font-semibold text-[#374151] transition hover:bg-[#F9F8F4]"
-                >
-                  Dismiss
-                </motion.button>
-                <motion.button
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() =>
-                    void updateOrderStatus(newOrderPopup._id, "confirmed")
-                  }
-                  disabled={statusUpdatingId === newOrderPopup._id}
-                  className="flex-1 rounded-xl border border-[#BFDBFE] bg-[#EFF6FF] px-3 py-2 text-sm font-semibold text-[#1D4ED8] transition hover:bg-[#DCEAFE] disabled:opacity-60"
-                >
-                  <span className="inline-flex items-center justify-center gap-1.5">
-                    <Sparkles className="h-3.5 w-3.5" />
-                    Confirm Order
-                  </span>
-                </motion.button>
+                          return (
+                            <div
+                              key={`${newOrderPopup._id}-${item.menuItemId || item.name || idx}`}
+                              className="flex items-center justify-between gap-3"
+                            >
+                              <div className="flex min-w-0 items-center gap-3">
+                                {itemImage ? (
+                                  <img
+                                    src={itemImage}
+                                    alt={item.name}
+                                    className="h-11 w-11 shrink-0 rounded-xl border border-[#EDEAE1] object-cover"
+                                  />
+                                ) : (
+                                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#EDEAE1] bg-[#F3F1EA] text-[#9CA3AF]">
+                                    <Utensils className="h-4 w-4" />
+                                  </div>
+                                )}
+                                <div className="min-w-0">
+                                  <p className="truncate text-sm font-semibold text-[#374151]">
+                                    {item.name}
+                                  </p>
+                                  <p className="text-xs text-[#9CA3AF]">
+                                    Qty {item.quantity}
+                                  </p>
+                                </div>
+                              </div>
+                              <span className="font-mono-ticket text-sm font-semibold text-[#22262B]">
+                                ₹{Number(item.lineTotal || 0).toFixed(0)}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                <div className="mt-4 flex gap-2 border-t border-dashed border-[#EDEAE1] pt-4">
+                  <motion.button
+                    whileTap={{ scale: 0.96 }}
+                    onClick={() => setNewOrderPopup(null)}
+                    className="flex-1 rounded-xl border border-[#EDEAE1] bg-white px-3 py-2 text-sm font-semibold text-[#374151] transition hover:bg-[#F9F8F4]"
+                  >
+                    Dismiss
+                  </motion.button>
+                  <motion.button
+                    whileTap={{ scale: 0.96 }}
+                    onClick={() =>
+                      void updateOrderStatus(newOrderPopup._id, "confirmed")
+                    }
+                    disabled={statusUpdatingId === newOrderPopup._id}
+                    className="flex-1 rounded-xl border border-[#BFDBFE] bg-[#EFF6FF] px-3 py-2 text-sm font-semibold text-[#1D4ED8] transition hover:bg-[#DCEAFE] disabled:opacity-60"
+                  >
+                    <span className="inline-flex items-center justify-center gap-1.5">
+                      <Sparkles className="h-3.5 w-3.5" />
+                      Confirm Order
+                    </span>
+                  </motion.button>
+                </div>
               </div>
             </motion.div>
           </motion.div>

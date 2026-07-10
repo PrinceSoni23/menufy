@@ -289,6 +289,8 @@ export interface OrderLineItem {
   quantity: number;
   unitPrice: number;
   lineTotal: number;
+  imageUrl2D?: string;
+  imageUrl?: string;
 }
 
 export type OrderStatus =
