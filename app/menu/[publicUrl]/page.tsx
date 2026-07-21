@@ -1030,16 +1030,43 @@ export default function PublicMenuPage() {
         }
         setError(null);
 
-        const qrResponse = await fetch(
-          `${API_BASE}/qrcode/public/${publicUrl}`,
-        );
-        const qrData = await qrResponse.json();
-        if (!qrResponse.ok || !qrData.data?.restaurantId) {
-          throw new Error(qrData.message || "Restaurant not found");
+        const response = await fetch(`${API_BASE}/qrcode/public/${publicUrl}`);
+        const payload = await response.json();
+        if (!response.ok || !payload?.data?.restaurantId) {
+          throw new Error(payload?.message || "Restaurant not found");
         }
 
-        const rId = qrData.data.restaurantId;
+        const rId = payload.data.restaurantId;
+        const nextRestaurant = payload.data.restaurant || null;
+        const items = payload.data.menuItems || [];
+        const typedItems = items as Array<{
+          _id?: string;
+          id?: string;
+          name?: string;
+          category?: string;
+          price?: number;
+          imageUrl2D?: string;
+          model3DUrl?: string | null;
+        }>;
+        const normalizedItems = typedItems.map((item, index) => ({
+          ...item,
+          _id:
+            item._id?.trim() ||
+            item.id?.trim() ||
+            `menu-item-${rId}-${index}-${(item.name || "item").replace(/\s+/g, "-").toLowerCase()}-${(item.category || "cat").replace(/\s+/g, "-").toLowerCase()}-${Math.round(Number(item.price || 0))}`,
+        }));
+
         setRestaurantId(rId);
+        setRestaurant(nextRestaurant);
+        setMenuItems(normalizedItems as MenuItem[]);
+
+        writeCachedMenuPayload(publicUrl, {
+          publicUrl,
+          restaurantId: rId,
+          restaurant: nextRestaurant,
+          menuItems: normalizedItems as MenuItem[],
+          timestamp: Date.now(),
+        });
 
         trackAnalyticsEvent({
           restaurantId: rId,
@@ -1050,7 +1077,7 @@ export default function PublicMenuPage() {
           source: "load",
         });
 
-        const qrCodeToken = qrData.data?.qrCode?.code;
+        const qrCodeToken = payload.data?.qrCode?.code;
         if (qrCodeToken) {
           void fetch(`${API_BASE}/qrcode/scan/${qrCodeToken}`, {
             method: "POST",
@@ -1063,77 +1090,6 @@ export default function PublicMenuPage() {
           }).catch(scanError => {
             console.warn("Failed to track QR scan:", scanError);
           });
-        }
-
-        const [restaurantResult, menuResult] = await Promise.allSettled([
-          fetch(`${API_BASE}/restaurants/public/${publicUrl}`),
-          fetch(`${API_BASE}/menu/public/${rId}`),
-        ]);
-
-        let nextRestaurant: any = null;
-        if (
-          restaurantResult.status === "fulfilled" &&
-          restaurantResult.value.ok
-        ) {
-          const restaurantData = await restaurantResult.value.json();
-          nextRestaurant = restaurantData?.data || restaurantData;
-          setRestaurant(nextRestaurant);
-        } else if (restaurantResult.status === "fulfilled") {
-          console.warn(
-            "Could not load restaurant details:",
-            restaurantResult.value.status,
-          );
-        }
-
-        if (menuResult.status === "fulfilled" && menuResult.value.ok) {
-          const menuData = await menuResult.value.json();
-          const items = menuData?.data?.menuItems || menuData?.data || [];
-          const itemsArray = Array.isArray(items) ? items : [];
-          const typedItems = itemsArray as Array<{
-            _id?: string;
-            id?: string;
-            name?: string;
-            category?: string;
-            price?: number;
-            imageUrl2D?: string;
-            model3DUrl?: string | null;
-          }>;
-          const normalizedItems = typedItems.map((item, index) => ({
-            ...item,
-            _id:
-              item._id?.trim() ||
-              item.id?.trim() ||
-              `menu-item-${rId}-${index}-${(item.name || "item").replace(/\s+/g, "-").toLowerCase()}-${(item.category || "cat").replace(/\s+/g, "-").toLowerCase()}-${Math.round(Number(item.price || 0))}`,
-          }));
-
-          console.log("[Menu]", {
-            itemCount: normalizedItems.length,
-            itemsWithModels: normalizedItems.filter(item => item.model3DUrl)
-              .length,
-          });
-          console.log(
-            "[Menu] sample media URLs",
-            normalizedItems.slice(0, 5).map(it => ({
-              id: it._id,
-              image: it.imageUrl2D,
-              model: it.model3DUrl,
-            })),
-          );
-
-          setMenuItems(normalizedItems as MenuItem[]);
-          writeCachedMenuPayload(publicUrl, {
-            publicUrl,
-            restaurantId: rId,
-            restaurant: nextRestaurant,
-            menuItems: normalizedItems as MenuItem[],
-            timestamp: Date.now(),
-          });
-        } else {
-          throw new Error(
-            menuResult.status === "fulfilled"
-              ? "Failed to load menu items"
-              : "Menu request failed",
-          );
         }
       } catch (err) {
         const errorMsg =

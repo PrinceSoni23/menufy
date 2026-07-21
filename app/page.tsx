@@ -466,7 +466,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="px-4 sm:px-6 lg:px-12 py-12 bg-[#fff7f1]">
+        <section className="px-4 sm:px-6 lg:px-12 py-12 bg-[#F1E6D3]">
           <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
