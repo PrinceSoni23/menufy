@@ -95,7 +95,7 @@ function FailedContent() {
               </button>
 
               <a
-                href="mailto:support@menuffy.com"
+                href="mailto:support@menuffy.in"
                 className="w-full flex items-center justify-center gap-2 text-slate-400 hover:text-slate-600 text-sm py-2 transition-colors"
               >
                 <MessageSquare className="w-4 h-4" />

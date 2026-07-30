@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/dashboard/", "/login", "/register"],
       },
     ],
-    sitemap: "https://menuffy.com/sitemap.xml",
+    sitemap: "https://menuffy.in/sitemap.xml",
   };
 }

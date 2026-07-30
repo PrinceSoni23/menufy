@@ -5,7 +5,7 @@ export const siteConfig = {
   title: "Menuffy | Digital Restaurant Menus, QR Ordering & Analytics",
   description:
     "Menuffy helps restaurants launch modern QR menus, contactless ordering, analytics, and premium digital experiences that increase conversions.",
-  url: "https://menuffy.com",
+  url: "https://menuffy.in",
   locale: "en_US",
   defaultLanguage: "en",
   keywords: [

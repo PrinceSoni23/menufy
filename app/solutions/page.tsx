@@ -68,7 +68,7 @@ export default function SolutionsPage() {
           name: "Menuffy solution pages",
           description:
             "A library of SEO landing pages for hospitality businesses using Menuffy.",
-          url: "https://menuffy.com/solutions",
+          url: "https://menuffy.in/solutions",
         }}
       />
     </main>

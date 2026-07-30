@@ -54,10 +54,10 @@ export default async function SolutionPage({ params }: Props) {
       provider: {
         "@type": "Organization",
         name: "Menuffy",
-        url: "https://menuffy.com",
+        url: "https://menuffy.in",
       },
       areaServed: page.slug,
-      url: `https://menuffy.com/solutions/${page.slug}`,
+      url: `https://menuffy.in/solutions/${page.slug}`,
     },
     {
       "@context": "https://schema.org",

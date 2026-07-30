@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: "Privacy Policy - menuffy",
     description:
       "Privacy Policy for menuffy. Learn how we collect, use, and protect your data.",
-    url: "https://menuffy.com/legal/privacy",
+    url: "https://menuffy.in/legal/privacy",
     type: "website",
   },
   robots: {
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: "https://menuffy.com/legal/privacy",
+    canonical: "https://menuffy.in/legal/privacy",
   },
 };
 

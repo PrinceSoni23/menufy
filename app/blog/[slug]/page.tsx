@@ -124,8 +124,8 @@ export default async function BlogPostPage({ params }: Props) {
           description: post.description,
           author: { "@type": "Organization", name: post.author },
           datePublished: post.publishedAt,
-          mainEntityOfPage: `https://menuffy.com/blog/${post.slug}`,
-          image: `https://menuffy.com${post.image}`,
+          mainEntityOfPage: `https://menuffy.in/blog/${post.slug}`,
+          image: `https://menuffy.in${post.image}`,
         }}
       />
     </main>

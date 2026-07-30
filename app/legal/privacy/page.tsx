@@ -1004,7 +1004,7 @@ export default function PrivacyPolicy() {
                         menuffy Privacy Team
                       </h4>
                       <p className="text-sm text-slate-700  mt-2">
-                        privacy@menuffy.com
+                        privacy@menuffy.in
                         <br />
                         +1 (555) 123-4567
                         <br />
@@ -1026,7 +1026,7 @@ export default function PrivacyPolicy() {
                         Data Protection Officer
                       </h4>
                       <p className="text-sm text-slate-700  mt-2">
-                        dpo@menuffy.com
+                        dpo@menuffy.in
                         <br />
                         (For GDPR-related inquiries only)
                       </p>
@@ -1083,7 +1083,7 @@ export default function PrivacyPolicy() {
 
       {/* Footer */}
       <Footer
-        contactEmail="privacy@menuffy.com"
+        contactEmail="privacy@menuffy.in"
         contactPhone="+1 (555) 123-4567"
         contactAddress="menuffy Legal Department, New Delhi, India"
         lastUpdated="2024-06-27"

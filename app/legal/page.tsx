@@ -115,13 +115,13 @@ export default function LegalHub() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 text-sm">
             <a
-              href="mailto:privacy@menuffy.com"
+              href="mailto:privacy@menuffy.in"
               className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors"
             >
               Email Privacy Team
             </a>
             <a
-              href="mailto:legal@menuffy.com"
+              href="mailto:legal@menuffy.in"
               className="px-6 py-3 rounded-lg bg-slate-200  hover:bg-slate-300  text-slate-900  font-semibold transition-colors"
             >
               Contact Legal

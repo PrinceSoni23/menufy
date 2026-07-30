@@ -74,7 +74,7 @@ export default function BlogPage() {
           name: "Menuffy blog",
           description:
             "SEO-friendly articles for hospitality leaders and restaurant operators.",
-          url: "https://menuffy.com/blog",
+          url: "https://menuffy.in/blog",
         }}
       />
     </main>

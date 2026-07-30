@@ -807,7 +807,7 @@ export default function TermsOfConditions() {
                   <p className="mt-4">
                     menuffy respects copyright. If you believe content on
                     menuffy infringes your rights, please submit a DMCA takedown
-                    notice to legal@menuffy.com.
+                    notice to legal@menuffy.in.
                   </p>
                 </SectionContent>
               </PolicySection>
@@ -1033,7 +1033,7 @@ export default function TermsOfConditions() {
                         1. Negotiation
                       </h4>
                       <p className="text-sm text-slate-700 ">
-                        First, contact menuffy support at support@menuffy.com to
+                        First, contact menuffy support at support@menuffy.in to
                         discuss the issue.
                       </p>
                     </motion.div>
@@ -1126,9 +1126,9 @@ export default function TermsOfConditions() {
                         General Support
                       </h4>
                       <p className="text-sm text-slate-700  mt-2">
-                        support@menuffy.com
+                        support@menuffy.in
                         <br />
-                        Live chat on menuffy.com
+                        Live chat on menuffy.in
                         <br />
                         +1 (555) 123-4567
                       </p>
@@ -1145,7 +1145,7 @@ export default function TermsOfConditions() {
                         Legal Issues
                       </h4>
                       <p className="text-sm text-slate-700  mt-2">
-                        legal@menuffy.com
+                        legal@menuffy.in
                         <br />
                         menuffy Legal Department
                         <br />
@@ -1164,7 +1164,7 @@ export default function TermsOfConditions() {
                         Abuse Reporting
                       </h4>
                       <p className="text-sm text-slate-700  mt-2">
-                        abuse@menuffy.com
+                        abuse@menuffy.in
                         <br />
                         Report violations or suspicious activity
                       </p>
@@ -1179,7 +1179,7 @@ export default function TermsOfConditions() {
 
       {/* Footer */}
       <Footer
-        contactEmail="support@menuffy.com"
+        contactEmail="support@menuffy.in"
         contactPhone="+1 (555) 123-4567"
         contactAddress="menuffy Legal Department, New Delhi, India"
         lastUpdated="2024-06-27"

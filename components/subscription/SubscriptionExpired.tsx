@@ -153,10 +153,10 @@ export default function SubscriptionExpired({
         <p className="text-center text-sm text-slate-400 mt-4">
           Need help? Contact{" "}
           <a
-            href="mailto:support@menuffy.com"
+            href="mailto:support@menuffy.in"
             className="text-orange-500 hover:underline"
           >
-            support@menuffy.com
+            support@menuffy.in
           </a>
         </p>
       </motion.div>

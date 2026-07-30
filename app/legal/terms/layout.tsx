@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: "Terms & Conditions - menuffy",
     description:
       "Terms & Conditions for menuffy. Read our full terms of service.",
-    url: "https://menuffy.com/legal/terms",
+    url: "https://menuffy.in/legal/terms",
     type: "website",
   },
   robots: {
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: "https://menuffy.com/legal/terms",
+    canonical: "https://menuffy.in/legal/terms",
   },
 };
 
