@@ -1,6 +1,9 @@
 // API Configuration
+// Use a production-safe fallback so SSR/public routes do not accidentally
+// depend on a localhost backend address in hosted environments.
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  process.env.NEXT_PUBLIC_API_URL ||
+  (process.env.NODE_ENV === "production" ? "/api" : "http://localhost:5000/api");
 
 // Endpoints
 export const API_ENDPOINTS = {
